@@ -41,6 +41,16 @@ function Header({ scrolled }: HeaderProps) {
     return pathname.startsWith(href)
   }
   const [partnersMenu, setPartnersMenu] = useState<'root' | 'networking' | 'security' | 'endpoint'>('root')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
+  const [mobilePartnersOpen, setMobilePartnersOpen] = useState(false)
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false)
+    setMobileServicesOpen(false)
+    setMobilePartnersOpen(false)
+  }
+
   return (
     <header
       className={`fixed left-0 right-0 top-0 z-20 transition ${
@@ -49,7 +59,7 @@ function Header({ scrolled }: HeaderProps) {
           : 'bg-white/90'
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center gap-3">
           <img src="/pir-logo.png" alt="Pirlanta" className="h-10 w-auto" />
         </div>
@@ -202,9 +212,103 @@ function Header({ scrolled }: HeaderProps) {
             Assessment
           </a>
         </nav>
-        <button className="rounded-full bg-emerald-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:bg-emerald-600">
-          Get Started
+        <div className="hidden md:flex md:items-center md:gap-3">
+          <button className="rounded-full bg-emerald-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:bg-emerald-600">
+            Get Started
+          </button>
+        </div>
+        <button
+          type="button"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 md:hidden"
+          onClick={() => setMobileMenuOpen((o) => !o)}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+          )}
         </button>
+      </div>
+
+      {/* Mobile menu overlay */}
+      <div
+        className={`fixed inset-x-0 top-14 bottom-0 z-10 bg-white/98 backdrop-blur-md md:hidden ${mobileMenuOpen ? 'visible' : 'invisible pointer-events-none'}`}
+      >
+        <nav className="flex flex-col overflow-y-auto px-4 py-6 pb-20">
+          <a className="mobile-nav-link" href="/" onClick={closeMobileMenu}>
+            Home
+          </a>
+          <a className="mobile-nav-link" href="/about" onClick={closeMobileMenu}>
+            About Us
+          </a>
+          <a className="mobile-nav-link" href="http://localhost:8000/threatmap/" onClick={closeMobileMenu}>
+            Threat Map
+          </a>
+
+          <button
+            type="button"
+            className="mobile-nav-accordion"
+            onClick={() => setMobileServicesOpen((o) => !o)}
+          >
+            Services <span className="ml-1">{mobileServicesOpen ? '▾' : '▸'}</span>
+          </button>
+          {mobileServicesOpen && (
+            <div className="ml-4 flex flex-col gap-1 pb-2">
+              <a className="mobile-nav-sublink" href="/services/cybersecurity" onClick={closeMobileMenu}>Cybersecurity</a>
+              <a className="mobile-nav-sublink" href="/services/data-centre-cloud" onClick={closeMobileMenu}>Data Centre</a>
+              <a className="mobile-nav-sublink" href="/services/network-sd-wan" onClick={closeMobileMenu}>Secure Network</a>
+              <a className="mobile-nav-sublink" href="/services/ai-code-audits" onClick={closeMobileMenu}>AI Code Audits</a>
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="mobile-nav-accordion"
+            onClick={() => setMobilePartnersOpen((o) => !o)}
+          >
+            Partners <span className="ml-1">{mobilePartnersOpen ? '▾' : '▸'}</span>
+          </button>
+          {mobilePartnersOpen && (
+            <div className="ml-4 flex flex-col gap-2 pb-2">
+              <a className="mobile-nav-sublink" href="/partners/ecosystem" onClick={closeMobileMenu}>Partner Ecosystem</a>
+              <span className="text-xs font-semibold text-slate-500 mt-2">Networking</span>
+              <a className="mobile-nav-sublink" href="/partners/networking/cisco" onClick={closeMobileMenu}>Cisco</a>
+              <a className="mobile-nav-sublink" href="/partners/networking/juniper" onClick={closeMobileMenu}>Juniper</a>
+              <span className="text-xs font-semibold text-slate-500 mt-2">Security</span>
+              <a className="mobile-nav-sublink" href="/partners/security/barracuda" onClick={closeMobileMenu}>Barracuda</a>
+              <a className="mobile-nav-sublink" href="/partners/security/fortinet" onClick={closeMobileMenu}>Fortinet</a>
+              <a className="mobile-nav-sublink" href="/partners/security/rsa" onClick={closeMobileMenu}>RSA</a>
+              <a className="mobile-nav-sublink" href="/partners/security/crowdstrike" onClick={closeMobileMenu}>CrowdStrike</a>
+              <a className="mobile-nav-sublink" href="/partners/security/forcepoint" onClick={closeMobileMenu}>Forcepoint</a>
+              <a className="mobile-nav-sublink" href="/partners/security/checkpoint" onClick={closeMobileMenu}>Check Point</a>
+              <span className="text-xs font-semibold text-slate-500 mt-2">Endpoint</span>
+              <a className="mobile-nav-sublink" href="/partners/endpoint/apple-enterprise" onClick={closeMobileMenu}>Apple for Enterprise</a>
+              <a className="mobile-nav-sublink" href="/partners/endpoint/apple-smb" onClick={closeMobileMenu}>Apple for SMB</a>
+              <a className="mobile-nav-sublink" href="/partners/endpoint/jamf" onClick={closeMobileMenu}>Jamf</a>
+            </div>
+          )}
+
+          <a className="mobile-nav-link" href="/contact" onClick={closeMobileMenu}>
+            Contact Us
+          </a>
+          <a className="mobile-nav-link" href="/assessment" onClick={closeMobileMenu}>
+            Assessment
+          </a>
+
+          <a
+            href="/contact"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:bg-emerald-600"
+            onClick={closeMobileMenu}
+          >
+            Get Started
+          </a>
+        </nav>
       </div>
     </header>
   )
@@ -4066,7 +4170,7 @@ export default function App() {
           <AssessmentPage />
         </Suspense>
       ) : (
-        <main className="relative overflow-hidden pt-24">
+        <main className="relative overflow-x-hidden pt-20 sm:pt-24">
 
 
           
@@ -4077,7 +4181,7 @@ export default function App() {
           <div className="hero-network" aria-hidden="true" />
           <div className="hero-orb hero-orb--left" aria-hidden="true" />
           <div className="hero-orb hero-orb--right" aria-hidden="true" />
-            <div className="hero-content mx-auto grid max-w-7xl gap-10 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            <div className="hero-content mx-auto grid max-w-7xl gap-6 px-4 py-16 sm:gap-8 sm:px-6 sm:py-20 md:gap-10 md:py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
             <div className="flex flex-wrap gap-3">
               <span className="badge-pill">
@@ -4093,7 +4197,7 @@ export default function App() {
               <span className="text-white">Expert-Led.</span>
               <span className="ai-accent"> AI-Powered.</span>
             </h1> */}
-                <h1 className="mt-6 inline-flex flex-nowrap items-baseline gap-2 whitespace-nowrap text-5xl font-semibold leading-tight text-white md:text-6xl">
+                <h1 className="mt-6 inline-flex flex-wrap items-baseline gap-2 text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
                   <span className="typewriter">
                     {typedFirst}
                     {phase === 1 && <span className="caret" />}
@@ -4107,7 +4211,7 @@ export default function App() {
 
 
 
-            <p className="mt-4 text-xl text-emerald-100">
+            <p className="mt-4 text-lg text-emerald-100 sm:text-xl">
               Cybersecurity Services for the AI Era
             </p>
             <p className="mt-4 max-w-xl text-base text-emerald-100/70 md:text-lg">
@@ -4124,8 +4228,8 @@ export default function App() {
             </div>
           </div>
 
-            <div className="relative" id="threat-map">
-            <div className="hidden md:block">
+            <div className="relative w-full mt-6 sm:mt-8 md:mt-0" id="threat-map">
+            <div className="block">
               <div className="globe-shell">
                 <div className="globe-rings" aria-hidden="true">
                   <span />
@@ -4171,7 +4275,7 @@ export default function App() {
                     </div>
                   </div>
                 )}
-                <div className="mt-6 flex gap-3">
+                <div className="mt-4 flex flex-wrap justify-center gap-3 sm:mt-6">
                   {[
                     { label: 'Threats Blocked', value: threatsBlocked.toLocaleString(), icon: 'shield' },
                     { label: 'Systems', value: systemsCount, icon: 'activity' },
@@ -4224,7 +4328,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-3xl border border-emerald-500/20 bg-slate-950/70 p-6 md:hidden">
+            <div className="mt-6 rounded-3xl border border-emerald-500/20 bg-slate-950/70 p-6 hidden">
               <div className="globe-static" />
               <h3 className="mt-6 text-sm font-semibold text-white">Live Attack Feed</h3>
               <ul className="mt-3 space-y-2 text-xs text-emerald-100/70">
@@ -4254,14 +4358,14 @@ export default function App() {
           </div>
         </section>
         <section className="section-light pricing-section" id="services">
-          <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+          <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20">
             <span className="pill">
               <span className="pill-icon" aria-hidden="true">
                 ✦
               </span>
               AI-ENHANCED SERVICES
             </span>
-            <h2 className="mt-4 text-4xl font-semibold text-slate-900">Our Services</h2>
+            <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl md:text-4xl">Our Services</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-500 md:text-base">
               Three integrated pillars of IT excellence, amplified by AI and delivered with
               senior expertise.
@@ -5085,7 +5189,7 @@ export default function App() {
           </div>
         </section>
         <section className="section-dark section-dark--cta" id="contact">
-          <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+          <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20">
             <h2 className="text-3xl font-semibold text-white">Ready to Secure Your Business?</h2>
             <p className="mt-3 text-sm text-emerald-100/70">
               Let's discuss how Pirlanta can help you achieve secure, scalable, and compliant IT
