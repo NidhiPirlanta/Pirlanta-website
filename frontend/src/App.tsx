@@ -1,6 +1,12 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 
 import { makeRandomAttack, seedAttacks, type Attack, type AttackType } from './data/threatData'
+import AntigravityBackground from './components/AntigravityBackground'
+import offerShield from './assets/icons/offer-shield.svg'
+import offerWifi from './assets/icons/offer-wifi.svg'
+import offerPuzzle from './assets/icons/offer-puzzle.svg'
+
+
 
 const ThreatGlobe = lazy(() => import('./components/ThreatGlobe'))
 const AssessmentPage = lazy(() => import('./components/AssessmentPage'))
@@ -3450,6 +3456,8 @@ export default function App() {
       copy: 'Seamless cross-platform integration.',
       detail:
         "We don't just deploy tools; we weave them into your existing ecosystem to ensure unified visibility and control.",
+      accent: '#b7f24a',
+      gradient: 'linear-gradient(135deg, rgba(20, 28, 26, 0.96), rgba(12, 18, 18, 0.98))',
     },
     {
       key: 'senior',
@@ -3457,6 +3465,8 @@ export default function App() {
       copy: 'Expert-led engagements, always.',
       detail:
         'Every project is led by a principal architect with 10+ years of experience. You get the experts you meet during the sales process.',
+      accent: '#b7f24a',
+      gradient: 'linear-gradient(135deg, rgba(18, 28, 24, 0.96), rgba(12, 18, 18, 0.98))',
     },
     {
       key: 'ai',
@@ -3464,6 +3474,8 @@ export default function App() {
       copy: 'AI tools amplify our experts.',
       detail:
         'We leverage Cisco XDR, Fortinet FortiAI, and leading AI platforms to accelerate detection, automate response, and deliver measurable outcomes.',
+      accent: '#b7f24a',
+      gradient: 'linear-gradient(135deg, rgba(18, 28, 24, 0.96), rgba(12, 18, 18, 0.98))',
     },
     {
       key: 'compliance',
@@ -3471,9 +3483,59 @@ export default function App() {
       copy: 'Audit-ready frameworks.',
       detail:
         'Architectures aligned with NIST, ISO, and PCI-DSS to keep your infrastructure secure, compliant, and audit-ready.',
+      accent: '#b7f24a',
+      gradient: 'linear-gradient(135deg, rgba(18, 28, 24, 0.96), rgba(12, 18, 18, 0.98))',
     },
   ]
   const [activeReasonKey, setActiveReasonKey] = useState(reasonOptions[0].key)
+  const renderReasonIcon = (key: string) => {
+    switch (key) {
+      case 'integration':
+        return (
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="6" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+            <circle cx="18" cy="6" r="3" stroke="currentColor" strokeWidth="1.8" />
+            <circle cx="18" cy="18" r="3" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M8.5 11L15 7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M8.5 13L15 16.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        )
+      case 'senior':
+        return (
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 3l2.8 5.4 6 0.8-4.4 4.2 1.1 5.9L12 16.8 6.5 19.3l1.1-5.9L3.2 9.2l6-0.8L12 3z"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )
+      case 'ai':
+        return (
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="7" width="16" height="10" rx="4" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M8 7V5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M12 7V4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M16 7V5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        )
+      case 'compliance':
+        return (
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+            <path d="M8.5 12.5l2.2 2.2 4.8-4.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        )
+      default:
+        return null
+    }
+  }
   const faqItems = [
     {
       question:
@@ -3528,7 +3590,37 @@ export default function App() {
         'Begin with a short assessment call. We align scope, timelines and outcomes, then execute a phased implementation plan tailored to your needs.',
     },
   ]
-  const [openFaqIndex, setOpenFaqIndex] = useState(0)
+
+  const partnerLogos = [
+    { src: '/partners/world-cisco-png-logo-12.png', alt: 'Cisco' },
+    { src: '/partners/Juniper_Networks_logo.svg.png', alt: 'Juniper Networks' },
+    { src: '/partners/RSA_Security-Logo.wine.png', alt: 'RSA' },
+    { src: '/partners/fortinet.png', alt: 'Fortinet' },
+    { src: '/partners/Check_Point_logo_2022.svg', alt: 'Check Point' },
+    { src: '/partners/Veeam_logo.png', alt: 'Veeam' },
+    { src: '/partners/Amazon_Web_Services_Logo.svg.png', alt: 'AWS' },
+    { src: '/partners/Logitech_logo.svg.png', alt: 'Logitech' },
+  ]
+
+  const handlePartnerScroll = (direction: 1 | -1) => {
+    const viewport = partnerViewportRef.current
+    const track = partnerTrackRef.current
+    if (!viewport || !track) return
+    const items = track.querySelectorAll<HTMLElement>('.partner-item')
+    const firstItem = items[0]
+    const gapValue = parseFloat(
+      getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0'
+    )
+    const step = (firstItem?.getBoundingClientRect().width || 180) + gapValue
+
+    if (direction < 0 && viewport.scrollLeft <= 0) {
+      viewport.scrollLeft += track.scrollWidth / 2
+    }
+
+    partnerPauseRef.current = performance.now() + 800
+    viewport.scrollBy({ left: direction * step, behavior: 'smooth' })
+  }
+  const [openFaqIndex, setOpenFaqIndex] = useState(-1)
 
   useEffect(() => {
     const createId = () =>
@@ -3672,6 +3764,110 @@ export default function App() {
     rafId = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(rafId)
   }, [])
+
+  useEffect(() => {
+    setVisibleLogCount(0)
+    setAuditComplete(false)
+    let idx = 0
+    const interval = setInterval(() => {
+      idx += 1
+      setVisibleLogCount(idx)
+      if (idx >= auditLogs.length) {
+        setAuditComplete(true)
+        clearInterval(interval)
+      }
+    }, 700)
+    return () => clearInterval(interval)
+  }, [auditLogs.length])
+
+  useEffect(() => {
+    if (!auditLogRef.current) return
+    auditLogRef.current.scrollTop = auditLogRef.current.scrollHeight
+  }, [visibleLogCount])
+
+  useEffect(() => {
+    if (!enableAuditParallax) return
+    const section = auditHeroRef.current
+    if (!section) return
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isFinePointer =
+      typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches
+    if (prefersReducedMotion || !isFinePointer) return
+
+    let rafId = 0
+    let targetX = 0
+    let targetY = 0
+    let currentX = 0
+    let currentY = 0
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max)
+
+    const animate = () => {
+      currentX += (targetX - currentX) * 0.08
+      currentY += (targetY - currentY) * 0.08
+      section.style.setProperty('--hero-x', `${currentX.toFixed(2)}px`)
+      section.style.setProperty('--hero-y', `${currentY.toFixed(2)}px`)
+      rafId = requestAnimationFrame(animate)
+    }
+
+    const handleMove = (event: MouseEvent) => {
+      const rect = section.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
+      const offsetX = (event.clientX - centerX) * 0.015
+      const offsetY = (event.clientY - centerY) * 0.01
+      targetX = clamp(offsetX, -16, 16)
+      targetY = clamp(offsetY, -12, 12)
+    }
+
+    const handleLeave = () => {
+      targetX = 0
+      targetY = 0
+    }
+
+    section.addEventListener('mousemove', handleMove)
+    section.addEventListener('mouseleave', handleLeave)
+    rafId = requestAnimationFrame(animate)
+
+    return () => {
+      section.removeEventListener('mousemove', handleMove)
+      section.removeEventListener('mouseleave', handleLeave)
+      cancelAnimationFrame(rafId)
+    }
+  }, [])
+
+  useEffect(() => {
+    const viewport = partnerViewportRef.current
+    const track = partnerTrackRef.current
+    if (!viewport || !track) return
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) return
+
+    let rafId = 0
+    let last = performance.now()
+    const speed = 75
+
+    const step = (now: number) => {
+      const delta = now - last
+      last = now
+      if (!partnersPaused && now > partnerPauseRef.current) {
+        viewport.scrollLeft += (speed * delta) / 1000
+        const halfWidth = track.scrollWidth / 2
+        if (viewport.scrollLeft >= halfWidth) {
+          viewport.scrollLeft -= halfWidth
+        }
+      }
+      rafId = requestAnimationFrame(step)
+    }
+
+    rafId = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(rafId)
+  }, [partnersPaused])
 
   const filteredAttacks = useMemo(
     () => attacks.filter((attack) => activeTypes[attack.attack_type]),
@@ -3826,14 +4022,17 @@ export default function App() {
         </Suspense>
       ) : (
         <main className="relative overflow-hidden pt-24">
-        <section className="hero-section relative flex items-center">
+
+
+          
+
+
+        <section className="hero-section relative flex items-center" id="home">
+          <AntigravityBackground className="hero-antigravity" />
           <div className="hero-network" aria-hidden="true" />
           <div className="hero-orb hero-orb--left" aria-hidden="true" />
           <div className="hero-orb hero-orb--right" aria-hidden="true" />
-          <div
-            className="hero-content mx-auto grid max-w-7xl gap-10 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center"
-            style={{ padding: '0 24px 14rem' }}
-          >
+            <div className="hero-content mx-auto grid max-w-7xl gap-10 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
             <div className="flex flex-wrap gap-3">
               <span className="badge-pill">
@@ -3845,10 +4044,24 @@ export default function App() {
                 AI-Enhanced Operations
               </span>
             </div>
-            <h1 className="mt-6 inline-flex flex-nowrap items-baseline gap-2 whitespace-nowrap text-5xl font-semibold leading-tight text-white md:text-6xl">
+            {/* <h1 className="mt-6 inline-flex flex-nowrap items-baseline gap-2 whitespace-nowrap text-5xl font-semibold leading-tight text-white md:text-6xl">
               <span className="text-white">Expert-Led.</span>
               <span className="ai-accent"> AI-Powered.</span>
-            </h1>
+            </h1> */}
+                <h1 className="mt-6 inline-flex flex-nowrap items-baseline gap-2 whitespace-nowrap text-5xl font-semibold leading-tight text-white md:text-6xl">
+                  <span className="typewriter">
+                    {typedFirst}
+                    {phase === 1 && <span className="caret" />}
+                  </span>
+
+                  <span className="ai-accent typewriter">
+                    {typedSecond}
+                    {phase === 2 && <span className="caret accent" />}
+                  </span>
+                </h1>
+
+
+
             <p className="mt-4 text-xl text-emerald-100">
               Cybersecurity Services for the AI Era
             </p>
@@ -3866,30 +4079,25 @@ export default function App() {
             </div>
           </div>
 
-            <div className="relative">
+            <div className="relative" id="threat-map">
             <div className="hidden md:block">
               <div className="globe-shell">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-semibold tracking-[0.3em] text-emerald-300">
-                  MITIGATED
-                </div>
-                <div className="globe-tag globe-tag--right">DETECTED</div>
-                <div className="globe-tag globe-tag--left">BLOCKED</div>
                 <div className="globe-rings" aria-hidden="true">
                   <span />
                   <span />
                   <span />
                 </div>
-                <div className="absolute inset-0 pointer-events-none z-[15]">
+              <div className="absolute inset-0 pointer-events-none z-[15]">
                   <div
                     className="absolute flex items-center gap-1 animate-alert-pop"
-                    style={{ left: '91.9201%', top: '33.6384%', transform: 'translate(-50%, -50%)' }}
+                    style={{ left: '88%', top: '34%', transform: 'translate(-50%, -50%)' }}
                   >
                     <div className="alert-dot" />
                     <span className="alert-label">BLOCKED</span>
                   </div>
                   <div
                     className="absolute flex items-center gap-1 animate-alert-pop"
-                    style={{ left: '6.60424%', top: '61.9083%', transform: 'translate(-50%, -50%)' }}
+                    style={{ left: '10%', top: '62%', transform: 'translate(-50%, -50%)' }}
                   >
                     <div className="alert-dot" />
                     <span className="alert-label">MITIGATED</span>
@@ -4000,7 +4208,7 @@ export default function App() {
             </svg>
           </div>
         </section>
-        <section className="section-light">
+        <section className="section-light pricing-section" id="services">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <span className="pill">
               <span className="pill-icon" aria-hidden="true">
@@ -4029,6 +4237,7 @@ export default function App() {
                     'AI-optimized infrastructure, predictive scaling & intelligent DR.',
                   bullets: ['Smart Migration', 'Predictive Analytics', 'Automated Recovery'],
                   icon: 'database',
+                  href: '/services/data-centre',
                 },
                 {
                   title: 'Secure Network',
@@ -4036,164 +4245,92 @@ export default function App() {
                     'AI-powered traffic analysis, self-healing networks & intelligent routing.',
                   bullets: ['Intelligent SD-WAN', 'AI Traffic Analysis', 'Adaptive Security'],
                   icon: 'network',
+                  href: '/services/secure-network',
                 },
               ].map((card) => (
                 <div key={card.title} className="group relative h-full">
-                  {card.href ? (
-                    <a href={card.href} className="block h-full">
-                      <div className="service-card-v2 text-left">
-                        <div className="service-card-glow" aria-hidden="true" />
-                        <div className="service-icon-box">
-                          {card.icon === 'shield' && (
-                            <svg viewBox="0 0 24 24" fill="none">
-                              <path
-                                d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          )}
-                          {card.icon === 'database' && (
-                            <svg viewBox="0 0 24 24" fill="none">
-                              <ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" strokeWidth="2" />
-                              <path
-                                d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                              />
-                              <path
-                                d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                              />
-                            </svg>
-                          )}
-                          {card.icon === 'network' && (
-                            <svg viewBox="0 0 24 24" fill="none">
-                              <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                              <rect x="15" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                              <rect x="9" y="15" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                              <path d="M6 9v3h12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                              <path d="M12 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                          )}
-                        </div>
-                        <h3 className="service-title">{card.title}</h3>
-                        <p className="service-copy">{card.description}</p>
-                        <ul className="service-list">
-                          {card.bullets.map((bullet) => (
-                            <li key={bullet} className="service-list-item">
-                              <svg viewBox="0 0 24 24" fill="none">
-                                <path
-                                  d="M9 18l6-6-6-6"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="service-link">
-                          Explore Solution
-                          <svg viewBox="0 0 24 24" fill="none">
-                            <path
-                              d="M5 12h14m-7-7 7 7-7 7"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </a>
-                  ) : (
-                    <div className="service-card-v2 text-left">
-                      <div className="service-card-glow" aria-hidden="true" />
-                      <div className="service-icon-box">
-                        {card.icon === 'shield' && (
-                          <svg viewBox="0 0 24 24" fill="none">
-                            <path
-                              d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                        {card.icon === 'database' && (
-                          <svg viewBox="0 0 24 24" fill="none">
-                            <ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" strokeWidth="2" />
-                            <path
-                              d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                            />
-                            <path
-                              d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                        )}
-                        {card.icon === 'network' && (
-                          <svg viewBox="0 0 24 24" fill="none">
-                            <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                            <rect x="15" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                            <rect x="9" y="15" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                            <path d="M6 9v3h12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                            <path d="M12 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                          </svg>
-                        )}
-                      </div>
-                      <h3 className="service-title">{card.title}</h3>
-                      <p className="service-copy">{card.description}</p>
-                      <ul className="service-list">
-                        {card.bullets.map((bullet) => (
-                          <li key={bullet} className="service-list-item">
-                            <svg viewBox="0 0 24 24" fill="none">
-                              <path
-                                d="M9 18l6-6-6-6"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            <span>{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="service-link">
-                        Explore Solution
+                  <div className="service-card-v2 text-left">
+                    <div className="service-card-glow" aria-hidden="true" />
+                    <div className="service-icon-box">
+                      {card.icon === 'shield' && (
                         <svg viewBox="0 0 24 24" fill="none">
                           <path
-                            d="M5 12h14m-7-7 7 7-7 7"
+                            d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </div>
+                      )}
+                      {card.icon === 'database' && (
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" strokeWidth="2" />
+                          <path
+                            d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      )}
+                      {card.icon === 'network' && (
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                          <rect x="15" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                          <rect x="9" y="15" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                          <path d="M6 9v3h12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path d="M12 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      )}
                     </div>
-                  )}
+                    <h3 className="service-title">
+                      <a className="service-title-link" href={card.href}>
+                        {card.title}
+                      </a>
+                    </h3>
+                    <p className="service-copy">{card.description}</p>
+                    <ul className="service-list">
+                      {card.bullets.map((bullet) => (
+                        <li key={bullet} className="service-list-item">
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M9 18l6-6-6-6"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <a className="service-link" href={card.href}>
+                      Explore Solution
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M5 12h14m-7-7 7 7-7 7"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
-        <section className="section-light">
+        <section className="section-light ai-ops-section" id="ai-ops">
           <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
               <span className="pill pill--tight">
@@ -4306,37 +4443,49 @@ export default function App() {
             </div>
           </div>
         </section>
-        <section className="section-dark">
-          <div className="hero-wave hero-wave--top hero-wave--dark" aria-hidden="true" />
-          <div className="section-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+        <section className="audit-hero" ref={auditHeroRef} id="ai-audits">
+          <div className="audit-bg" aria-hidden="true" />
+          <div className="audit-glow" aria-hidden="true" />
+          <div className="audit-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
-              <span className="pill pill--alert">
-                <span className="pill-icon pill-icon--alert" aria-hidden="true">
-                  ▲
-                </span>
+              <span className="audit-badge audit-reveal" style={{ animationDelay: '0s' }}>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 3l9 16H3L12 3z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M12 9v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="12" cy="16" r="1" fill="currentColor" />
+                </svg>
                 New Threat Vector
               </span>
-              <h2 className="mt-5 text-4xl font-semibold text-white">
+              <h2 className="audit-title audit-reveal" style={{ animationDelay: '0.1s' }}>
                 Secure Your AI-Built
                 <br />
                 Applications
               </h2>
-              <p className="mt-4 text-sm text-emerald-100/70 md:text-base">
-                48% of AI-generated code contains vulnerabilities
+              <p className="audit-stat audit-reveal" style={{ animationDelay: '0.2s' }}>
+                <span>48%</span> of AI-generated code contains vulnerabilities.
               </p>
-              <p className="mt-3 max-w-xl text-sm text-emerald-100/60 md:text-base">
+              <p className="audit-desc audit-reveal" style={{ animationDelay: '0.3s' }}>
                 Cursor, Copilot, and vibe-coded applications introduce security blind spots.
                 Purpose-built audits catch what automated scanners miss.
               </p>
-              <div className="mt-6 grid gap-3 text-sm text-emerald-100/80 md:grid-cols-2">
+              <div className="audit-features">
                 {[
                   { label: 'SAST & DAST Analysis', icon: 'search' },
                   { label: 'Dependency Scanning', icon: 'layers' },
                   { label: 'AI Prompt Injection Testing', icon: 'shield' },
                   { label: 'Remediation Guidance', icon: 'spark' },
-                ].map((item) => (
-                  <div key={item.label} className="feature-row">
-                    <span className="feature-icon" aria-hidden="true">
+                ].map((item, idx) => (
+                  <div
+                    key={item.label}
+                    className="audit-feature audit-reveal"
+                    style={{ animationDelay: `${0.35 + idx * 0.08}s` }}
+                  >
+                    <span className="audit-feature-icon" aria-hidden="true">
                       {item.icon === 'search' && (
                         <svg viewBox="0 0 24 24" fill="none">
                           <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2" />
@@ -4371,159 +4520,394 @@ export default function App() {
                   </div>
                 ))}
               </div>
-              <button className="mt-7 rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600">
-                Get Your Code Audited →
+              <button className="audit-cta audit-reveal" style={{ animationDelay: '0.7s' }}>
+                Get Your Code Audited <span>→</span>
               </button>
             </div>
-            <div className="code-panel">
-              <div className="code-panel-header">
-                <span className="dot dot-red" />
-                <span className="dot dot-yellow" />
-                <span className="dot dot-green" />
-                <span className="code-title">security_audit.log</span>
-              </div>
-              <div className="code-panel-body">
-                <p className="code-line code-line--alert">[CRITICAL] SQL Injection in user input handler</p>
-                <p className="code-line code-line--warn">[WARNING] Hardcoded API key detected</p>
-                <p className="code-line code-line--warn">[WARNING] Vulnerable dependency: lodash@4.17.15</p>
-                <p className="code-line code-line--ok">[FIXED] XSS vulnerability patched</p>
-                <p className="code-line code-line--ok">[FIXED] Authentication bypass resolved</p>
-                <p className="code-line code-line--muted">Scan complete</p>
-                <div className="code-footer">12 issues found, 8 fixed</div>
-              </div>
-            </div>
-          </div>
-          <div className="hero-wave" aria-hidden="true" />
-        </section>
-        <section className="section-dark section-dark--muted">
-          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-            <div>
-              <h2 className="text-3xl font-semibold text-white">Why Choose Pirlanta?</h2>
-              <p className="mt-3 max-w-xl text-sm text-emerald-100/60 md:text-base">
-                We bridge strategy and execution in converged Cybersecurity, Data Infrastructure,
-                and Network environments to help you achieve measurable business outcomes.
-              </p>
-              <div className="mt-8 grid gap-4 md:grid-cols-2">
-                {reasonOptions.map((item) => (
-                  <button
-                    key={item.key}
-                    className={`reason-card ${
-                      item.key === activeReasonKey ? 'reason-card--active' : ''
-                    }`}
-                    onClick={() => setActiveReasonKey(item.key)}
-                    type="button"
-                  >
-                    <div className="reason-icon" aria-hidden="true">
-                      <span />
+            <div className="hidden lg:block audit-reveal" style={{ animationDelay: '0.5s' }}>
+              <div className="relative">
+                <div className="animated-border glass-card-dark rounded-2xl border border-white/10 p-8">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-3 w-3 rounded-full bg-red-500" />
+                      <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                      <div className="h-3 w-3 rounded-full bg-green-500" />
                     </div>
-                    <h3 className="reason-title">{item.title}</h3>
-                    <p className="reason-copy">{item.copy}</p>
-                  </button>
-                ))}
-              </div>
-              <button className="mt-6 rounded-full bg-emerald-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600">
-                About Our Approach
-              </button>
-            </div>
-            {(() => {
-              const active =
-                reasonOptions.find((item) => item.key === activeReasonKey) ?? reasonOptions[0]
-              const orbitLabels: Record<string, string[]> = {
-                integration: ['Cloud', 'On-Prem', 'Hybrid', 'SOC'],
-                senior: ['10+ yrs', 'Lead', 'Experts', 'Advisors'],
-                ai: ['AI', 'XDR', 'SOAR', 'ML'],
-                compliance: ['NIST', 'ISO', 'PCI-DSS', 'SOC2'],
-              }
-              const labels = orbitLabels[active.key] ?? []
-              return (
-                <div className="focus-card focus-card--interactive">
-                  <div key={active.key} className="focus-graphic">
-                    {active.key === 'integration' && (
-                      <div className="focus-graph">
-                        <svg className="focus-graph-lines" viewBox="0 0 200 200" aria-hidden="true">
-                          <line x1="100" y1="100" x2="100" y2="30" />
-                          <line x1="100" y1="100" x2="160" y2="70" />
-                          <line x1="100" y1="100" x2="160" y2="130" />
-                          <line x1="100" y1="100" x2="100" y2="170" />
-                          <line x1="100" y1="100" x2="40" y2="130" />
-                          <line x1="100" y1="100" x2="40" y2="70" />
-                          <line x1="40" y1="70" x2="100" y2="30" />
-                          <line x1="100" y1="30" x2="160" y2="70" />
-                          <line x1="160" y1="70" x2="160" y2="130" />
-                          <line x1="160" y1="130" x2="100" y2="170" />
-                          <line x1="100" y1="170" x2="40" y2="130" />
-                          <line x1="40" y1="130" x2="40" y2="70" />
-                        </svg>
-                        <span className="focus-node focus-node--center" />
-                        <span className="focus-node focus-node--top" />
-                        <span className="focus-node focus-node--top-right" />
-                        <span className="focus-node focus-node--bottom-right" />
-                        <span className="focus-node focus-node--bottom" />
-                        <span className="focus-node focus-node--bottom-left" />
-                        <span className="focus-node focus-node--top-left" />
-                        <span className="focus-node focus-node--mid-top" />
-                        <span className="focus-node focus-node--mid-bottom" />
-                      </div>
-                    )}
-                    {active.key === 'senior' && (
-                      <div className="focus-graphic-icon focus-graphic-icon--person">
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
-                          <path
-                            d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                    {active.key === 'ai' && (
-                      <div className="focus-graphic-nodes">
-                        {Array.from({ length: 12 }).map((_, idx) => (
-                          <span key={idx} className="focus-node" />
-                        ))}
-                      </div>
-                    )}
-                    {active.key === 'compliance' && (
-                      <div className="focus-graphic-icon focus-graphic-icon--shield">
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <path
-                            d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                    {active.key !== 'integration' && labels.length > 0 && (
-                      <div className="orbit-group" aria-hidden="true">
-                        {labels.map((label, index) => (
-                          <div
-                            key={label}
-                            className="orbit-label"
-                            style={
-                              {
-                                '--orbit-angle': `${index * (360 / labels.length)}deg`,
-                              } as React.CSSProperties
-                            }
-                          >
-                            {label}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <span className="text-xs font-mono text-white/40">security_audit.log</span>
                   </div>
-                  <h3 className="focus-title">{active.title}</h3>
-                  <p className="focus-copy">{active.detail}</p>
+                  <div className="space-y-3 font-mono text-sm" ref={auditLogRef}>
+                    {auditLogs.slice(0, visibleLogCount).map((line, idx) => (
+                      <div key={`${line.level}-${idx}`} className="flex items-start space-x-3">
+                        <span
+                          className={
+                            line.level === 'critical'
+                              ? 'text-red-400'
+                              : line.level === 'warning'
+                                ? 'text-yellow-400'
+                                : 'text-green-400'
+                          }
+                        >
+                          [{line.level.toUpperCase()}]
+                        </span>
+                        <span className="text-white/70">{line.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {auditComplete && (
+                    <div className="mt-6 border-t border-white/10 pt-6">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-white/40">Scan complete</span>
+                        <span className="text-accent font-medium">
+                          12 issues found, 8 fixed
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )
-            })()}
+              </div>
+            </div>
           </div>
         </section>
-        <section className="section-light">
+        <section className="bg-dark-950 text-white py-24 md:py-32 lg:py-36 relative overflow-hidden" id="why-choose">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(80% 50% at 50% 0%, rgba(39, 102, 0, 0.15), transparent)',
+            }}
+          />
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+              <AntigravityBackground className="absolute inset-0 w-full h-full" />
+            </div>
+            <div className="grid lg:grid-cols-2 gap-12 items-stretch relative z-10">
+              <div style={{ opacity: 1, transform: 'none' }}>
+                <div className="flex flex-col h-full">
+                  <div className="mb-10">
+                    <h2 className="text-section-sm md:text-section font-medium text-white mb-6">
+                      Why Choose Pirlanta?
+                    </h2>
+                    <p className="text-lg text-white/70">
+                      We bridge strategy and execution in converged Cybersecurity, Data
+                      Infrastructure, and Network environments to help you achieve measurable
+                      business outcomes.
+                    </p>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {reasonOptions.map((item) => {
+                      const isActive = item.key === activeReasonKey
+                      return (
+                        <div
+                          key={item.key}
+                          className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer group why-focus-card ${
+                            isActive
+                              ? 'bg-white/10 border-primary/50 shadow-[0_0_20px_-5px_rgba(39,102,0,0.3)]'
+                              : 'bg-white/5 border-white/5 hover:bg-white/[0.07] hover:border-white/10'
+                          }`}
+                          onClick={() => setActiveReasonKey(item.key)}
+                          onMouseEnter={() => setActiveReasonKey(item.key)}
+                          onFocus={() => setActiveReasonKey(item.key)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              setActiveReasonKey(item.key)
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                        >
+                          <div
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${
+                              isActive ? 'bg-primary text-white' : 'bg-white/10 text-primary'
+                            }`}
+                          >
+                            {renderReasonIcon(item.key)}
+                          </div>
+                          <h4 className={`font-medium mb-2 ${isActive ? 'text-white' : 'text-white/90'}`}>
+                            {item.title}
+                          </h4>
+                          <p className="text-sm text-white/60 leading-relaxed">{item.copy}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-10">
+                    <a
+                      className="inline-flex items-center justify-center font-medium transition-all duration-300 ease-premium rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm text-primary border border-primary/20 hover:bg-white hover:border-primary/40 hover:-translate-y-0.5 focus-visible:ring-primary px-6 py-3 text-base"
+                      href="/about"
+                    >
+                      About Our Approach
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+
+              <div className="hidden lg:block h-full" style={{ opacity: 1, transform: 'none' }}>
+                {(() => {
+                  const active =
+                    reasonOptions.find((item) => item.key === activeReasonKey) ?? reasonOptions[0]
+                  // const orbitLabels: Record<string, string[]> = {
+                  //   compliance: ['NIST', 'ISO', 'PCI-DSS', 'SOC2'],
+                  // }
+                  // const labels = orbitLabels[active.key] ?? []
+                  const labels: string[] = []
+                  return (
+                    <div className="relative">
+                      <div style={{ transform: 'translateY(-0.35489px)' }}>
+                        <div className="relative h-full min-h-[590px] rounded-3xl overflow-hidden glass-card-dark border border-white/10 flex flex-col why-focus-card">
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50" />
+                          <div className="relative z-10 flex-1 flex flex-col items-center p-8 text-center">
+                            <div className="w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden">
+                              <div key={active.key} className="focus-graphic">
+                                {/* {active.key === 'integration' && (
+                                  <div className="focus-graph">
+                                    <svg className="focus-graph-lines" viewBox="0 0 200 200" aria-hidden="true">
+                                      <line x1="100" y1="100" x2="100" y2="30" />
+                                      <line x1="100" y1="100" x2="160" y2="70" />
+                                      <line x1="100" y1="100" x2="160" y2="130" />
+                                      <line x1="100" y1="100" x2="100" y2="170" />
+                                      <line x1="100" y1="100" x2="40" y2="130" />
+                                      <line x1="100" y1="100" x2="40" y2="70" />
+                                      <line x1="40" y1="70" x2="100" y2="30" />
+                                      <line x1="100" y1="30" x2="160" y2="70" />
+                                      <line x1="160" y1="70" x2="160" y2="130" />
+                                      <line x1="160" y1="130" x2="100" y2="170" />
+                                      <line x1="100" y1="170" x2="40" y2="130" />
+                                      <line x1="40" y1="130" x2="40" y2="70" />
+                                    </svg>
+                                    <span className="focus-node focus-node--center" />
+                                    <span className="focus-node focus-node--top" />
+                                    <span className="focus-node focus-node--top-right" />
+                                    <span className="focus-node focus-node--bottom-right" />
+                                    <span className="focus-node focus-node--bottom" />
+                                    <span className="focus-node focus-node--bottom-left" />
+                                    <span className="focus-node focus-node--top-left" />
+                                    <span className="focus-node focus-node--mid-top" />
+                                    <span className="focus-node focus-node--mid-bottom" />
+                                  </div>
+                                )} */}
+                                {active.key === 'integration' && (
+                                  <div className="focus-pipeline">
+                                    <svg viewBox="0 0 220 200" className="focus-pipeline-svg" aria-hidden="true">
+
+                                      {/* Left Systems */}
+                                      <rect x="10" y="30" width="40" height="24" rx="6" className="pipe-system" />
+                                      <rect x="10" y="88" width="40" height="24" rx="6" className="pipe-system" />
+                                      <rect x="10" y="146" width="40" height="24" rx="6" className="pipe-system" />
+
+                                      {/* Right Systems */}
+                                      <rect x="170" y="30" width="40" height="24" rx="6" className="pipe-system" />
+                                      <rect x="170" y="88" width="40" height="24" rx="6" className="pipe-system" />
+                                      <rect x="170" y="146" width="40" height="24" rx="6" className="pipe-system" />
+
+                                      {/* Central Hub */}
+                                      <circle cx="110" cy="100" r="26" className="pipe-hub" />
+
+                                      {/* Connection Paths */}
+                                      <g className="pipe-lines">
+                                        <path d="M50 42 H84 Q96 42 96 60 V100" />
+                                        <path d="M50 100 H96" />
+                                        <path d="M50 158 H84 Q96 158 96 140 V100" />
+
+                                        <path d="M170 42 H136 Q124 42 124 60 V100" />
+                                        <path d="M170 100 H124" />
+                                        <path d="M170 158 H136 Q124 158 124 140 V100" />
+                                      </g>
+                                    </svg>
+
+                                    {/* Moving Data Packets */}
+                                    {/* <span className="pipe-packet pipe-packet--1" />
+                                    <span className="pipe-packet pipe-packet--2" />
+                                    <span className="pipe-packet pipe-packet--3" /> */}
+                                  </div>
+                                )}
+
+
+
+
+
+                                {/* {active.key === 'senior' && (
+                                  <div className="focus-graphic-icon focus-graphic-icon--person">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                      <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
+                                      <path
+                                        d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                      />
+                                    </svg>
+                                    <div className="senior-orbit" aria-hidden="true">
+                                      {Array.from({ length: 6 }).map((_, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="senior-orbit-dot"
+                                          style={{ ['--orbit-angle' as string]: `${idx * 60}deg` } as React.CSSProperties}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                )} */}
+
+                                {active.key === 'senior' && (
+                                  <div className="senior-anim">
+                                    <div className="senior-anim__core">
+                                      <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
+                                        <path
+                                          d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                    </div>
+
+                                    <div className="senior-anim__orbit">
+                                      {Array.from({ length: 6 }).map((_, i) => (
+                                        <span key={i} style={{ ['--a' as string]: `${i * 60}deg` }} />
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+
+
+
+                                {/* {active.key === 'ai' && (
+                                  <div className="focus-ai-graph">
+                                    <svg className="focus-ai-lines" viewBox="0 0 220 180" aria-hidden="true">
+                                      <line x1="40" y1="70" x2="110" y2="40" />
+                                      <line x1="110" y1="40" x2="180" y2="70" />
+                                      <line x1="40" y1="70" x2="90" y2="120" />
+                                      <line x1="180" y1="70" x2="130" y2="120" />
+                                      <line x1="90" y1="120" x2="130" y2="120" />
+                                      <line x1="110" y1="40" x2="110" y2="100" />
+                                    </svg>
+                                    {Array.from({ length: 12 }).map((_, idx) => (
+                                      <span key={idx} className="ai-node" />
+                                    ))}
+                                    <div className="ai-flow-labels" aria-hidden="true">
+                                      <span>Input</span>
+                                      <span>Process</span>
+                                      <span>Output</span>
+                                    </div>
+                                  </div>
+                                )} */}
+
+                                {active.key === 'ai' && (
+                                    <div className="focus-graphic-icon focus-graphic-icon--ai-network">
+                                      <div className="ai-network">
+                                        {/* Nodes */}
+                                        <span className="node n1" />
+                                        <span className="node n2" />
+                                        <span className="node n3" />
+                                        <span className="node n4" />
+                                        <span className="node n5" />
+                                        <span className="node n6" />
+                                        <span className="node n7" />
+
+                                        {/* Center processor */}
+                                        <span className="node core" />
+
+                                        {/* SVG Lines */}
+                                        <svg className="links" viewBox="0 0 200 200">
+                                          <line x1="30" y1="40" x2="100" y2="100" />
+                                          <line x1="30" y1="100" x2="100" y2="100" />
+                                          <line x1="30" y1="160" x2="100" y2="100" />
+
+                                          <line x1="100" y1="100" x2="170" y2="40" />
+                                          <line x1="100" y1="100" x2="170" y2="100" />
+                                          <line x1="100" y1="100" x2="170" y2="160" />
+                                        </svg>
+                                      </div>
+
+                                      <div className="ai-labels">
+                                        <span>INPUT</span>
+                                        <span>PROCESS</span>
+                                        <span>OUTPUT</span>
+                                      </div>
+                                    </div>
+                                  )}
+
+
+
+
+
+
+
+                                
+                                {/* {active.key === 'compliance' && (
+                                  <div className="focus-graphic-icon focus-graphic-icon--shield">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                      <path
+                                        d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </div>
+                                )} */}
+
+                                {active.key === 'compliance' && (
+                                  <div className="focus-graphic-icon focus-graphic-icon--shield">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                      <path
+                                        d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </div>
+                                )}
+
+
+
+
+                                {active.key !== 'integration' && labels.length > 0 && (
+                                  <div className="orbit-group" aria-hidden="true">
+                                    {labels.map((label, index) => (
+                                      <div
+                                        key={label}
+                                        className="orbit-label"
+                                        style={
+                                          {
+                                            '--orbit-angle': `${index * (360 / labels.length)}deg`,
+                                          } as React.CSSProperties
+                                        }
+                                      >
+                                        {label}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex-shrink-0 mt-4">
+                              <h3 className="text-2xl md:text-3xl font-medium text-white mb-3">
+                                {active.title}
+                              </h3>
+                              <p className="text-base text-white/70 max-w-md mx-auto leading-relaxed">
+                                {active.detail}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="section-light" id="package-offerings">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <h2 className="text-4xl font-semibold text-slate-900">Package Offerings</h2>
             <p className="mt-3 text-sm text-slate-500 md:text-base">
@@ -4535,6 +4919,7 @@ export default function App() {
                 {
                   name: 'FLEX',
                   tag: 'Get Started',
+                  icon: offerShield,
                   copy:
                     'Everything you need to get started with cybersecurity and data center protection.',
                   bullets: ['Security Assessment', 'Vulnerability Scanning', 'Basic Monitoring', 'Incident Response Planning'],
@@ -4543,12 +4928,14 @@ export default function App() {
                   name: 'CONNECT',
                   tag: 'Most Popular',
                   featured: true,
+                  icon: offerWifi,
                   copy: 'Enhance visibility, prepare for cloud migration, and strengthen your posture.',
                   bullets: ['Everything in FLEX', '24x7 SOC Monitoring', 'Cloud Security Posture', 'Compliance Reporting', 'Quarterly Reviews'],
                 },
                 {
                   name: 'INTEGRATE',
                   tag: 'Enterprise',
+                  icon: offerPuzzle,
                   copy:
                     'Full-stack cyber transformation with AI-driven defense and compliance.',
                   bullets: ['Everything in CONNECT', 'AI-Driven Detection', 'Custom Playbooks', 'Dedicated Account Team', 'Executive Reporting', 'DR as a Service'],
@@ -4558,6 +4945,9 @@ export default function App() {
                   key={plan.name}
                   className={`pricing-card ${plan.featured ? 'pricing-card--featured' : ''}`}
                 >
+                  <div className="pricing-icon-wrap" aria-hidden="true">
+                    <img className="pricing-icon" src={plan.icon} alt="" loading="lazy" />
+                  </div>
                   <span className="pricing-tag">{plan.tag}</span>
                   <h3 className="pricing-name">{plan.name}</h3>
                   <p className="pricing-copy">{plan.copy}</p>
@@ -4572,28 +4962,53 @@ export default function App() {
             </div>
           </div>
         </section>
-        <section className="section-light">
-          <div className="mx-auto max-w-7xl px-6 py-16 text-center">
+        <section className="section-light partners-section" id="partners">
+          <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <h2 className="text-3xl font-semibold text-slate-900">Our Technology Partners</h2>
             <p className="mt-2 text-sm text-slate-500">
               We partner with industry leaders to deliver best-in-class solutions.
             </p>
-            <div className="partners-row">
-              <button className="partners-arrow" aria-label="Previous">
+            <div className="partners-marquee">
+              <button
+                className="partners-nav partners-nav--left"
+                onClick={() => handlePartnerScroll(-1)}
+                type="button"
+                aria-label="Scroll left"
+              >
                 ‹
               </button>
-              {['Intel', 'Barracuda', 'Veeam', 'Apple', 'Jamf', 'AWS', 'Google'].map((logo) => (
-                <span key={logo} className="partner-logo">
-                  {logo}
-                </span>
-              ))}
-              <button className="partners-arrow" aria-label="Next">
+              <div
+                className="partners-viewport"
+                ref={partnerViewportRef}
+                onMouseEnter={() => setPartnersPaused(true)}
+                onMouseLeave={() => setPartnersPaused(false)}
+                onFocus={() => setPartnersPaused(true)}
+                onBlur={() => setPartnersPaused(false)}
+              >
+                <div className="partners-track" ref={partnerTrackRef}>
+                  {[...partnerLogos, ...partnerLogos].map((logo, index) => (
+                    <div
+                      key={`${logo.alt}-${index}`}
+                      className="partner-item"
+                      aria-hidden={index >= partnerLogos.length}
+                    >
+                      <img src={logo.src} alt={logo.alt} loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <button
+                className="partners-nav partners-nav--right"
+                onClick={() => handlePartnerScroll(1)}
+                type="button"
+                aria-label="Scroll right"
+              >
                 ›
               </button>
             </div>
           </div>
         </section>
-        <section className="section-light faq-section">
+        <section className="section-light faq-section" id="faq">
           <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <h2 className="text-3xl font-semibold text-slate-900">Frequently Asked Questions</h2>
@@ -4624,7 +5039,7 @@ export default function App() {
             </div>
           </div>
         </section>
-        <section className="section-dark section-dark--cta">
+        <section className="section-dark section-dark--cta" id="contact">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <h2 className="text-3xl font-semibold text-white">Ready to Secure Your Business?</h2>
             <p className="mt-3 text-sm text-emerald-100/70">
@@ -4700,4 +5115,3 @@ export default function App() {
     </div>
   )
 }
-
