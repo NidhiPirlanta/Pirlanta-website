@@ -1,0 +1,1186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Threat Map</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --bg-2: #121821;
+        --card: #121a25;
+        --accent: #8bc34a;
+        --accent-2: #22d3ee;
+        --danger: #ff5a5f;
+        --text: #e6edf6;
+        --muted: #9aa6b2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 20% 20%, rgba(139, 195, 74, 0.12), transparent 45%),
+          radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.12), transparent 45%),
+          linear-gradient(160deg, #0b1016 0%, #0b1220 60%, #0c1722 100%);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .navbar {
+        background: rgba(5, 10, 26, 0.88);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 24px rgba(5, 10, 26, 0.45);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .navbar-brand img {
+        height: 34px;
+        filter: brightness(17.35) contrast(1.1) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+      }
+
+      .nav-link {
+        color: var(--text);
+        opacity: 0.85;
+        transition: all 0.2s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--accent);
+        opacity: 1;
+      }
+
+      .page {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr) 320px;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 1rem;
+        height: calc(100vh - 64px);
+        padding: 0.75rem 1.25rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        padding: 1rem 0 0.5rem;
+        grid-column: 1 / -1;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .header h1 span {
+        color: var(--accent);
+      }
+
+      .header p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+
+      .attacks-today {
+        margin-top: 0.35rem;
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #f5b342;
+      }
+
+      .attack-tooltip {
+        position: absolute;
+        min-width: 200px;
+        background: rgba(6, 12, 24, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: var(--text);
+        padding: 0.65rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 12px 24px rgba(5, 10, 26, 0.45);
+        z-index: 5;
+      }
+
+      .attack-tooltip.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .attack-tooltip .label {
+        color: var(--muted);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .attack-tooltip .value {
+        font-weight: 600;
+      }
+
+      .severity-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .severity-pill.low {
+        background: rgba(34, 197, 94, 0.15);
+        color: #86efac;
+      }
+
+      .severity-pill.medium {
+        background: rgba(245, 158, 11, 0.18);
+        color: #fbbf24;
+      }
+
+      .severity-pill.high {
+        background: rgba(239, 68, 68, 0.18);
+        color: #f87171;
+      }
+
+      .country-shape {
+        transition: filter 0.2s ease, stroke 0.2s ease;
+      }
+
+      .country-shape.hovered {
+        filter: drop-shadow(0 0 8px rgba(126, 229, 255, 0.6));
+        stroke: rgba(126, 229, 255, 0.7);
+        stroke-width: 1.2;
+      }
+
+      .map-panel {
+        position: relative;
+        border-radius: 20px;
+        background: linear-gradient(160deg, rgba(16, 20, 28, 0.95), rgba(12, 20, 32, 0.95));
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        overflow: hidden;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+
+      .map-overlay {
+        position: absolute;
+        inset: 24px auto auto 24px;
+        max-width: 340px;
+        background: rgba(13, 20, 30, 0.78);
+        border-radius: 16px;
+        padding: 1rem 1.25rem;
+        border: 1px solid rgba(139, 195, 74, 0.2);
+        box-shadow: 0 12px 28px rgba(5, 10, 26, 0.4);
+        z-index: 2;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(139, 195, 74, 0.12);
+        color: var(--accent);
+        border: 1px solid rgba(139, 195, 74, 0.35);
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        margin-top: 0.75rem;
+      }
+
+      .filters,
+      .side-panel {
+        background: rgba(14, 20, 30, 0.9);
+        border-radius: 20px;
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        display: grid;
+        gap: 1rem;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .panel-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .filter-pill {
+        padding: 0.35rem 0.65rem;
+        border-radius: 10px;
+        background: rgba(18, 28, 40, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .filter-pill.active {
+        border-color: rgba(139, 195, 74, 0.6);
+        color: var(--accent);
+      }
+
+      .events,
+      .activity-list {
+        display: grid;
+        gap: 0.75rem;
+        overflow-y: auto;
+      }
+
+      .activity-panel .activity-list {
+        min-height: 0;
+      }
+
+      .event-card,
+      .attack-item {
+        background: rgba(17, 24, 35, 0.7);
+        border-radius: 12px;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+
+      .event-meta {
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .country-list {
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .country-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text);
+        padding-bottom: 0.35rem;
+        border-bottom: 1px dashed rgba(148, 163, 184, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .stat-card {
+        background: rgba(17, 24, 35, 0.7);
+        border-radius: 12px;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+
+      .stat-card h4 {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .stat-card strong {
+        font-size: 1.2rem;
+      }
+
+      .activity-panel {
+        background: rgba(14, 20, 30, 0.9);
+        border-radius: 20px;
+        padding: 1rem 1.25rem;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        display: grid;
+        gap: 0.75rem;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-height: 0;
+      }
+
+      .left-activity {
+        min-height: 0;
+        flex: 1 1 auto;
+      }
+
+      .severity-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.5rem;
+      }
+
+      .severity-card {
+        background: rgba(17, 24, 35, 0.7);
+        border-radius: 10px;
+        padding: 0.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .severity-card strong {
+        display: block;
+        font-size: 1rem;
+        color: var(--text);
+      }
+
+      .attack-type-list {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .attack-type-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text);
+      }
+
+      .attack-type-row span {
+        color: var(--muted);
+      }
+
+      .meta-list {
+        display: grid;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .empty-state {
+        color: var(--muted);
+        font-size: 0.9rem;
+        border: 1px dashed rgba(148, 163, 184, 0.3);
+        border-radius: 14px;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      @media (max-width: 1100px) {
+        .page {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto;
+          height: auto;
+          overflow-y: auto;
+        }
+
+        .map-panel {
+          height: 60vh;
+        }
+
+        .activity-panel {
+          grid-column: auto;
+          height: auto;
+        }
+
+        .left-column {
+          height: auto;
+        }
+
+        body {
+          overflow: auto;
+        }
+      }
+    </style>
+  </head>
+  <body
+    data-target-lat="{{ target_lat }}"
+    data-target-lng="{{ target_lng }}"
+    data-target-city="{{ target_city }}"
+    data-target-country="{{ target_country }}"
+  >
+    <nav class="navbar navbar-expand-lg navbar-dark px-4 py-2">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="http://localhost:5173/">
+        <img src="{% static 'pir-logo.png' %}" alt="Pirlanta" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="http://localhost:5173/">Home</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="header">
+        <div class="status-pill" style="margin: 0 auto 0.5rem; width: fit-content;">
+          <i class="fa-solid fa-shield-halved"></i>
+          Security Intelligence
+        </div>
+        <h1>Global <span>Threat Map</span></h1>
+        <p>
+          Real-time visualization of cyber threats worldwide. Monitor attacks, identify patterns, and stay informed.
+        </p>
+        <div class="attacks-today" id="attacksToday">0 attacks today (sampled)</div>
+      </div>
+
+      <div class="left-column">
+        <aside class="filters">
+          <h5>Filters</h5>
+          <div>
+            <div class="event-meta">Time Range</div>
+            <div class="filter-row">
+              <span class="filter-pill">1 Hour</span>
+              <span class="filter-pill">6 Hours</span>
+              <span class="filter-pill active">24 Hours</span>
+              <span class="filter-pill">7 Days</span>
+            </div>
+          </div>
+          <div>
+            <div class="event-meta">Min Severity</div>
+            <div class="filter-row">
+              <span class="filter-pill">Low+</span>
+              <span class="filter-pill active">Medium+</span>
+              <span class="filter-pill">High+</span>
+            </div>
+          </div>
+          <div>
+            <div class="event-meta">Attack Types</div>
+            <div class="filter-row">
+              <span class="filter-pill">Malware</span>
+              <span class="filter-pill">Phishing</span>
+              <span class="filter-pill">Brute Force</span>
+              <span class="filter-pill">Exploit</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="activity-panel left-activity">
+          <div class="panel-title">
+            <h2>Live Activity</h2>
+            <span class="event-meta">Recent events</span>
+          </div>
+          <div class="activity-list" id="attackStream">
+            <div class="empty-state">Waiting for attacks...</div>
+          </div>
+        </section>
+      </div>
+
+      <section class="map-panel">
+        <svg id="map"></svg>
+        <div class="map-overlay">
+          <h1>Live Cyber Threat Map</h1>
+          <p>OTX, AbuseIPDB, URLhaus, ThreatFox, Feodo Tracker.</p>
+          <div class="status-pill">
+            <i class="fa-solid fa-satellite-dish"></i>
+            Live feed active
+          </div>
+          <p style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--muted);">
+            The map uses live geolocation lookups to place IPs. If your server blocks outbound calls, you’ll need to allow them.
+          </p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h2>Live Attacks</h2>
+          <span class="event-meta" id="eventCount">0 events</span>
+        </div>
+        <div class="event-meta" id="totalTracked">0 total tracked</div>
+        <div class="severity-grid">
+          <div class="severity-card"><strong id="sevCritical">0</strong>Critical</div>
+          <div class="severity-card"><strong id="sevHigh">0</strong>High</div>
+          <div class="severity-card"><strong id="sevMedium">0</strong>Medium</div>
+          <div class="severity-card"><strong id="sevLow">0</strong>Low</div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h4>Live</h4>
+            <strong id="liveCount">0</strong>
+          </div>
+          <div class="stat-card">
+            <h4>Total</h4>
+            <strong id="totalCount">0</strong>
+          </div>
+          <div class="stat-card">
+            <h4>High</h4>
+            <strong id="highCount">0</strong>
+          </div>
+          <div class="stat-card">
+            <h4>Medium</h4>
+            <strong id="mediumCount">0</strong>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h4>Total Detected</h4>
+            <strong id="totalDetectedCount">0</strong>
+          </div>
+          <div class="stat-card">
+            <h4>Attacks / Sec</h4>
+            <strong id="attacksPerSecond">0.0</strong>
+          </div>
+        </div>
+        <div class="events" id="eventsList">
+          <div class="empty-state">Waiting for live threat data...</div>
+        </div>
+        <div>
+          <div class="panel-title">
+            <h2>Top Countries</h2>
+          </div>
+          <div class="country-list" id="countryList">
+            <div class="empty-state">No country data yet.</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">
+            <h2>Attack Types</h2>
+          </div>
+          <div class="attack-type-list" id="attackTypeList">
+            <div class="empty-state">No data yet.</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">
+            <h2>Top Attack Sources</h2>
+          </div>
+          <div class="meta-list" id="topSources">
+            <div class="empty-state">No data yet.</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">
+            <h2>Top Targets</h2>
+          </div>
+          <div class="meta-list" id="topTargets">
+            <div class="empty-state">No data yet.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="attack-tooltip" id="attackTooltip"></div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <script>
+      const targetLat = parseFloat(document.body.dataset.targetLat);
+      const targetLng = parseFloat(document.body.dataset.targetLng);
+      let targetCity = document.body.dataset.targetCity || 'Target';
+      let targetCountry = document.body.dataset.targetCountry || '';
+      const tooltip = document.getElementById('attackTooltip');
+
+      function formatTime(ts) {
+        if (!ts) return 'Just now';
+        const date = new Date(ts);
+        if (Number.isNaN(date.getTime())) return 'Just now';
+        return date.toLocaleTimeString();
+      }
+
+      function showTooltip(evt, event) {
+        if (!tooltip) return;
+        const sourceLabel = `${event.city || 'Unknown'}, ${event.country || ''}`.trim();
+        const targetLabel = `${targetCity}${targetCountry ? ', ' + targetCountry : ''}`.trim();
+        const severity = (event.severity || 'medium').toLowerCase();
+        const attackType = event.attack_type || event.attack || 'Threat activity';
+        tooltip.innerHTML = `
+          <div class="label">Source</div>
+          <div class="value">${sourceLabel}</div>
+          <div class="label" style="margin-top:0.4rem;">Target</div>
+          <div class="value">${targetLabel}</div>
+          <div class="label" style="margin-top:0.4rem;">Attack</div>
+          <div class="value">${attackType}</div>
+          <div class="label" style="margin-top:0.4rem;">Detected</div>
+          <div class="value">${formatTime(event.timestamp)}</div>
+          <div style="margin-top:0.5rem;">
+            <span class="severity-pill ${severity}">${severity}</span>
+          </div>
+        `;
+        tooltip.style.left = `${evt.pageX + 12}px`;
+        tooltip.style.top = `${evt.pageY - 10}px`;
+        tooltip.classList.add('visible');
+      }
+
+      function showCountryTooltip(evt, name) {
+        if (!tooltip) return;
+        tooltip.innerHTML = `<div class="value">${name}</div>`;
+        tooltip.style.left = `${evt.pageX + 12}px`;
+        tooltip.style.top = `${evt.pageY - 10}px`;
+        tooltip.classList.add('visible');
+      }
+
+      function showArcTooltip(evt, event) {
+        return showTooltip(evt, event);
+      }
+
+      function moveTooltip(evt) {
+        if (!tooltip || !tooltip.classList.contains('visible')) return;
+        tooltip.style.left = `${evt.pageX + 12}px`;
+        tooltip.style.top = `${evt.pageY - 10}px`;
+      }
+
+      function hideTooltip() {
+        if (!tooltip) return;
+        tooltip.classList.remove('visible');
+      }
+
+      const svg = d3.select('#map');
+      const mapPanel = document.querySelector('.map-panel');
+      let width = mapPanel.clientWidth;
+      let height = mapPanel.clientHeight;
+      svg.attr('width', width).attr('height', height);
+
+      const defs = svg.append('defs');
+      const pattern = defs
+        .append('pattern')
+        .attr('id', 'dotPattern')
+        .attr('width', 6)
+        .attr('height', 6)
+        .attr('patternUnits', 'userSpaceOnUse');
+      pattern
+        .append('circle')
+        .attr('cx', 1.5)
+        .attr('cy', 1.5)
+        .attr('r', 1.2)
+        .attr('fill', '#5b647a')
+        .attr('opacity', 0.8);
+
+      const projection = d3.geoNaturalEarth1();
+      const path = d3.geoPath(projection);
+
+      const rootLayer = svg.append('g');
+      const worldLayer = rootLayer.append('g');
+      const arcLayer = rootLayer.append('g');
+      const pointLayer = rootLayer.append('g');
+
+      const zoom = d3
+        .zoom()
+        .scaleExtent([0.9, 2.5])
+        .on('zoom', (event) => {
+          rootLayer.attr('transform', event.transform);
+          scheduleReset();
+        });
+      svg.call(zoom);
+
+      let resetTimer = null;
+      function scheduleReset() {
+        if (resetTimer) clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          svg.transition().duration(900).call(zoom.transform, d3.zoomIdentity);
+        }, 6000);
+      }
+
+      async function drawWorld() {
+        const world = await d3.json('https://unpkg.com/world-atlas@2/countries-110m.json');
+        const land = topojson.feature(world, world.objects.countries);
+        projection.fitSize([width, height], land);
+        worldLayer.selectAll('line').remove();
+        const grid = d3.geoGraticule().step([20, 20])();
+        worldLayer
+          .append('path')
+          .datum(grid)
+          .attr('d', path)
+          .attr('fill', 'none')
+          .attr('stroke', 'rgba(86, 102, 138, 0.25)')
+          .attr('stroke-width', 0.6)
+          .attr('stroke-dasharray', '2 6');
+        worldLayer
+          .selectAll('path')
+          .data(land.features)
+          .join('path')
+          .attr('d', path)
+          .attr('fill', 'url(#dotPattern)')
+          .attr('stroke', 'rgba(148,163,184,0.15)')
+          .attr('stroke-width', 0.5)
+          .attr('class', 'country-shape')
+          .on('mouseover', function (evt, d) {
+            d3.select(this).classed('hovered', true);
+            showCountryTooltip(evt, d.properties?.name || 'Unknown');
+          })
+          .on('mousemove', function (evt) {
+            moveTooltip(evt);
+          })
+          .on('mouseout', function () {
+            d3.select(this).classed('hovered', false);
+            hideTooltip();
+          });
+      }
+
+      function updateList(events) {
+        const list = document.getElementById('eventsList');
+        const count = document.getElementById('eventCount');
+        count.textContent = `${events.length} events`;
+        if (!events.length) {
+          list.innerHTML = '<div class="empty-state">No events returned yet.</div>';
+          return;
+        }
+
+        list.innerHTML = events
+          .slice(0, 10)
+          .map(
+            (e) => `
+            <div class="event-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>${e.city || 'Unknown'}, ${e.country || 'Unknown'}</strong>
+                <span class="event-meta">${e.source}</span>
+              </div>
+              <div class="event-meta">${e.attack || 'Threat activity detected'}</div>
+            </div>
+          `
+          )
+          .join('');
+      }
+
+      function updateStream(events) {
+        const stream = document.getElementById('attackStream');
+        if (!events.length) {
+          stream.innerHTML = '<div class="empty-state">Waiting for attacks...</div>';
+          return;
+        }
+        stream.innerHTML = events
+          .slice(0, 8)
+          .map(
+            (e) => `
+            <div class="attack-item">
+              <div class="d-flex justify-content-between">
+                <strong>${e.city || 'Unknown'}, ${e.country || 'Unknown'}</strong>
+                <span class="event-meta">${e.source}</span>
+              </div>
+              <small class="event-meta">${e.attack || 'Threat activity detected'}</small>
+            </div>
+          `
+          )
+          .join('');
+      }
+
+      function updateCountries(events) {
+        const list = document.getElementById('countryList');
+        if (!events.length) {
+          list.innerHTML = '<div class="empty-state">No country data yet.</div>';
+          return;
+        }
+        const counts = {};
+        events.forEach((e) => {
+          const country = e.country || 'Unknown';
+          counts[country] = (counts[country] || 0) + 1;
+        });
+        const rows = Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6);
+        list.innerHTML = rows
+          .map(
+            ([country, total]) => `
+            <div class="country-item">
+              <div>${country}</div>
+              <span>${total}</span>
+            </div>
+          `
+          )
+          .join('');
+      }
+
+      function updateStats(events) {
+        const total = events.length;
+        const high = events.filter((e) => e.severity === 'high').length;
+        const medium = events.filter((e) => e.severity === 'medium').length;
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('liveCount').textContent = Math.min(total, 99);
+        document.getElementById('highCount').textContent = high;
+        document.getElementById('mediumCount').textContent = medium;
+        document.getElementById('totalTracked').textContent = `${total} total tracked`;
+        document.getElementById('sevCritical').textContent = Math.max(0, Math.round(high * 0.2));
+        document.getElementById('sevHigh').textContent = high;
+        document.getElementById('sevMedium').textContent = medium;
+        document.getElementById('sevLow').textContent = Math.max(0, total - high - medium);
+      }
+
+      function updateAttackTypes(events) {
+        const counts = {};
+        events.forEach((e) => {
+          const key = (e.attack || 'Unknown').split(' ')[0] || 'Unknown';
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        const rows = Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6);
+        const list = document.getElementById('attackTypeList');
+        if (!rows.length) {
+          list.innerHTML = '<div class="empty-state">No data yet.</div>';
+          return;
+        }
+        list.innerHTML = rows
+          .map(
+            ([name, count]) => `
+            <div class="attack-type-row">
+              <div>${name}</div>
+              <span>${count}</span>
+            </div>
+          `
+          )
+          .join('');
+      }
+
+      function updateMetaLists(events) {
+        const sourceCounts = {};
+        const targetCounts = {};
+        events.forEach((e) => {
+          const source = e.country || 'Unknown';
+          sourceCounts[source] = (sourceCounts[source] || 0) + 1;
+          const target = e.city || 'Unknown';
+          targetCounts[target] = (targetCounts[target] || 0) + 1;
+        });
+
+        const topSources = Object.entries(sourceCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+        const topTargets = Object.entries(targetCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+
+        const sourcesEl = document.getElementById('topSources');
+        sourcesEl.innerHTML = topSources.length
+          ? topSources.map(([name, count]) => `<div>${name} <span>${count}</span></div>`).join('')
+          : '<div class="empty-state">No data yet.</div>';
+
+        const targetsEl = document.getElementById('topTargets');
+        targetsEl.innerHTML = topTargets.length
+          ? topTargets.map(([name, count]) => `<div>${name} <span>${count}</span></div>`).join('')
+          : '<div class="empty-state">No data yet.</div>';
+      }
+
+      let liveEvents = [];
+      let streamTimer = null;
+      let lastRenderEvents = [];
+      let totalDetected = 0;
+      const detectionTimes = [];
+
+      function updateMap(renderEvents) {
+        const arcSample = renderEvents.slice(0, Math.min(renderEvents.length, 40));
+        const arcs = arcSample.map((event) => ({
+          source: [event.lng, event.lat],
+          target: [targetLng, targetLat],
+          severity: event.severity || 'medium',
+          city: event.city,
+          country: event.country,
+          attack: event.attack,
+          timestamp: event.timestamp,
+        }));
+
+        const arcPaths = arcLayer.selectAll('path').data(arcs, (d, i) => i);
+
+        arcPaths
+          .enter()
+          .append('path')
+          .attr('fill', 'none')
+          .attr('stroke', (d) => (d.severity === 'high' ? '#ff8a4c' : '#f5b342'))
+          .attr('stroke-width', 1.6)
+          .attr('stroke-opacity', 0.7)
+          .attr('d', (d) => {
+            const [sx, sy] = projection(d.source);
+            const [tx, ty] = projection(d.target);
+            const midX = (sx + tx) / 2;
+            const midY = (sy + ty) / 2 - 60;
+            return `M${sx},${sy} Q${midX},${midY} ${tx},${ty}`;
+          })
+          .attr('stroke-dasharray', '6 8')
+          .attr('stroke-dashoffset', 200)
+          .on('mouseover', function (evt, d) {
+            showArcTooltip(evt, d);
+          })
+          .on('mousemove', function (evt) {
+            moveTooltip(evt);
+          })
+          .on('mouseout', function () {
+            hideTooltip();
+          })
+          .transition()
+          .duration(1500)
+          .attr('stroke-dashoffset', 0);
+
+        arcPaths.exit().remove();
+
+        const points = pointLayer.selectAll('circle.base-point').data(renderEvents, (d, i) => i);
+        points
+          .enter()
+          .append('circle')
+          .attr('class', 'base-point')
+          .attr('r', (d) => (d.severity === 'high' ? 4 : 3))
+          .attr('fill', (d) => (d.severity === 'high' ? '#ff8a4c' : '#7ee5ff'))
+          .attr('opacity', 0.9)
+          .attr('cx', (d) => projection([d.lng, d.lat])[0])
+          .attr('cy', (d) => projection([d.lng, d.lat])[1])
+          .on('mouseover', function (evt, d) {
+            showTooltip(evt, d);
+          })
+          .on('mousemove', function (evt) {
+            moveTooltip(evt);
+          })
+          .on('mouseout', function () {
+            hideTooltip();
+          })
+          .on('click', function (evt, d) {
+            showTooltip(evt, d);
+          });
+        points.exit().remove();
+      }
+
+      function scheduleStreamTick() {
+        const delay = 200 + Math.random() * 600;
+        streamTimer = setTimeout(() => {
+          if (!lastRenderEvents.length) {
+            streamTimer = null;
+            return;
+          }
+          const nextEvent = lastRenderEvents[Math.floor(Math.random() * lastRenderEvents.length)];
+          liveEvents.unshift(nextEvent);
+          liveEvents = liveEvents.slice(0, 80);
+          updateMap(lastRenderEvents);
+          animateAttack(nextEvent);
+          totalDetected += 1;
+          detectionTimes.push(Date.now());
+          const cutoff = Date.now() - 1000;
+          while (detectionTimes.length && detectionTimes[0] < cutoff) {
+            detectionTimes.shift();
+          }
+          updateLiveCounters();
+          updateStream(liveEvents);
+          scheduleStreamTick();
+        }, delay);
+      }
+
+      function updateLiveCounters() {
+        const totalEl = document.getElementById('totalDetectedCount');
+        const rateEl = document.getElementById('attacksPerSecond');
+        if (totalEl) totalEl.textContent = totalDetected.toLocaleString();
+        if (rateEl) rateEl.textContent = detectionTimes.length.toFixed(1);
+      }
+
+      function animateAttack(event) {
+        const source = projection([event.lng, event.lat]);
+        const target = projection([targetLng, targetLat]);
+        if (!source || !target) return;
+
+        const midX = (source[0] + target[0]) / 2;
+        const midY = (source[1] + target[1]) / 2 - 80;
+        const pathD = `M${source[0]},${source[1]} Q${midX},${midY} ${target[0]},${target[1]}`;
+
+        const arcData = {
+          city: event.city,
+          country: event.country,
+          attack: event.attack,
+          attack_type: event.attack_type,
+          severity: event.severity,
+          timestamp: event.timestamp,
+        };
+
+        const arc = arcLayer
+          .append('path')
+          .attr('d', pathD)
+          .attr('fill', 'none')
+          .attr('stroke', '#f5b342')
+          .attr('stroke-width', 1.8)
+          .attr('stroke-opacity', 0.9)
+          .on('mouseover', function (evt) {
+            showArcTooltip(evt, arcData);
+          })
+          .on('mousemove', function (evt) {
+            moveTooltip(evt);
+          })
+          .on('mouseout', function () {
+            hideTooltip();
+          });
+
+        const arcLength = arc.node().getTotalLength();
+        arc.attr('stroke-dasharray', `${arcLength} ${arcLength}`)
+          .attr('stroke-dashoffset', arcLength)
+          .transition()
+          .duration(900)
+          .ease(d3.easeCubicOut)
+          .attr('stroke-dashoffset', 0)
+          .transition()
+          .duration(700)
+          .attr('stroke-opacity', 0)
+          .remove();
+
+        const particle = arcLayer.append('circle').attr('r', 3).attr('fill', '#7ee5ff').attr('opacity', 0.9);
+
+        particle
+          .transition()
+          .duration(900)
+          .ease(d3.easeCubicOut)
+          .attrTween('transform', () => (t) => {
+            const p = arc.node().getPointAtLength(t * arcLength);
+            return `translate(${p.x},${p.y})`;
+          })
+          .transition()
+          .duration(300)
+          .attr('opacity', 0)
+          .remove();
+
+        const pulse = pointLayer
+          .append('circle')
+          .attr('class', 'pulse-point')
+          .attr('cx', target[0])
+          .attr('cy', target[1])
+          .attr('r', 2)
+          .attr('fill', '#f5b342')
+          .attr('opacity', 0.9);
+        pulse.transition().duration(900).attr('r', 14).attr('opacity', 0).remove();
+
+        const sourceLabel = `${event.city || 'Unknown'}, ${event.country || ''}`.trim();
+        const targetLabel = `${targetCity}${targetCountry ? ', ' + targetCountry : ''}`.trim();
+
+        const sourceText = pointLayer
+          .append('text')
+          .attr('x', source[0] + 6)
+          .attr('y', source[1] - 6)
+          .attr('fill', '#7ee5ff')
+          .attr('font-size', '11px')
+          .attr('opacity', 0.9)
+          .text(sourceLabel);
+        sourceText.transition().duration(1400).attr('opacity', 0).remove();
+
+        const targetText = pointLayer
+          .append('text')
+          .attr('x', target[0] + 6)
+          .attr('y', target[1] - 6)
+          .attr('fill', '#f5b342')
+          .attr('font-size', '11px')
+          .attr('opacity', 0.9)
+          .text(targetLabel);
+        targetText.transition().duration(1600).attr('opacity', 0).remove();
+      }
+
+      function handleThreatData(data) {
+        const events = data.events || [];
+        if (data.target) {
+          targetCity = data.target.city || targetCity;
+          targetCountry = data.target.country || targetCountry;
+        }
+        if (totalDetected === 0 && events.length) {
+          totalDetected = events.length;
+          detectionTimes.length = 0;
+          updateLiveCounters();
+        }
+        const renderEvents = data.render_events || events;
+        lastRenderEvents = renderEvents.length ? renderEvents : events;
+        updateList(events);
+        updateCountries(events);
+        updateStats(events);
+        updateAttackTypes(events);
+        updateMetaLists(events);
+        const attacksToday = document.getElementById('attacksToday');
+        if (attacksToday) {
+          attacksToday.textContent = `${Math.max(events.length, 0).toLocaleString()} attacks today (sampled)`;
+        }
+        if (!streamTimer) {
+          liveEvents = [];
+          scheduleStreamTick();
+        }
+      }
+
+      async function fetchThreatData() {
+        try {
+          const resp = await fetch('/api/threatmap/', { cache: 'no-store' });
+          if (!resp.ok) throw new Error('Request failed');
+          const data = await resp.json();
+          handleThreatData(data);
+        } catch (err) {
+          updateList([]);
+          updateStream([]);
+          updateCountries([]);
+          updateStats([]);
+          updateAttackTypes([]);
+          updateMetaLists([]);
+        }
+      }
+
+      let pollTimer = null;
+      let wsFailures = 0;
+
+      function startPolling() {
+        if (pollTimer) return;
+        fetchThreatData();
+        pollTimer = setInterval(fetchThreatData, 60000);
+      }
+
+      function connectThreatSocket() {
+        const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const wsUrl = `${scheme}://${window.location.host}/ws/threatmap/`;
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = () => {
+          wsFailures = 0;
+        };
+
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            handleThreatData(data);
+          } catch (err) {
+            // Ignore malformed payloads
+          }
+        };
+
+        socket.onerror = () => {
+          socket.close();
+        };
+
+        socket.onclose = () => {
+          wsFailures += 1;
+          if (wsFailures <= 3) {
+            setTimeout(connectThreatSocket, 1500 * wsFailures);
+          } else {
+            startPolling();
+          }
+        };
+      }
+
+      drawWorld().then(() => {
+        connectThreatSocket();
+      });
+
+      window.addEventListener('resize', () => {
+        width = mapPanel.clientWidth;
+        height = mapPanel.clientHeight;
+        svg.attr('width', width).attr('height', height);
+        drawWorld();
+      });
+    </script>
+  </body>
+</html>

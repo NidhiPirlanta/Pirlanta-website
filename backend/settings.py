@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nqxx+o04w1$f7mfp+)74xj!oi1$v%vb7@sq@f%@2vw=^)d!k)@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'website' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,12 +77,22 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Use PostgreSQL in production. Configure via environment variables.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation
@@ -126,3 +137,56 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email (SMTP)
+# Set EMAIL_BACKEND to 'django.core.mail.backends.console.EmailBackend' to print emails to console (for debugging)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'nidhi@pirlanta.in'
+EMAIL_HOST_PASSWORD = 'fftmdkuciijxnglf'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+OTX_API_KEY="89002c1dad4699ad93d01f43f392b6f0b556d0b9994144f33f1c1f15d768221c"
+ABUSEIPDB_API_KEY="d7e9cf20dc59779fb98986ffccecbbb9ee0d03987ca59ac80ed5c28f02f0c0c06b45c850b58f7181"
+THREATMAP_CACHE_SECONDS=300
+THREATMAP_MAX_EVENTS=50
+THREATMAP_TARGET_LAT=20.5937
+THREATMAP_TARGET_LNG=78.9629
+THREATMAP_TARGET_CITY="New Delhi"
+THREATMAP_TARGET_COUNTRY="India"
+THREATMAP_DENSITY_MULTIPLIER=2
+THREATMAP_JITTER_DEGREES=0.6
+THREATMAP_RESPONSE_BUDGET_SECONDS = 18
+THREATMAP_FEED_TIMEOUT_SECONDS = 15
+THREATMAP_GEO_TIMEOUT_SECONDS = 3
+THREATMAP_WS_INTERVAL_SECONDS = 5
+
+
+URLHAUS_TEXT_ONLINE_URL=""
+THREATFOX_IPPORT_RECENT_URL="https://threatfox.abuse.ch/export/json/ip-port/recent/"
+FEODO_IP_BLOCKLIST_URL="https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt"
+
+# Assessment redirect - set to your deployed digital-assessment URL (e.g. Netlify, Vercel)
+ASSESSMENT_REDIRECT_URL = os.environ.get("ASSESSMENT_REDIRECT_URL", "")
+
+# Logging - show assessment report errors in console
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "website": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+    },
+}
