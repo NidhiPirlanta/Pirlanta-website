@@ -492,13 +492,13 @@ body {
 }
 
 /* Blinking Cursor */
-/* .caret {
+.caret {
   width: 2px;
   height: 1em;
   margin-left: 4px;
   background: #ffffff;
   animation: caretBlink 1s ease-in-out infinite;
-} */
+}
 
 /* Green cursor for AI word */
 .caret.accent {
@@ -3801,6 +3801,31 @@ body {
     font-size: 1.05rem;
   }
 
+  .package-card {
+    position: relative;
+    border-radius: 20px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: #ffffff;
+    padding: 2rem;
+    text-align: left;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .package-highlight {
+    background: #1e5b16;
+    color: #ffffff;
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  .package-highlight ul {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .package-highlight button {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+  }
+
   .partners-row {
     margin-top: 2rem;
     display: flex;
@@ -3927,6 +3952,10 @@ body {
     font-size: 1rem;
     color: #334155;
     text-align: left;
+  }
+
+  .faq-item:first-child {
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
   }
 
   .faq-item:last-child {

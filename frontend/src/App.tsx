@@ -3449,6 +3449,28 @@ export default function App() {
     'idle'
   )
   const [contactError, setContactError] = useState('')
+  const [typedFirst, setTypedFirst] = useState('')
+  const [typedSecond, setTypedSecond] = useState('')
+  const [phase, setPhase] = useState<1 | 2>(1)
+  const auditHeroRef = useRef<HTMLElement | null>(null)
+  const auditLogRef = useRef<HTMLDivElement | null>(null)
+  const auditLogs = useMemo(
+    () => [
+      { level: 'critical', text: 'SQL injection in user input handler' },
+      { level: 'warning', text: 'Hardcoded API key detected' },
+      { level: 'warning', text: 'Vulnerable dependency: lodash@4.17.15' },
+      { level: 'fixed', text: 'XSS vulnerability patched' },
+      { level: 'fixed', text: 'Authentication bypass resolved' },
+    ],
+    []
+  )
+  const [visibleLogCount, setVisibleLogCount] = useState(0)
+  const [auditComplete, setAuditComplete] = useState(false)
+  const enableAuditParallax = false
+  const partnerViewportRef = useRef<HTMLDivElement | null>(null)
+  const partnerTrackRef = useRef<HTMLDivElement | null>(null)
+  const partnerPauseRef = useRef(0)
+  const [partnersPaused, setPartnersPaused] = useState(false)
   const reasonOptions = [
     {
       key: 'integration',
@@ -3764,6 +3786,29 @@ export default function App() {
     rafId = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(rafId)
   }, [])
+
+  const firstText = 'Expert-Led.'
+  const secondText = 'AI-Powered.'
+  const typingSpeed = 55
+  useEffect(() => {
+    if (phase === 1) {
+      if (typedFirst.length < firstText.length) {
+        const t = setTimeout(() => {
+          setTypedFirst(firstText.slice(0, typedFirst.length + 1))
+        }, typingSpeed)
+        return () => clearTimeout(t)
+      } else {
+        const pause = setTimeout(() => setPhase(2), 250)
+        return () => clearTimeout(pause)
+      }
+    }
+    if (phase === 2 && typedSecond.length < secondText.length) {
+      const t = setTimeout(() => {
+        setTypedSecond(secondText.slice(0, typedSecond.length + 1))
+      }, typingSpeed)
+      return () => clearTimeout(t)
+    }
+  }, [typedFirst, typedSecond, phase])
 
   useEffect(() => {
     setVisibleLogCount(0)

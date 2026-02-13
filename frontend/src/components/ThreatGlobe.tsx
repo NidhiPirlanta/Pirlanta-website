@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import createGlobe from 'cobe'
 
-import type { Attack } from '../data/threatData'
+import { attackTypeColors, countries, type Attack } from '../data/threatData'
 
 type CountryStats = {
   count: number
@@ -27,11 +27,107 @@ type ThreatGlobeProps = {
   onHover: (info: HoverInfo | null) => void
 }
 
-export default function ThreatGlobe({ onHover }: ThreatGlobeProps) {
+/** Project lat/lon to screen coords given globe phi/theta (matches cobe rotation) */
+const projectToScreen = (
+  lat: number,
+  lon: number,
+  phi: number,
+  theta: number,
+  width: number,
+  height: number
+): { x: number; y: number; visible: boolean } => {
+  const latRad = (lat * Math.PI) / 180
+  const lonRad = (lon * Math.PI) / 180
+  const x = Math.cos(latRad) * Math.sin(lonRad)
+  const y = Math.sin(latRad)
+  const z = Math.cos(latRad) * Math.cos(lonRad)
+
+  const cosPhi = Math.cos(phi)
+  const sinPhi = Math.sin(phi)
+  const x1 = x * cosPhi + z * sinPhi
+  const z1 = -x * sinPhi + z * cosPhi
+
+  const cosTheta = Math.cos(theta)
+  const sinTheta = Math.sin(theta)
+  const y2 = y * cosTheta - z1 * sinTheta
+  const z2 = y * sinTheta + z1 * cosTheta
+
+  if (z2 > 0.3) return { x: 0, y: 0, visible: false }
+
+  const d = 2.5
+  const scale = (d - z2) / d
+  const ndcX = (x1 / scale) * 0.5 + 0.5
+  const ndcY = (-y2 / scale) * 0.5 + 0.5
+
+  return {
+    x: ndcX * width,
+    y: ndcY * height,
+    visible: true,
+  }
+}
+
+const hexToRgb = (hex: string): [number, number, number] => {
+  const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
+  if (!m) return [0.85, 1, 0.32]
+  return [
+    parseInt(m[1], 16) / 255,
+    parseInt(m[2], 16) / 255,
+    parseInt(m[3], 16) / 255,
+  ]
+}
+
+export default function ThreatGlobe({
+  attacks,
+  activeTypes,
+  countryStats,
+  onSelectAttack,
+  onHover,
+}: ThreatGlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const globeRef = useRef<ReturnType<typeof createGlobe> | null>(null)
   const phiRef = useRef(0)
   const pointerRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 })
+  const statsRef = useRef(countryStats)
+  const markersRef = useRef<{ country: (typeof countries)[number]; attack?: Attack }[]>([])
+
+  const activeAttacks = useMemo(
+    () => attacks.filter((a) => activeTypes[a.attack_type]),
+    [attacks, activeTypes]
+  )
+
+  useEffect(() => {
+    statsRef.current = countryStats
+  }, [countryStats])
+
+  const markers = useMemo(() => {
+    const seen = new Set<string>()
+    const result: { location: [number, number]; size: number; color?: [number, number, number] }[] = []
+    const countryToAttack = new Map<string, Attack>()
+
+    activeAttacks.forEach((attack) => {
+      for (const name of [attack.source_country, attack.target_country]) {
+        if (seen.has(name)) continue
+        seen.add(name)
+        countryToAttack.set(name, attack)
+      }
+    })
+
+    markersRef.current = []
+    seen.forEach((name) => {
+      const country = countries.find((c) => c.name === name)
+      if (!country) return
+      const attack = countryToAttack.get(name)
+      const color = attack ? hexToRgb(attackTypeColors[attack.attack_type]) : undefined
+      result.push({
+        location: [country.lat, country.lon],
+        size: 0.04,
+        color,
+      })
+      markersRef.current.push({ country, attack })
+    })
+
+    return result
+  }, [activeAttacks])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -49,26 +145,16 @@ export default function ThreatGlobe({ onHover }: ThreatGlobeProps) {
         height: canvas.height,
         phi: 0,
         theta: 0,
-        // dark: 1,
-        // diffuse: 1.05,
-
         dark: 5,
         diffuse: 1.1,
         mapBrightness: 10,
-
         scale: 0.8,
         mapSamples: 24000,
-        // mapBrightness: 9.0,
-        // baseColor: [0.01, 0.03, 0.01],
-        // markerColor: [0.62, 1, 0.18],
-        // glowColor: [0.14, 0.45, 0.08],
-
         baseColor: [0.01, 0.03, 0.01],
         markerColor: [0.85, 1.0, 0.32],
         glowColor: [0.22, 0.65, 0.18],
-
         offset: [0, 1],
-        markers: [],
+        markers,
         onRender: (state) => {
           phiRef.current += 0.0105
           const pointer = pointerRef.current
@@ -90,12 +176,74 @@ export default function ThreatGlobe({ onHover }: ThreatGlobeProps) {
       globeRef.current = setupGlobe()
     }
 
+    const HIT_RADIUS = 24
+
+    type HitResult = {
+      country: (typeof countries)[number]
+      attack?: Attack
+      dist: number
+      x: number
+      y: number
+    }
+
+    const findHoveredMarker = (clientX: number, clientY: number): HitResult | null => {
+      const rect = canvas.getBoundingClientRect()
+      const phi = phiRef.current + pointerRef.current.x
+      const theta = pointerRef.current.y
+      const width = rect.width
+      const height = rect.height
+
+      let closest: HitResult | null = null
+
+      markersRef.current.forEach(({ country, attack }) => {
+        const { x, y, visible } = projectToScreen(
+          country.lat,
+          country.lon,
+          phi,
+          theta,
+          width,
+          height
+        )
+        if (!visible) return
+        const dx = clientX - rect.left - x
+        const dy = clientY - rect.top - y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < HIT_RADIUS && (!closest || dist < closest.dist)) {
+          closest = { country, attack, dist, x: rect.left + x, y: rect.top + y }
+        }
+      })
+
+      return closest
+    }
+
     const handleMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
       const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2
       const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2
       pointerRef.current.targetX = x * 0.2
       pointerRef.current.targetY = -y * 0.15
+
+      const hit = findHoveredMarker(event.clientX, event.clientY)
+      if (!hit) {
+        onHover(null)
+        return
+      }
+      const stats = statsRef.current[hit.country.name]
+      onHover({
+        country: hit.country.name,
+        region: hit.country.region,
+        attackCount: stats?.count ?? 0,
+        attackType: stats?.latestType ?? 'Malware',
+        timestamp: stats?.latestTimestamp ?? '—',
+        x: hit.x,
+        y: hit.y,
+      })
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      const hit = findHoveredMarker(event.clientX, event.clientY)
+      if (!hit?.attack) return
+      onSelectAttack(hit.attack)
     }
 
     const handleLeave = () => {
@@ -106,15 +254,17 @@ export default function ThreatGlobe({ onHover }: ThreatGlobeProps) {
 
     window.addEventListener('resize', handleResize)
     canvas.addEventListener('mousemove', handleMove)
+    canvas.addEventListener('click', handleClick)
     canvas.addEventListener('mouseleave', handleLeave)
 
     return () => {
       window.removeEventListener('resize', handleResize)
       canvas.removeEventListener('mousemove', handleMove)
+      canvas.removeEventListener('click', handleClick)
       canvas.removeEventListener('mouseleave', handleLeave)
       globeRef.current?.destroy()
     }
-  }, [onHover])
+  }, [onHover, onSelectAttack, markers])
 
   return (
     <div className="globe-canvas-wrap">
