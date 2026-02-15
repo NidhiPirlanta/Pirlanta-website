@@ -26,8 +26,17 @@ SECRET_KEY = 'django-insecure-nqxx+o04w1$f7mfp+)74xj!oi1$v%vb7@sq@f%@2vw=^)d!k)@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['3.110.143.60', 'pirlanta.in', 'www.pirlanta.in', '127.0.0.1', 'localhost']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://3.110.143.60',
+    'https://pirlanta.in',
+    'https://www.pirlanta.in',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://localhost',
+    'http://localhost:8000',
+]
 
 # Application definition
 
@@ -42,6 +51,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'website',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -130,6 +141,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
