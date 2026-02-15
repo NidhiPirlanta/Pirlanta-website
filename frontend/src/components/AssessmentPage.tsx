@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+import { getBaseUrl } from '../utils/baseUrl'
+
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? getBaseUrl()) || 'http://localhost:8000'
 
 type StepData = {
   title?: string

@@ -1,6 +1,7 @@
 import { Suspense, lazy, type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 
 import { makeRandomAttack, seedAttacks, type Attack, type AttackType } from './data/threatData'
+import { getBaseUrl } from './utils/baseUrl'
 import AntigravityBackground from './components/AntigravityBackground'
 import offerShield from './assets/icons/offer-shield.svg'
 import offerWifi from './assets/icons/offer-wifi.svg'
@@ -72,7 +73,7 @@ function Header({ scrolled }: HeaderProps) {
           </a>
           <a
             className={`nav-item ${isActive('/threatmap') ? 'nav-item--active' : ''}`}
-            href="http://localhost:8000/threatmap/"
+            href={`${getBaseUrl()}/threatmap/`}
           >
             Threat Map
           </a>
@@ -247,7 +248,7 @@ function Header({ scrolled }: HeaderProps) {
           <a className="mobile-nav-link" href="/about" onClick={closeMobileMenu}>
             About Us
           </a>
-          <a className="mobile-nav-link" href="http://localhost:8000/threatmap/" onClick={closeMobileMenu}>
+          <a className="mobile-nav-link" href={`${getBaseUrl()}/threatmap/`} onClick={closeMobileMenu}>
             Threat Map
           </a>
 
@@ -618,7 +619,7 @@ function CybersecurityPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -933,7 +934,7 @@ function DataCentrePage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -1255,7 +1256,7 @@ function SecureNetworkPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -1656,7 +1657,7 @@ function AiCodeAuditsPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -1808,7 +1809,7 @@ function PartnerEcosystemPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -2173,7 +2174,7 @@ function PartnerCiscoPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -2549,7 +2550,7 @@ function PartnerJuniperPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -3463,7 +3464,7 @@ function AboutPage() {
           <div className="footer-grid">
             <div className="footer-brand">
               <img
-                src="http://localhost:8000/static/pir-logo.png"
+                src={`${getBaseUrl()}/static/pir-logo.png`}
                 alt="Pirlanta"
                 className="footer-logo"
               />
@@ -3811,7 +3812,7 @@ export default function App() {
     return () => ws.close()
   }, [])
 
-  const apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+  const apiBase = (import.meta.env.VITE_API_BASE_URL ?? getBaseUrl()) || 'http://localhost:8000'
 
   const handleContactChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = event.target
@@ -5204,7 +5205,7 @@ export default function App() {
             <div className="footer-grid">
               <div className="footer-brand">
                 <img
-                  src="http://localhost:8000/static/pir-logo.png"
+                  src={`${getBaseUrl()}/static/pir-logo.png`}
                   alt="Pirlanta"
                   className="footer-logo"
                 />
