@@ -239,7 +239,7 @@ function Header({ scrolled }: HeaderProps) {
 
       {/* Mobile menu overlay */}
       <div
-        className={`fixed inset-x-0 top-14 bottom-0 z-10 bg-white/98 backdrop-blur-md md:hidden ${mobileMenuOpen ? 'visible' : 'invisible pointer-events-none'}`}
+        className={`fixed inset-x-0 top-14 bottom-0 z-10 bg-white shadow-xl md:hidden ${mobileMenuOpen ? 'visible' : 'invisible pointer-events-none'}`}
       >
         <nav className="flex flex-col overflow-y-auto px-4 py-6 pb-20">
           <a className="mobile-nav-link" href="/" onClick={closeMobileMenu}>
@@ -278,17 +278,17 @@ function Header({ scrolled }: HeaderProps) {
           {mobilePartnersOpen && (
             <div className="ml-4 flex flex-col gap-2 pb-2">
               <a className="mobile-nav-sublink" href="/partners/ecosystem" onClick={closeMobileMenu}>Partner Ecosystem</a>
-              <span className="text-xs font-semibold text-slate-500 mt-2">Networking</span>
+              <span className="mobile-nav-section-label">Networking</span>
               <a className="mobile-nav-sublink" href="/partners/networking/cisco" onClick={closeMobileMenu}>Cisco</a>
               <a className="mobile-nav-sublink" href="/partners/networking/juniper" onClick={closeMobileMenu}>Juniper</a>
-              <span className="text-xs font-semibold text-slate-500 mt-2">Security</span>
+              <span className="mobile-nav-section-label">Security</span>
               <a className="mobile-nav-sublink" href="/partners/security/barracuda" onClick={closeMobileMenu}>Barracuda</a>
               <a className="mobile-nav-sublink" href="/partners/security/fortinet" onClick={closeMobileMenu}>Fortinet</a>
               <a className="mobile-nav-sublink" href="/partners/security/rsa" onClick={closeMobileMenu}>RSA</a>
               <a className="mobile-nav-sublink" href="/partners/security/crowdstrike" onClick={closeMobileMenu}>CrowdStrike</a>
               <a className="mobile-nav-sublink" href="/partners/security/forcepoint" onClick={closeMobileMenu}>Forcepoint</a>
               <a className="mobile-nav-sublink" href="/partners/security/checkpoint" onClick={closeMobileMenu}>Check Point</a>
-              <span className="text-xs font-semibold text-slate-500 mt-2">Endpoint</span>
+              <span className="mobile-nav-section-label">Endpoint</span>
               <a className="mobile-nav-sublink" href="/partners/endpoint/apple-enterprise" onClick={closeMobileMenu}>Apple for Enterprise</a>
               <a className="mobile-nav-sublink" href="/partners/endpoint/apple-smb" onClick={closeMobileMenu}>Apple for SMB</a>
               <a className="mobile-nav-sublink" href="/partners/endpoint/jamf" onClick={closeMobileMenu}>Jamf</a>
@@ -2638,14 +2638,14 @@ function ContactPage({
     <main className="relative overflow-hidden pt-24">
       <section className="section-light contact-section" id="contact">
         <div className="contact-hero">
-          <div className="contact-hero-content mx-auto max-w-7xl px-6 py-16">
+          <div className="contact-hero-content mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
             <span className="pill pill--tight">
               <span className="pill-icon" aria-hidden="true">
                 ✦
               </span>
               Contact Us
             </span>
-            <h2 className="mt-4 text-4xl font-semibold text-slate-900">
+            <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl md:text-4xl">
               Let&apos;s Start the <br />
               <span className="contact-hero-accent"> Conversation</span>
             </h2>
@@ -2666,7 +2666,7 @@ function ContactPage({
             </svg>
           </div>
         </div>
-          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:gap-12 sm:px-6 sm:py-16 lg:grid-cols-[1.2fr_0.8fr]">
           <form className="contact-card" onSubmit={onSubmit}>
             <h3 className="contact-title">Send Us a Message</h3>
             <div className="contact-grid">
