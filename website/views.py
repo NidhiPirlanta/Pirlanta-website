@@ -154,11 +154,17 @@ def threatmap(request):
 
 
 def threatmap_page(request):
+    # Home URL: in dev (DEBUG) use React dev server; in prod use current request host
+    if getattr(settings, "DEBUG", False):
+        home_url = "http://localhost:5173"
+    else:
+        home_url = request.build_absolute_uri("/").rstrip("/")
     context = {
         "target_lat": getattr(settings, "THREATMAP_TARGET_LAT", 20.5937),
         "target_lng": getattr(settings, "THREATMAP_TARGET_LNG", 78.9629),
         "target_city": getattr(settings, "THREATMAP_TARGET_CITY", "New Delhi"),
         "target_country": getattr(settings, "THREATMAP_TARGET_COUNTRY", "India"),
+        "home_url": home_url,
     }
     return render(request, "website/threatmap.html", context)
 

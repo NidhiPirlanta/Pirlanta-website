@@ -433,7 +433,7 @@
     data-target-country="{{ target_country }}"
   >
     <nav class="navbar navbar-expand-lg navbar-dark px-4 py-2">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="http://localhost:5173/">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ home_url }}/">
         <img src="{% static 'pir-logo.png' %}" alt="Pirlanta" />
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -441,7 +441,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="navbar-nav ms-auto">
-          <a class="nav-link" href="http://localhost:5173/">Home</a>
+          <a class="nav-link" href="{{ home_url }}/">Home</a>
         </div>
       </div>
     </nav>
