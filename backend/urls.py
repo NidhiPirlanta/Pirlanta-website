@@ -22,5 +22,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('website.urls')),
     path('threatmap/', views.threatmap_page, name='threatmap_page'),
-    path('assessment/', views.assessment_redirect, name='assessment_redirect'),
 ]

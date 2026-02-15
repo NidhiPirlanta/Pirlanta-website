@@ -4079,7 +4079,8 @@ export default function App() {
     typeof window !== 'undefined' && window.location.pathname === '/contact'
   const isAbout = typeof window !== 'undefined' && window.location.pathname === '/about'
   const isAssessment =
-    typeof window !== 'undefined' && window.location.pathname === '/assessment'
+    typeof window !== 'undefined' &&
+    (window.location.pathname === '/assessment' || window.location.pathname === '/assessment/')
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
