@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import { getBaseUrl } from '../utils/baseUrl'
-
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? getBaseUrl()) || 'http://localhost:8000'
+import { getApiBaseUrl } from '../utils/baseUrl'
 
 type StepData = {
   title?: string
@@ -234,7 +232,7 @@ export default function AssessmentPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/assessment/start/`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/assessment/start/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -261,7 +259,7 @@ export default function AssessmentPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/assessment/verify-otp/`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/assessment/verify-otp/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId, otp }),
@@ -288,7 +286,7 @@ export default function AssessmentPage() {
   useEffect(() => {
     if (phase === 'steps' && sessionId && currentStep <= 4) {
       setLoading(true)
-      fetch(`${API_BASE}/api/assessment/questions/${currentStep}/?session_id=${sessionId}`)
+      fetch(`${getApiBaseUrl()}/api/assessment/questions/${currentStep}/?session_id=${sessionId}`)
         .then((r) => r.json())
         .then((d) => {
           if (d.error) throw new Error(d.error)
@@ -306,7 +304,7 @@ export default function AssessmentPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/assessment/submit/`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/assessment/submit/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId, step: currentStep, form_data: data }),

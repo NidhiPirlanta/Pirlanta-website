@@ -1,7 +1,7 @@
 import { Suspense, lazy, type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 
 import { makeRandomAttack, seedAttacks, type Attack, type AttackType } from './data/threatData'
-import { getBaseUrl } from './utils/baseUrl'
+import { getApiBaseUrl, getBaseUrl } from './utils/baseUrl'
 import AntigravityBackground from './components/AntigravityBackground'
 import offerShield from './assets/icons/offer-shield.svg'
 import offerWifi from './assets/icons/offer-wifi.svg'
@@ -3764,7 +3764,11 @@ export default function App() {
       return mapping[name] ?? name
     }
 
-    const ws = new WebSocket('ws://localhost:9000/ws/threats')
+    const wsHost =
+      typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'localhost:9000'
+        : `${window.location.hostname}:9000`
+    const ws = new WebSocket(`ws://${wsHost}/ws/threats`)
     ws.onopen = () => setUseSimulation(false)
     ws.onmessage = (event) => {
       try {
@@ -3812,7 +3816,7 @@ export default function App() {
     return () => ws.close()
   }, [])
 
-  const apiBase = (import.meta.env.VITE_API_BASE_URL ?? getBaseUrl()) || 'http://localhost:8000'
+  const apiBase = getApiBaseUrl() || 'http://localhost:8000'
 
   const handleContactChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = event.target

@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.shortcuts import redirect, render
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from rest_framework import status
 
 logger = logging.getLogger(__name__)

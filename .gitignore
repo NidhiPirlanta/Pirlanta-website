@@ -22,3 +22,6 @@ db.sqlite3
 
 # Logs
 *.log
+
+# Local dev: emails saved here when DEBUG=True
+sent_emails/

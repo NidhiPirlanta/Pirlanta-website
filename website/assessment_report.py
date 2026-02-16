@@ -172,7 +172,7 @@ def send_report_email(session, pdf_bytes):
     body = (
         f"Dear {session.name},\n\n"
         "Thank you for completing the Pirlanta Digital Assessment.\n\n"
-        "Please find your personalized Digital Maturity Report attached.\n\n"
+        "Please find your personalized Digital Assessment Report attached.\n\n"
         "Best regards,\n"
         "Pirlanta IT Solutions"
     )
