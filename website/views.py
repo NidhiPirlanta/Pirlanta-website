@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.shortcuts import redirect, render
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from rest_framework import status
 
 logger = logging.getLogger(__name__)
@@ -368,14 +368,16 @@ def contact(request):
     )
 
     try:
-        send_mail(
+        msg = EmailMessage(
             subject,
             body,
             settings.DEFAULT_FROM_EMAIL,
             [settings.EMAIL_HOST_USER],
             reply_to=[email],
         )
-    except Exception:
+        msg.send()
+    except Exception as e:
+        logger.exception("Contact form email failed: %s", e)
         return Response(
             {"error": "Failed to send message. Please try again."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
