@@ -153,18 +153,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email
 # Local (DEBUG=True): print emails to runserver terminal. Production: use SMTP.
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = '587'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'nidhi@pirlanta.in'
-EMAIL_HOST_PASSWORD = 'fftmdkuciijxnglf'
+EMAIL_HOST_USER = 'secure@pirlanta.in'
+EMAIL_HOST_PASSWORD = 'lhzxxlkzdzyivfqe'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
+# Where to send contact form submissions (default: EMAIL_HOST_USER)
+# CONTACT_FORM_RECIPIENT = os.environ.get("CONTACT_FORM_RECIPIENT", EMAIL_HOST_USER)
 
 
 OTX_API_KEY="89002c1dad4699ad93d01f43f392b6f0b556d0b9994144f33f1c1f15d768221c"

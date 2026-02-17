@@ -2,11 +2,14 @@
 Assessment report generation: scoring logic and PDF creation.
 """
 import io
+import logging
 import tempfile
 from datetime import datetime
 from pathlib import Path
 
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 from django.template.loader import render_to_string
 
 INDUSTRY_AVERAGE = 55
@@ -86,12 +89,12 @@ def compute_scores(session):
 
 def get_score_message(overall_score):
     if overall_score >= 80:
-        return "Your business shows excellent digital maturity! You're well-positioned for future growth."
+        return "Your business's Cybersecurity Maturity Score is ahead of the curve. You're setting the standard for secure, future-ready operations!"
     if overall_score >= 60:
-        return "Your business has made good progress on its digital journey. There are opportunities to strengthen further."
+        return "Your business has made good progress on its cybersecurity journey. There are opportunities to strengthen your security posture further."
     if overall_score >= 40:
-        return "Your business has begun its digital transformation. We can help you accelerate and fill the gaps."
-    return "There's significant opportunity to digitally transform your business. Let's get started!"
+        return "Your business has begun strengthening its security posture. We can help you accelerate and fill the gaps."
+    return "There's significant opportunity to strengthen your cybersecurity posture. Let's get started!"
 
 
 def generate_survey_code(session):
@@ -106,6 +109,13 @@ def get_logo_path():
     return None
 
 
+CONTACT = {
+    "phone": "+91 94296 93558",
+    "email": "secure@pirlanta.in",
+    "office": "C/O Flex Coworks, 2nd Floor, 71, 15th Cross Road, J. P. Nagar, Bengaluru - 560078",
+}
+
+
 def build_report_context(session):
     scores = compute_scores(session)
     return {
@@ -115,6 +125,7 @@ def build_report_context(session):
         "scores": scores,
         "score_message": get_score_message(scores["overall_score"]),
         "survey_code": generate_survey_code(session),
+        "contact": CONTACT,
     }
 
 
@@ -143,10 +154,10 @@ def generate_pdf(session):
                 temp_path.unlink(missing_ok=True)
             browser.close()
         return pdf_bytes, None
-    except ImportError:
-        pass
-    except Exception:
-        pass
+    except ImportError as e:
+        logger.info("Playwright not available for PDF, falling back to xhtml2pdf: %s", e)
+    except Exception as e:
+        logger.warning("Playwright PDF generation failed, falling back to xhtml2pdf: %s", e)
 
     try:
         from xhtml2pdf import pisa

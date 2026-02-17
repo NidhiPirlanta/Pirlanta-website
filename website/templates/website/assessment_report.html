@@ -12,7 +12,7 @@
         @page score {
             size: A4;
             margin: 0;
-            background: linear-gradient(135deg, #e7f5e9 0%, #cfe8d4 55%, #b7d8bf 100%);
+            background: linear-gradient(180deg, #5c1a1a 0%, #4a1515 45%, #ffffff 45%, #ffffff 100%);
         }
         
         body {
@@ -45,7 +45,7 @@
         .bg-primary { background-color: #286600; }
         .bg-secondary { background-color: #D3DB2C; }
         
-        /* Cover Page */
+        /* Cover Page - Vi/Ready for Next style */
         .cover-page {
             page-break-after: always;
             width: var(--page-width);
@@ -53,9 +53,8 @@
             min-height: var(--page-height);
             margin: 0;
             background:
-                radial-gradient(circle at 18% 18%, rgba(211, 219, 44, 0.22), transparent 45%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.14), transparent 45%),
-                linear-gradient(135deg, #2a6a48 0%, #1f5339 55%, #173f2b 100%);
+                radial-gradient(ellipse 80% 50% at top right, rgba(211, 219, 44, 0.2), transparent 55%),
+                linear-gradient(135deg, #5c1a1a 0%, #7b2d2d 35%, #9d3d3d 70%, #c45c5c 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -138,16 +137,39 @@
             z-index: 1;
         }
 
-        .cover-date {
-            color: #fff;
-            font-size: 16px;
-            text-align: center;
+        .cover-footer-row {
             position: absolute;
-            bottom: 40px;
-            left: 0;
-            right: 0;
+            bottom: 70px;
+            left: 40px;
+            right: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
             z-index: 1;
         }
+        .cover-disclaimer {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 9px;
+            max-width: 65%;
+            line-height: 1.4;
+        }
+        .cover-date {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1;
+        }
+        .cover-contact {
+            position: absolute;
+            bottom: 28px;
+            left: 40px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 11px;
+            line-height: 1.5;
+            z-index: 1;
+        }
+        .cover-contact p { margin: 2px 0; }
         
         .logo-header {
             display: flex;
@@ -283,13 +305,13 @@
             font-size: 26px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #1a1a1a;
+            color: #fff;
         }
         
         .score-message {
             font-size: 16px;
             margin-bottom: 30px;
-            color: #1a1a1a;
+            color: rgba(255, 255, 255, 0.95);
         }
         
         .overall-score {
@@ -297,7 +319,7 @@
             font-weight: bold;
             text-align: center;
             margin: 24px 0;
-            color: #1a1a1a;
+            color: #fff;
         }
         
         .comparison-bar {
@@ -327,7 +349,7 @@
         
         .bar-label {
             display: block;
-            color: #1a1a1a;
+            color: #fff;
             font-weight: bold;
             margin-bottom: 6px;
         }
@@ -588,12 +610,21 @@
         {% endif %}
 
         <div class="cover-title-group">
-            <div class="cover-title">Digital</div>
-            <div class="cover-title cover-title-highlight">Maturity</div>
+            <span class="cover-title">your</span>
+            <span class="cover-title cover-title-highlight">Pirlanta Cybersecurity</span>
+            <span class="cover-title">assessment report</span>
         </div>
-        <div class="cover-subtitle">Report</div>
-        <div class="cover-company">Empowering Your Digital Transformation Journey</div>
-        <div class="cover-date">{{ report_date }}</div>
+        <div class="cover-subtitle">Digital Evaluation &amp; Cybersecurity Advisory</div>
+        <div class="cover-company">Empowering Your Business with Secure, Future-Ready Technology</div>
+        <div class="cover-footer-row">
+            <div class="cover-disclaimer">This assessment evaluates your cybersecurity posture and digital readiness. Pirlanta IT Solutions – Secure. Data-Smart. Always Connected.</div>
+            <div class="cover-date">{{ report_date }}</div>
+        </div>
+        <div class="cover-contact">
+            <p><strong>Phone</strong> {{ contact.phone }}</p>
+            <p><strong>Email</strong> {{ contact.email }}</p>
+            <p><strong>Office</strong> {{ contact.office }}</p>
+        </div>
     </div>
     
     <!-- Introduction Page -->
@@ -607,31 +638,31 @@
         </div>
         
         <div class="company-info">
-            <h3>About Pirlanta</h3>
-            <p><strong>Website:</strong> www.pirlanta.in</p>
-            <p><strong>Email:</strong> info@pirlanta.in</p>
-            <p><strong>Phone:</strong> 1800 123 123 123</p>
-            <p>Pirlanta is committed to helping businesses transform digitally and achieve their full potential through innovative technology solutions and expert guidance.</p>
+            <h3>Pirlanta IT Solutions</h3>
+            <p><strong>Phone</strong> {{ contact.phone }}</p>
+            <p><strong>Email</strong> {{ contact.email }}</p>
+            <p><strong>Office</strong> {{ contact.office }}</p>
+            <p>Pirlanta delivers integrated cybersecurity, data infrastructure, and network solutions for enterprises across India. Secure. Data-Smart. Always Connected.</p>
         </div>
         
-        <div class="intro-title">What is the Digital Assessment?</div>
+        <div class="intro-title">What is the Pirlanta Cybersecurity Assessment?</div>
         <div class="intro-content">
-            <p>The Pirlanta Digital Assessment helps you understand where you stand in your digital journey. It's designed to help you understand how future-ready your business is and suggests areas of your business that need to be digitalized.</p>
-            <p>This comprehensive evaluation analyzes your business across three critical dimensions: Digital Customers, Digital Workplace, and Digital Operations. Based on your responses, we provide personalized insights and recommendations to accelerate your digital transformation.</p>
-            <p>Now, it's your turn to take the next step and transform your business with Pirlanta's expert solutions.</p>
+            <p>The <strong>Pirlanta Cybersecurity Assessment</strong> helps you understand where you stand in your digital security journey. It evaluates how cyber-ready your business is and identifies areas that need strengthening to protect against emerging threats.</p>
+            <p>This assessment analyzes your organization across three critical dimensions: Secure Customer Engagement, Secure Digital Workplace, and Secure Digital Operations. Based on your responses, we provide personalized insights and recommendations to strengthen your security posture.</p>
+            <p>Now, it's your turn to take the next step and secure your business with Pirlanta's expert cybersecurity solutions.</p>
         </div>
         <div class="pillars">
             <div class="pillar">
-                <div class="pillar-title">Digital Customers</div>
-                <div class="pillar-desc">Strategies that enable businesses to digitally target, acquire, and serve customers, adapting to their evolving needs</div>
+                <div class="pillar-title">Secure Customer Engagement</div>
+                <div class="pillar-desc">Strategies that enable businesses to securely reach, acquire, and serve customers while protecting their data and preserving trust.</div>
             </div>
             <div class="pillar">
-                <div class="pillar-title">Digital Workplace</div>
-                <div class="pillar-desc">Insights and solutions to ensure a digital, secure, and safe workplace for today's employees</div>
+                <div class="pillar-title">Secure Digital Workplace</div>
+                <div class="pillar-desc">Insights and solutions to ensure a digital, secure, and safe workplace for today's employees – from identity to device protection.</div>
             </div>
             <div class="pillar">
-                <div class="pillar-title">Digital Operations</div>
-                <div class="pillar-desc">Using cutting-edge tech that takes the business to the next level and makes day-to-day operations more efficient</div>
+                <div class="pillar-title">Secure Digital Operations</div>
+                <div class="pillar-desc">Using security-first technology that protects infrastructure, data, and operations from cyber threats while enabling growth.</div>
             </div>
         </div>
     </div>
@@ -658,48 +689,49 @@
                 </div>
             </div>
             <div>
-                <div class="bar-label">Industry Average</div>
+                <div class="bar-label">Industry Average ({{ scores.industry_average }}%)</div>
                 <div class="comparison-bar">
                     <div class="bar-fill bar-fill-industry" style="width: {{ scores.industry_average }}%;">{{ scores.industry_average }}%</div>
                 </div>
             </div>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.9); margin-top: 12px;">Technology is helping businesses improve security posture and scale operations securely &amp; efficiently.</p>
         </div>
         
         <div class="comparison-section">
             <div class="comparison-title">Comparative Analysis</div>
             <div style="text-align: center; margin-bottom: 30px; color: #666;">
-                Take a closer look at the readiness of the individual aspects of your business and where you stand in comparison to your industry peers.
+                Take a closer look at the security readiness of individual aspects of your business and where you stand in comparison to your industry peers.
             </div>
             
             <div class="category-grid">
                 <div class="category-box">
-                    <div class="category-title">Digital Customers</div>
+                    <div class="category-title">Secure Customer Engagement</div>
                     <div class="category-score">{{ scores.digital_customers_score }}%</div>
                     <div class="category-bar">
                         <div class="category-bar-item category-bar-your" style="--your-height: {{ scores.digital_customers_score }}%; height: {{ scores.digital_customers_score }}%;">{{ scores.digital_customers_score }}%</div>
                         <div class="category-bar-item category-bar-industry" style="--industry-height: {{ scores.industry_average }}%; height: {{ scores.industry_average }}%;">{{ scores.industry_average }}%</div>
                     </div>
-                    <div class="category-desc">Strategies that enable businesses to digitally target, acquire, and serve customers, adapting to their evolving needs.</div>
+                    <div class="category-desc">Strategies that enable businesses to securely target, acquire, and serve customers while protecting data and adapting to evolving threat landscapes.</div>
                 </div>
                 
                 <div class="category-box">
-                    <div class="category-title">Digital Workplace</div>
+                    <div class="category-title">Secure Digital Workplace</div>
                     <div class="category-score">{{ scores.digital_workplace_score }}%</div>
                     <div class="category-bar">
                         <div class="category-bar-item category-bar-your" style="--your-height: {{ scores.digital_workplace_score }}%; height: {{ scores.digital_workplace_score }}%;">{{ scores.digital_workplace_score }}%</div>
                         <div class="category-bar-item category-bar-industry" style="--industry-height: {{ scores.industry_average }}%; height: {{ scores.industry_average }}%;">{{ scores.industry_average }}%</div>
                     </div>
-                    <div class="category-desc">Insights and solutions to ensure a digital, secure, and safe workplace for today's employees.</div>
+                    <div class="category-desc">Insights and solutions to ensure a digital, secure, and safe workplace for today's employees – identity, device, and access protection.</div>
                 </div>
                 
                 <div class="category-box">
-                    <div class="category-title">Digital Operations</div>
+                    <div class="category-title">Secure Digital Operations</div>
                     <div class="category-score">{{ scores.digital_operations_score }}%</div>
                     <div class="category-bar">
                         <div class="category-bar-item category-bar-your" style="--your-height: {{ scores.digital_operations_score }}%; height: {{ scores.digital_operations_score }}%;">{{ scores.digital_operations_score }}%</div>
                         <div class="category-bar-item category-bar-industry" style="--industry-height: {{ scores.industry_average }}%; height: {{ scores.industry_average }}%;">{{ scores.industry_average }}%</div>
                     </div>
-                    <div class="category-desc">Using cutting-edge tech that takes the business to the next level and makes day-to-day operations more efficient.</div>
+                    <div class="category-desc">Using security-first technology that protects infrastructure and operations from cyber threats while enabling efficient day-to-day operations.</div>
                 </div>
             </div>
         </div>
@@ -707,34 +739,34 @@
     
     <!-- Recommendations Page -->
     <div class="recommendations-page">
-        <div class="recommendations-title">How to Improve Your Digital Maturity Index?</div>
+        <div class="recommendations-title">How to Improve Your Cybersecurity Maturity?</div>
         <div class="recommendation-intro">
-            You have taken some commendable steps to make your business more digital. Here are a few suggestions to enable you to bridge the gap and grow more digitally and become Ready for Next!
+            You have taken some commendable steps to secure your business. Here are cybersecurity solutions to bridge gaps and strengthen your posture against evolving threats.
         </div>
         <div class="recommendations-grid">
             <div class="recommendation-box">
-                <div class="recommendation-title">Internet Leased Lines</div>
-                <div class="recommendation-desc">Keep your business securely connected with dedicated high-speed Internet Leased Lines. Pirlanta offers reliable, high-bandwidth connectivity solutions tailored for your business needs.</div>
+                <div class="recommendation-title">Managed Detection & Response (MDR)</div>
+                <div class="recommendation-desc">24x7 threat monitoring, detection engineering, and incident response. Pirlanta's MDR helps you detect and contain threats before they impact your business.</div>
             </div>
             <div class="recommendation-box">
-                <div class="recommendation-title">Web Security</div>
-                <div class="recommendation-desc">Safeguard your business from cyber-attacks with Pirlanta's comprehensive Web Security solutions that block online threats before they reach your business infrastructure.</div>
+                <div class="recommendation-title">Zero Trust & Secure Access</div>
+                <div class="recommendation-desc">Replace legacy VPN with identity-aware, policy-driven access. Pirlanta designs Zero Trust architectures and ZTNA for secure remote access.</div>
             </div>
             <div class="recommendation-box">
-                <div class="recommendation-title">Cloud Solutions</div>
-                <div class="recommendation-desc">Access information from business apps & services located on any remote company device through Pirlanta's secure, centralized cloud infrastructure solutions.</div>
+                <div class="recommendation-title">Cloud Security</div>
+                <div class="recommendation-desc">Secure Microsoft 365, Azure, and multi-cloud environments. Pirlanta offers hardening, continuous monitoring, and incident response readiness.</div>
             </div>
             <div class="recommendation-box">
-                <div class="recommendation-title">Digital Communication</div>
-                <div class="recommendation-desc">Enhance team collaboration with Pirlanta's modern digital communication tools and platforms designed for seamless business operations.</div>
+                <div class="recommendation-title">SD-WAN & SASE</div>
+                <div class="recommendation-desc">Secure connectivity for distributed teams. Pirlanta delivers SD-WAN rollouts and SASE implementations for unified, secure cloud application access.</div>
             </div>
             <div class="recommendation-box">
-                <div class="recommendation-title">SIP Trunking</div>
-                <div class="recommendation-desc">Consolidate your voice infrastructure efficiently with Pirlanta's managed SIP solutions, reducing costs while improving communication reliability.</div>
+                <div class="recommendation-title">Endpoint Protection</div>
+                <div class="recommendation-desc">Protect devices and users with next-gen endpoint security. Pirlanta partners with industry leaders like CrowdStrike, Fortinet, and Barracuda.</div>
             </div>
             <div class="recommendation-box">
-                <div class="recommendation-title">Virtual Desktop Infrastructure</div>
-                <div class="recommendation-desc">Enable remote work capabilities with Pirlanta's DaaS (Desktop as a Service) solutions, providing secure access to business applications from anywhere.</div>
+                <div class="recommendation-title">Data Protection & DLP</div>
+                <div class="recommendation-desc">Safeguard sensitive data with data-loss prevention and encryption. Pirlanta helps you protect data across cloud, email, and endpoints.</div>
             </div>
         </div>
     </div>
@@ -746,7 +778,7 @@
                 {% if logo_path %}
                 <img src="{{ logo_path }}" alt="Pirlanta Logo" style="height: 60px; width: auto; background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 5px; margin-bottom: 20px;" />
                 {% endif %}
-                <div style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Digital Assessment Completed Successfully</div>
+                <div style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Cybersecurity Assessment Completed Successfully</div>
             </div>
             <div class="survey-code-box">
                 <div class="survey-code-label">Your Survey Code</div>
@@ -758,13 +790,13 @@
             </div>
             <div class="contact-info">
                 <h3 style="color: #D3DB2C; margin-bottom: 16px;">Get in Touch with Pirlanta</h3>
-                <p><strong>Call our experts:</strong> <strong style="color: #D3DB2C;">1800 123 123 123</strong></p>
-                <p><strong>Email:</strong> info@pirlanta.in</p>
-                <p><strong>Website:</strong> <a href="https://www.pirlanta.in">www.pirlanta.in</a></p>
-                <p style="margin-top: 12px;">Visit our website to explore exciting offers on our industry-leading digital solutions that will make your business Ready for Next!</p>
+                <p><strong>Phone</strong> {{ contact.phone }}</p>
+                <p><strong>Email</strong> {{ contact.email }}</p>
+                <p><strong>Office</strong> {{ contact.office }}</p>
+                <p style="margin-top: 12px;">Visit <a href="https://www.pirlanta.in">www.pirlanta.in</a> to explore our cybersecurity, data centre, and network solutions. Secure. Data-Smart. Always Connected.</p>
             </div>
             <div class="footer">
-                <p><strong>Disclaimer:</strong> The Digital Assessment score is unique to the respondent using the tool and has been calculated as per responses recorded in the Digital Assessment tool, according to an internal model developed by Pirlanta. All decisions made by the user of this document shall solely be based on such users' own vision, and neither Pirlanta shall be held responsible for such decision in any manner whatsoever.</p>
+                <p><strong>Disclaimer:</strong> The Cybersecurity Assessment score is unique to the respondent and has been calculated from responses recorded in the Pirlanta Digital Assessment tool, according to an internal model developed by Pirlanta. All decisions made by the user of this document shall be based solely on such user's own judgment, and Pirlanta shall not be held responsible for such decisions in any manner whatsoever.</p>
             </div>
         </div>
     </div>

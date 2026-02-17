@@ -1,8 +1,10 @@
 import logging
 
 from django.conf import settings
+from django.utils import timezone
 from django.shortcuts import redirect, render
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import EmailMessage, EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
 from rest_framework import status
 
 logger = logging.getLogger(__name__)
@@ -199,12 +201,17 @@ def assessment_start(request):
     session.generate_otp()
     try:
         if getattr(settings, "EMAIL_HOST_USER", None) and getattr(settings, "EMAIL_HOST_PASSWORD", None):
+            html_body = render_to_string(
+                "website/otp_email.html",
+                {"otp": session.otp, "year": timezone.now().year},
+            )
             send_mail(
-                f"Your Pirlanta Assessment OTP: {session.otp}",
+                "Verify Your Identity – Pirlanta Assessment OTP",
                 f"Your one-time password is: {session.otp}\n\nIt expires in 5 minutes.",
                 getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@pirlanta.in"),
                 [email],
                 fail_silently=True,
+                html_message=html_body,
             )
     except Exception:
         pass
@@ -288,26 +295,39 @@ def assessment_submit_step(request):
     session.save(update_fields=["form_data", "current_step", "progress_percent"])
 
     # Generate and email PDF report when assessment is complete (step 4 submitted)
+    report_sent = False
+    report_error = None
     if session.current_step > 4:
         try:
             from .assessment_report import generate_pdf, send_report_email
             pdf_bytes, err = generate_pdf(session)
             if err:
                 logger.error("Assessment report PDF generation failed: %s", err)
+                report_error = "pdf_failed"
             elif pdf_bytes:
                 ok, email_err = send_report_email(session, pdf_bytes)
                 if not ok:
                     logger.error("Assessment report email failed: %s", email_err)
+                    report_error = "email_failed"
                 else:
                     logger.info("Assessment report sent to %s", session.email)
+                    report_sent = True
+            else:
+                report_error = "pdf_empty"
         except Exception as e:
             logger.exception("Assessment report generation/email failed: %s", e)
+            report_error = "unexpected"
 
-    return Response({
+    payload = {
         "status": "ok",
         "current_step": session.current_step,
         "progress_percent": session.progress_percent,
-    })
+    }
+    if session.current_step > 4:
+        payload["report_sent"] = report_sent
+        if report_error:
+            payload["report_error"] = report_error
+    return Response(payload)
 
 
 @api_view(["GET"])
@@ -357,8 +377,8 @@ def contact(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    subject = f"Contact form: {name}"
-    body = (
+    subject = f"Contact Form Submission – {name}"
+    body_plain = (
         f"Name: {name}\n"
         f"Email: {email}\n"
         f"Phone: {phone}\n"
@@ -366,21 +386,65 @@ def contact(request):
         f"Service: {service}\n\n"
         f"Message:\n{message}\n"
     )
+    body_html = render_to_string(
+        "website/contact_email.html",
+        {
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "company": company,
+            "service": service,
+            "message": message,
+        },
+    )
+
+    # Recipient for contact form submissions (default: same as EMAIL_HOST_USER)
+    contact_recipient = getattr(
+        settings, "CONTACT_FORM_RECIPIENT", None
+    ) or settings.EMAIL_HOST_USER
 
     try:
-        msg = EmailMessage(
+        # 1. Send submission to Pirlanta
+        msg = EmailMultiAlternatives(
             subject,
-            body,
+            body_plain,
             settings.DEFAULT_FROM_EMAIL,
-            [settings.EMAIL_HOST_USER],
+            [contact_recipient],
             reply_to=[email],
         )
+        msg.attach_alternative(body_html, "text/html")
         msg.send()
+        logger.info("Contact form submission sent to %s from %s", contact_recipient, email)
     except Exception as e:
         logger.exception("Contact form email failed: %s", e)
         return Response(
             {"error": "Failed to send message. Please try again."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+    # 2. Send confirmation to the user who submitted
+    try:
+        confirm_subject = "Thank you for contacting Pirlanta IT Solutions"
+        confirm_plain = (
+            f"Dear {name},\n\n"
+            "Thank you for reaching out. We have received your message and will get back to you within 1–2 business days.\n\n"
+            "Best regards,\nPirlanta IT Solutions\n"
+            "Phone: +91 94296 93558 | Email: secure@pirlanta.in"
+        )
+        confirm_html = render_to_string(
+            "website/contact_confirmation_email.html",
+            {"name": name},
+        )
+        confirm_msg = EmailMultiAlternatives(
+            confirm_subject,
+            confirm_plain,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+        )
+        confirm_msg.attach_alternative(confirm_html, "text/html")
+        confirm_msg.send()
+        logger.info("Contact confirmation sent to %s", email)
+    except Exception as e:
+        logger.warning("Contact confirmation email failed (submission was sent): %s", e)
 
     return Response({"status": "ok"}, status=status.HTTP_200_OK)

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Identity - Pirlanta</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #2d3e6f;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #2d3e6f; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <!-- Padlock icon -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin-bottom: 20px;">
+                    <tr>
+                        <td align="center" style="padding: 20px;">
+                            <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.95); border-radius: 12px; display: inline-block; text-align: center; line-height: 64px; font-size: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">🔒</div>
+                        </td>
+                    </tr>
+                </table>
+                <h1 style="color: #ffffff; font-size: 28px; font-weight: 300; margin: 0 0 30px 0; letter-spacing: 0.5px;">Verify Your Identity</h1>
+
+                <!-- White card -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 480px; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden;">
+                    <tr>
+                        <td style="padding: 40px 36px;">
+                            <p style="color: #6b7280; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 20px 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; text-align: center;">Your One-Time Password (OTP)</p>
+                            <p style="font-size: 42px; font-weight: 700; color: #111827; letter-spacing: 12px; text-align: center; margin: 24px 0;">{{ otp }}</p>
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 24px 0;">
+                                <tr>
+                                    <td style="padding: 16px; background: #fef3c7; border-radius: 10px; border-left: 4px solid #d97706;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="padding-right: 10px; font-size: 18px; vertical-align: middle;">⏱</td>
+                                                <td><span style="color: #92400e; font-size: 14px;">This code will expire in <strong style="color: #b45309;">5 minutes</strong>.</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="color: #4b5563; font-size: 14px; line-height: 1.7; margin: 20px 0 0 0;">For your security, please do not share this code with anyone.</p>
+                            <p style="color: #4b5563; font-size: 14px; line-height: 1.7; margin: 8px 0 0 0;">If you didn't request this code, you can <strong>safely</strong> ignore this message.</p>
+                            <p style="color: #4b5563; font-size: 14px; line-height: 1.7; margin: 8px 0 0 0;">We're committed to keeping your account secure.</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Footer -->
+                <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 32px;">© {{ year }} Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

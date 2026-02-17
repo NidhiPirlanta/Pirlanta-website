@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AntigravityBackground from './AntigravityBackground'
 
 export default function CrowdStrikeSecurityPage() {
   const whyPoints = [
@@ -82,6 +83,7 @@ export default function CrowdStrikeSecurityPage() {
       {/* Hero Section */}
       <section className="partner-hero relative">
         <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24">
+          <AntigravityBackground className="hero-antigravity" />
           <div className="partner-logo flex items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-white font-bold tracking-wider">
             CROWDSTRIKE
           </div>

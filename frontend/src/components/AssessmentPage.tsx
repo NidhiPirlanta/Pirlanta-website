@@ -226,6 +226,7 @@ export default function AssessmentPage() {
   const [otp, setOtp] = useState('')
   const [otpExpiresIn, setOtpExpiresIn] = useState(0)
   const [formData, setFormData] = useState<Record<string, unknown>>({})
+  const [reportSent, setReportSent] = useState<boolean | null>(null)
 
   const handlePreregSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -315,6 +316,7 @@ export default function AssessmentPage() {
       setProgressPercent(d.progress_percent)
       setFormData({})
       if (d.current_step > 4) {
+        setReportSent(d.report_sent === true)
         setPhase('complete')
       } else {
         setStepData(null)
@@ -682,7 +684,11 @@ export default function AssessmentPage() {
             <div className="absolute bottom-0 right-0 h-80 w-80 translate-x-1/2 translate-y-1/2 rounded-full bg-emerald-400/20 blur-3xl" aria-hidden />
             <div className="relative">
               <h1 className="text-3xl font-semibold text-slate-800">Thank you!</h1>
-              <p className="mt-4 text-slate-600">Your assessment has been submitted. Your Digital Assessment Report has been sent to your email.</p>
+              <p className="mt-4 text-slate-600">
+                {reportSent === false
+                  ? 'Your assessment has been submitted. We had trouble sending your report by email. Please check your spam folder, or contact us at secure@pirlanta.in and we will send it to you.'
+                  : 'Your assessment has been submitted. Your Digital Assessment Report has been sent to your email.'}
+              </p>
               <a href="/" className="mt-8 inline-block rounded-lg bg-emerald-600 px-8 py-3 font-semibold text-white hover:bg-emerald-500">
                 Back to Home
               </a>
