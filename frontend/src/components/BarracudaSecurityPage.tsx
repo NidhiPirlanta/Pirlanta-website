@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import AntigravityBackground from './AntigravityBackground'
+import SiteFooter from './SiteFooter'
 
 export default function BarracudaSecurityPage() {
   const whyPoints = [
@@ -80,47 +82,52 @@ export default function BarracudaSecurityPage() {
 
   return (
     <main className="partner-page relative overflow-hidden pt-24">
-      {/* Hero Section */}
-      <section className="partner-hero barracuda-hero relative">
-        <div className="partner-hero-content barracuda-hero-content mx-auto max-w-7xl px-6 py-24">
+      <section className="partner-hero relative">
+        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24 relative">
           <AntigravityBackground className="hero-antigravity" />
-          <div className="barracuda-hero-logo" aria-label="Barracuda">
-            <svg viewBox="0 0 120 60" aria-hidden="true">
-              <path d="M6 54L30 6l24 48H6z" fill="currentColor" />
-              <path d="M56 54l12-24 12 24H56z" fill="currentColor" />
-            </svg>
-            <span className="barracuda-wordmark">Barracuda.</span>
+          <div className="partner-logo barracuda-logo" aria-label="Barracuda">
+            <span>Barracuda</span>
           </div>
-          <span className="pill pill--tight barracuda-hero-pill">Barracuda Certified Partner</span>
-          <h1 className="barracuda-hero-title">
-            Barracuda <span className="barracuda-hero-accent">Partner</span>
+          <span className="pill pill--tight">Barracuda Certified Partner</span>
+          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
+            Barracuda <span className="ai-accent">Partner</span>
           </h1>
-          <p className="barracuda-hero-kicker">Email Security, XDR & Cloud Backup</p>
-          <p className="barracuda-hero-description">
+          <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+            Email Security, XDR &amp; Cloud Backup
+          </p>
+          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
             As a Barracuda Certified Partner, we deliver integrated email protection, extended
             detection and response, and cloud backup solutions for modern enterprises.
           </p>
         </div>
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]">
-          <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-[calc(100%+1.3px)] h-[60px] md:h-[100px] fill-white">
+        <div
+          className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
+          aria-hidden="true"
+        >
+          <svg
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+            className="relative block w-[calc(100%+1.3px)] h-[60px] md:h-[100px] fill-white"
+          >
             <path d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z" className="fill-white" />
           </svg>
         </div>
       </section>
 
-      {/* Why Pirlanta for Barracuda */}
-      <section className="section-light barracuda-why-section">
-        <div className="barracuda-why-wrapper mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div className="barracuda-why-copy">
-            <h2 className="barracuda-why-title">Why Pirlanta for Barracuda?</h2>
-            <p className="barracuda-why-subtitle">
+      <section className="section-light">
+        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Barracuda?</h2>
+            <p className="mt-2 text-sm text-slate-500">
               Our Barracuda partnership enables us to deliver comprehensive email security, data protection,
               and XDR solutions with cloud-native simplicity and AI-powered threat detection.
             </p>
-            <div className="barracuda-why-list">
+            <div className="mt-6 grid gap-3 text-sm text-slate-600">
               {whyPoints.map((point) => (
-                <div key={point} className="barracuda-why-item">
-                  <span className="barracuda-why-icon" aria-hidden="true">
+                <div key={point} className="cisco-point">
+                  <span className="benefit-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                       <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
                       <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -131,19 +138,15 @@ export default function BarracudaSecurityPage() {
               ))}
             </div>
           </div>
-          <div className="barracuda-why-card">
-            <div className="barracuda-why-logo" aria-label="Barracuda">
-              <svg viewBox="0 0 120 60" aria-hidden="true">
-                <path d="M6 54L30 6l24 48H6z" fill="currentColor" />
-                <path d="M56 54l12-24 12 24H56z" fill="currentColor" />
-              </svg>
-              <span className="barracuda-wordmark">Barracuda.</span>
+          <div className="cisco-card">
+            <div className="partner-logo partner-logo--small barracuda-logo" aria-label="Barracuda">
+              <span>Barracuda</span>
             </div>
             <h3>Barracuda Certified Partner</h3>
             <p>
               Certified to implement and support the full Barracuda portfolio including email, backup, and security solutions.
             </p>
-            <div className="barracuda-why-badges">
+            <div className="cisco-badges">
               <div>
                 <strong>Email</strong>
                 <span>Protection</span>
@@ -157,17 +160,16 @@ export default function BarracudaSecurityPage() {
         </div>
       </section>
 
-      {/* Barracuda Solutions We Deliver */}
-      <section className="section-light barracuda-solutions-section">
-        <div className="barracuda-solutions-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="barracuda-solutions-title">Barracuda Solutions We Deliver</h2>
-          <p className="barracuda-solutions-subtitle">
+      <section className="section-light">
+        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="text-3xl font-semibold text-slate-900">Barracuda Solutions We Deliver</h2>
+          <p className="mt-2 text-sm text-slate-500">
             Comprehensive security and data protection across email, cloud, and applications.
           </p>
-          <div className="barracuda-solutions-grid">
+          <div className="cisco-solution-grid mt-10">
             {solutions.map((item) => (
-              <div key={item.title} className="barracuda-solution-card">
-                <div className="barracuda-solution-icon" aria-hidden="true">
+              <div key={item.title} className="cyber-cap-card cisco-solution-card">
+                <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'email' && (
                     <svg viewBox="0 0 24 24" fill="none">
                       <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
@@ -206,7 +208,7 @@ export default function BarracudaSecurityPage() {
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.copy}</p>
-                <ul className="barracuda-solution-list">
+                <ul>
                   {item.bullets.map((bullet) => (
                     <li key={bullet}>{bullet}</li>
                   ))}
@@ -217,17 +219,16 @@ export default function BarracudaSecurityPage() {
         </div>
       </section>
 
-      {/* Common Use Cases */}
-      <section className="section-light barracuda-use-section">
-        <div className="barracuda-use-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="barracuda-use-title">Common Use Cases</h2>
-          <p className="barracuda-use-subtitle">
+      <section className="section-light">
+        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="text-3xl font-semibold text-slate-900">Common Use Cases</h2>
+          <p className="mt-2 text-sm text-slate-500">
             How enterprises leverage Barracuda through Pirlanta.
           </p>
-          <div className="barracuda-use-grid">
+          <div className="cisco-use-grid mt-10">
             {useCases.map((item) => (
-              <div key={item.title} className="barracuda-use-card">
-                <div className="barracuda-use-icon" aria-hidden="true">
+              <div key={item.title} className="cyber-cap-card">
+                <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'email' && (
                     <svg viewBox="0 0 24 24" fill="none">
                       <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
@@ -256,58 +257,53 @@ export default function BarracudaSecurityPage() {
         </div>
       </section>
 
-      {/* Barracuda FAQs */}
-      <section className="section-light cyber-faq-section">
-        <div className="cyber-faq-wrapper mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div className="cyber-faq-copy">
-            <h2 className="cyber-faq-title">Barracuda FAQs</h2>
-            <p className="cyber-faq-subtitle">
+      <section className="section-light">
+        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <h2 className="text-3xl font-semibold text-slate-900">Barracuda FAQs</h2>
+            <p className="mt-3 text-sm text-slate-500">
               Common questions about Barracuda email security, XDR, and backup solutions.
             </p>
-            <a href="/contact" className="cyber-faq-button">
-              Ask a Question
-            </a>
+            <Link to="/contact">
+              <button className="mt-6 rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300">
+                Ask a Question
+              </button>
+            </Link>
           </div>
           <div className="cyber-faq">
             {faqs.map((question, index) => {
               const isOpen = openFaq === index
               return (
-                <div key={question} className={`cyber-faq-block ${isOpen ? 'cyber-faq-block--open' : ''}`}>
-                  <button
-                    className="cyber-faq-trigger"
-                    onClick={() => setOpenFaq(isOpen ? null : index)}
-                    type="button"
-                  >
-                    <span>{question}</span>
-                    <span className="faq-toggle">▾</span>
-                  </button>
-                  <div className={`cyber-faq-answer ${isOpen ? 'cyber-faq-answer--open' : ''}`}>
-                    <p>
-                      Contact us to learn more about our Barracuda solutions and how they can benefit your organization.
-                    </p>
-                  </div>
-                </div>
+                <button
+                  key={question}
+                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  onClick={() => setOpenFaq(isOpen ? null : index)}
+                  type="button"
+                >
+                  <span>{question}</span>
+                  <span className="faq-toggle">▾</span>
+                </button>
               )
             })}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section-dark section-dark--cta relative overflow-hidden bg-slate-900">
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 text-center">
+      <section className="section-dark section-dark--cta">
+        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
           <h2 className="text-3xl font-semibold text-white">
-            Ready for Comprehensive Email & Data Protection?
+            Ready for Comprehensive Email &amp; Data Protection?
           </h2>
           <p className="mt-3 text-sm text-emerald-100/70">
             Let&apos;s discuss how Barracuda solutions can secure your email, protect your data, and simplify your security operations.
           </p>
-          <a
+          <Link
             className="mt-6 inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600"
-            href="/contact"
+            to="/contact"
           >
             Schedule Consultation →
-          </a>
+          </Link>
+          <SiteFooter />
         </div>
       </section>
     </main>

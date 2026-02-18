@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { getBaseUrl } from '../utils/baseUrl'
 import { preloadRoute } from '../utils/routePreload'
@@ -17,12 +17,32 @@ export default function Header({ scrolled }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const [mobilePartnersOpen, setMobilePartnersOpen] = useState(false)
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
+  const [partnersDropdownOpen, setPartnersDropdownOpen] = useState(false)
+  const servicesRef = useRef<HTMLDivElement>(null)
+  const partnersRef = useRef<HTMLDivElement>(null)
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false)
     setMobileServicesOpen(false)
     setMobilePartnersOpen(false)
   }
+
+  const closeDesktopDropdowns = () => {
+    setServicesDropdownOpen(false)
+    setPartnersDropdownOpen(false)
+    setPartnersMenu('root')
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (servicesRef.current?.contains(target) || partnersRef.current?.contains(target)) return
+      closeDesktopDropdowns()
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
 
   return (
     <header
@@ -51,30 +71,38 @@ export default function Header({ scrolled }: HeaderProps) {
           >
             Threat Map
           </a>
-          <div className="group relative">
-            <button className="nav-item inline-flex items-center gap-1" type="button">
-              Services <span className="text-xs">▾</span>
+          <div className="relative" ref={servicesRef}>
+            <button
+              className={`nav-item inline-flex items-center gap-1 ${servicesDropdownOpen ? 'nav-item--active' : ''}`}
+              type="button"
+              onClick={() => {
+                setServicesDropdownOpen((o) => !o)
+                if (!servicesDropdownOpen) setPartnersDropdownOpen(false)
+              }}
+              aria-expanded={servicesDropdownOpen}
+            >
+              Services <span className={`text-xs transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`}>▾</span>
             </button>
-            <div className="nav-dropdown">
-              <Link className="dropdown-item block" to="/services/cybersecurity" onMouseEnter={() => preloadRoute('/services/cybersecurity')}>
+            <div className={`nav-dropdown ${servicesDropdownOpen ? 'nav-dropdown--open' : ''}`}>
+              <Link className="dropdown-item block" to="/services/cybersecurity" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/services/cybersecurity')}>
                 <p className="font-semibold text-slate-900">Cybersecurity</p>
                 <p className="text-[11px] text-slate-500">
                   MDR, compliance, cloud security & threat protection
                 </p>
               </Link>
-              <Link className="dropdown-item block dropdown-divider" to="/services/data-centre-cloud" onMouseEnter={() => preloadRoute('/services/data-centre-cloud')}>
+              <Link className="dropdown-item block dropdown-divider" to="/services/data-centre-cloud" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/services/data-centre-cloud')}>
                 <p className="font-semibold text-slate-900">Data Centre</p>
                 <p className="text-[11px] text-slate-500">
                   Cloud migration, modernization & backup solutions
                 </p>
               </Link>
-              <Link className="dropdown-item block dropdown-divider" to="/services/network-sd-wan">
+              <Link className="dropdown-item block dropdown-divider" to="/services/network-sd-wan" onClick={closeDesktopDropdowns}>
                 <p className="font-semibold text-slate-900">Secure Network</p>
                 <p className="text-[11px] text-slate-500">
                   NAC, SD-WAN, Zero Trust & connectivity
                 </p>
               </Link>
-              <Link className="dropdown-item block dropdown-divider" to="/services/ai-code-audits">
+              <Link className="dropdown-item block dropdown-divider" to="/services/ai-code-audits" onClick={closeDesktopDropdowns}>
                 <p className="font-semibold text-slate-900">AI Code Audits</p>
                 <p className="text-[11px] text-slate-500">
                   Security for AI-generated & vibe-coded apps
@@ -82,17 +110,25 @@ export default function Header({ scrolled }: HeaderProps) {
               </Link>
             </div>
           </div>
-          <div className="relative group">
-            <button className="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors text-primary bg-primary-50" type="button">
+          <div className="relative" ref={partnersRef}>
+            <button
+              className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${partnersDropdownOpen ? 'text-primary bg-primary-100' : 'text-primary bg-primary-50'}`}
+              type="button"
+              onClick={() => {
+                setPartnersDropdownOpen((o) => !o)
+                if (!partnersDropdownOpen) setServicesDropdownOpen(false)
+              }}
+              aria-expanded={partnersDropdownOpen}
+            >
               Partners
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down ml-1 h-4 w-4 transition-transform group-hover:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`lucide lucide-chevron-down ml-1 h-4 w-4 transition-transform ${partnersDropdownOpen ? 'rotate-180' : ''}`}>
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
-            <div className="partners-dropdown absolute top-full left-0 pt-2 transition-all duration-200 opacity-0 invisible -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+            <div className={`partners-dropdown absolute top-full left-0 pt-2 transition-all duration-200 ${partnersDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
               <div className="flex items-start gap-4">
                 <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-glass border border-black/5 py-2 min-w-[220px]">
-                  <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors bg-primary-50" to="/partners/ecosystem">
+                  <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors bg-primary-50" to="/partners/ecosystem" onClick={closeDesktopDropdowns}>
                     <span className="block text-sm font-medium text-gray-900">Partner Ecosystem</span>
                     <span className="block text-xs text-gray-500 mt-0.5">Our growing partner network</span>
                   </Link>
@@ -123,11 +159,11 @@ export default function Header({ scrolled }: HeaderProps) {
                 </div>
                 {partnersMenu === 'networking' && (
                   <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-glass border border-black/5 py-2 min-w-[220px]">
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors" to="/partners/networking/cisco" onMouseEnter={() => preloadRoute('/partners/networking/cisco')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors" to="/partners/networking/cisco" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/networking/cisco')}>
                       <span className="block text-sm font-medium text-gray-900">Cisco</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Select Integrator Partner</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/networking/juniper" onMouseEnter={() => preloadRoute('/partners/networking/juniper')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/networking/juniper" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/networking/juniper')}>
                       <span className="block text-sm font-medium text-gray-900">Juniper Networks</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Partner</span>
                     </Link>
@@ -135,27 +171,27 @@ export default function Header({ scrolled }: HeaderProps) {
                 )}
                 {partnersMenu === 'security' && (
                   <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-glass border border-black/5 py-2 min-w-[220px]">
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors" to="/partners/security/barracuda" onMouseEnter={() => preloadRoute('/partners/security/barracuda')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors" to="/partners/security/barracuda" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/security/barracuda')}>
                       <span className="block text-sm font-medium text-gray-900">Barracuda</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Certified Partner</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/fortinet" onMouseEnter={() => preloadRoute('/partners/security/fortinet')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/fortinet" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/security/fortinet')}>
                       <span className="block text-sm font-medium text-gray-900">Fortinet</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Authorized Partner</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/rsa" onMouseEnter={() => preloadRoute('/partners/security/rsa')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/rsa" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/security/rsa')}>
                       <span className="block text-sm font-medium text-gray-900">RSA</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Identity & Access Security Partner</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/crowdstrike" onMouseEnter={() => preloadRoute('/partners/security/crowdstrike')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/crowdstrike" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/security/crowdstrike')}>
                       <span className="block text-sm font-medium text-gray-900">CrowdStrike</span>
                       <span className="block text-xs text-gray-500 mt-0.5">AI-Native Endpoint & Cloud Security</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/forcepoint" onMouseEnter={() => preloadRoute('/partners/security/forcepoint')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/forcepoint" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/security/forcepoint')}>
                       <span className="block text-sm font-medium text-gray-900">Forcepoint</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Data-First Security & DLP</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/checkpoint" onMouseEnter={() => preloadRoute('/partners/security/checkpoint')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/security/checkpoint" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/security/checkpoint')}>
                       <span className="block text-sm font-medium text-gray-900">Check Point</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Prevention-First Cyber Security</span>
                     </Link>
@@ -163,15 +199,15 @@ export default function Header({ scrolled }: HeaderProps) {
                 )}
                 {partnersMenu === 'endpoint' && (
                   <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-glass border border-black/5 py-2 min-w-[220px]">
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors" to="/partners/endpoint/apple-enterprise" onMouseEnter={() => preloadRoute('/partners/endpoint/apple-enterprise')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors" to="/partners/endpoint/apple-enterprise" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/endpoint/apple-enterprise')}>
                       <span className="block text-sm font-medium text-gray-900">Apple for Enterprise</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Enterprise Apple device procurement</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/endpoint/apple-smb" onMouseEnter={() => preloadRoute('/partners/endpoint/apple-smb')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/endpoint/apple-smb" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/endpoint/apple-smb')}>
                       <span className="block text-sm font-medium text-gray-900">Apple for SMB</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Apple devices for small &amp; mid-sized businesses</span>
                     </Link>
-                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/endpoint/jamf" onMouseEnter={() => preloadRoute('/partners/endpoint/jamf')}>
+                    <Link className="block px-4 py-2.5 hover:bg-primary-50 transition-colors border-t border-gray-100" to="/partners/endpoint/jamf" onClick={closeDesktopDropdowns} onMouseEnter={() => preloadRoute('/partners/endpoint/jamf')}>
                       <span className="block text-sm font-medium text-gray-900">Jamf</span>
                       <span className="block text-xs text-gray-500 mt-0.5">Apple device management &amp; security</span>
                     </Link>

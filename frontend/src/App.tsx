@@ -2146,20 +2146,20 @@ function AboutPage() {
 
   return (
     <main className="relative overflow-hidden pt-16">
-      <section className="about-hero relative min-h-[calc(100vh-4rem)] flex items-center bg-dark-950 overflow-hidden">
+      <section className="about-hero relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
         <ConstellationBackground
           className="about-hero-constellation"
           count={90}
           connectionDistance={160}
-          nodeColor="rgba(124, 193, 61, 0.85)"
-          lineColor="rgba(124, 193, 61, 0.1)"
+          nodeColor="rgba(211, 255, 79, 0.85)"
+          lineColor="rgba(211, 255, 79, 0.12)"
           nodeSize={2.2}
           mouseRadius={180}
           glow
         />
         <div className="about-hero-overlay" />
         <div className="about-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-2 md:py-6">
-          <div className="max-w-3xl">
+          <div className="max-w-3xl mx-auto">
             <div className="about-kicker-row">
               <p className="about-kicker-primary">About Pirlanta</p>
               <span className="about-kicker-divider">|</span>
@@ -2176,32 +2176,26 @@ function AboutPage() {
               detection, smarter automation, and measurable outcomes.
             </p>
             <p className="about-hero-copy">
-              We combine OEM AI tools from Cisco, Fortinet, and industry leaders with deep
-              implementation expertise to transform how enterprises approach security.
+              We combine OEM AI tools from Cisco, Fortinet, and industry leaders with our
+              deep implementation expertise to transform how enterprises approach security.
             </p>
           </div>
         </div>
         <div
-          className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
+          className="about-hero-wave-wrapper w-full overflow-hidden leading-[0]"
           aria-hidden="true"
         >
           <svg
             data-name="Layer 1"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1200 120"
+            viewBox="0 0 1200 140"
             preserveAspectRatio="none"
-            className="about-hero-wave"
+            className="block w-[calc(100%+1.3px)] h-[150px] md:h-[200px] fill-white"
           >
-            <path
-              d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z"
-              className="fill-white"
-              fill="#ffffff"
-            />
+            <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="white" />
           </svg>
         </div>
       </section>
-
-
 
       <section className="section-light min-h-screen" >
         
