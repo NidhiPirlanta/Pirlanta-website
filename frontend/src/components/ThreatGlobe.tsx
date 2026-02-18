@@ -27,6 +27,8 @@ type ThreatGlobeProps = {
   onHover: (info: HoverInfo | null) => void
 }
 
+type GlobeMarker = { location: [number, number]; size: number; color?: [number, number, number] }
+
 /** Project lat/lon to screen coords given globe phi/theta (matches cobe rotation) */
 const projectToScreen = (
   lat: number,
@@ -89,6 +91,10 @@ export default function ThreatGlobe({
   const pointerRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 })
   const statsRef = useRef(countryStats)
   const markersRef = useRef<{ country: (typeof countries)[number]; attack?: Attack }[]>([])
+  const globeMarkersRef = useRef<GlobeMarker[]>([])
+  const hoverRef = useRef(onHover)
+  const selectRef = useRef(onSelectAttack)
+  const sizeRef = useRef({ width: 0, height: 0, dpr: 1 })
 
   const activeAttacks = useMemo(
     () => attacks.filter((a) => activeTypes[a.attack_type]),
@@ -99,9 +105,17 @@ export default function ThreatGlobe({
     statsRef.current = countryStats
   }, [countryStats])
 
+  useEffect(() => {
+    hoverRef.current = onHover
+  }, [onHover])
+
+  useEffect(() => {
+    selectRef.current = onSelectAttack
+  }, [onSelectAttack])
+
   const markers = useMemo(() => {
     const seen = new Set<string>()
-    const result: { location: [number, number]; size: number; color?: [number, number, number] }[] = []
+    const result: GlobeMarker[] = []
     const countryToAttack = new Map<string, Attack>()
 
     activeAttacks.forEach((attack) => {
@@ -130,19 +144,27 @@ export default function ThreatGlobe({
   }, [activeAttacks])
 
   useEffect(() => {
+    globeMarkersRef.current = markers
+  }, [markers])
+
+  useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const setupGlobe = () => {
+    const createInstance = () => {
       const rect = canvas.getBoundingClientRect()
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas.width = Math.round(rect.width * dpr)
-      canvas.height = Math.round(rect.height * dpr)
+      const width = Math.round(rect.width * dpr)
+      const height = Math.round(rect.height * dpr)
+      if (width < 2 || height < 2) return false
+      sizeRef.current = { width, height, dpr }
+      canvas.width = width
+      canvas.height = height
 
       const globe = createGlobe(canvas, {
         devicePixelRatio: dpr,
-        width: canvas.width,
-        height: canvas.height,
+        width,
+        height,
         phi: 0,
         theta: 0,
         dark: 5,
@@ -154,7 +176,7 @@ export default function ThreatGlobe({
         markerColor: [0.85, 1.0, 0.32],
         glowColor: [0.22, 0.65, 0.18],
         offset: [0, 1],
-        markers,
+        markers: globeMarkersRef.current,
         onRender: (state) => {
           phiRef.current += 0.0105
           const pointer = pointerRef.current
@@ -163,17 +185,40 @@ export default function ThreatGlobe({
           state.phi = phiRef.current + pointer.x
           state.theta = pointer.y
           state.mapBrightness = 10.8
+          state.markers = globeMarkersRef.current
         },
       })
 
-      return globe
+      globeRef.current?.destroy()
+      globeRef.current = globe
+      return true
     }
 
-    globeRef.current = setupGlobe()
+    let initRaf = 0
+    const init = () => {
+      if (!createInstance()) {
+        initRaf = requestAnimationFrame(init)
+      }
+    }
+    init()
 
+    let resizeRaf = 0
     const handleResize = () => {
-      globeRef.current?.destroy()
-      globeRef.current = setupGlobe()
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
+      resizeRaf = requestAnimationFrame(() => {
+        const rect = canvas.getBoundingClientRect()
+        const dpr = Math.min(window.devicePixelRatio || 1, 2)
+        const width = Math.round(rect.width * dpr)
+        const height = Math.round(rect.height * dpr)
+        const current = sizeRef.current
+        const sizeChanged =
+          Math.abs(width - current.width) > 2 ||
+          Math.abs(height - current.height) > 2 ||
+          dpr !== current.dpr
+        if (sizeChanged) {
+          createInstance()
+        }
+      })
     }
 
     const HIT_RADIUS = 24
@@ -225,11 +270,11 @@ export default function ThreatGlobe({
 
       const hit = findHoveredMarker(event.clientX, event.clientY)
       if (!hit) {
-        onHover(null)
+        hoverRef.current(null)
         return
       }
       const stats = statsRef.current[hit.country.name]
-      onHover({
+      hoverRef.current({
         country: hit.country.name,
         region: hit.country.region,
         attackCount: stats?.count ?? 0,
@@ -243,13 +288,13 @@ export default function ThreatGlobe({
     const handleClick = (event: MouseEvent) => {
       const hit = findHoveredMarker(event.clientX, event.clientY)
       if (!hit?.attack) return
-      onSelectAttack(hit.attack)
+      selectRef.current(hit.attack)
     }
 
     const handleLeave = () => {
       pointerRef.current.targetX = 0
       pointerRef.current.targetY = 0
-      onHover(null)
+      hoverRef.current(null)
     }
 
     window.addEventListener('resize', handleResize)
@@ -259,12 +304,14 @@ export default function ThreatGlobe({
 
     return () => {
       window.removeEventListener('resize', handleResize)
+      if (initRaf) cancelAnimationFrame(initRaf)
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
       canvas.removeEventListener('mousemove', handleMove)
       canvas.removeEventListener('click', handleClick)
       canvas.removeEventListener('mouseleave', handleLeave)
       globeRef.current?.destroy()
     }
-  }, [onHover, onSelectAttack, markers])
+  }, [])
 
   return (
     <div className="globe-canvas-wrap">

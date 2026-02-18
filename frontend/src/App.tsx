@@ -1,14 +1,19 @@
 import { Suspense, lazy, type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
+
+import { motion } from "framer-motion";
 
 import { makeRandomAttack, seedAttacks, type Attack, type AttackType } from './data/threatData'
 import { getApiBaseUrl, getBaseUrl } from './utils/baseUrl'
 import { preloadRoute } from './utils/routePreload'
 import AntigravityBackground from './components/AntigravityBackground'
+import ConstellationBackground from './components/ConstellationBackground'
 import Header from './components/Header'
 import offerShield from './assets/icons/offer-shield.svg'
 import offerWifi from './assets/icons/offer-wifi.svg'
 import offerPuzzle from './assets/icons/offer-puzzle.svg'
+
+
 
 
 
@@ -142,7 +147,7 @@ function SecureNetworkPage() {
       <div className="hero-wave" aria-hidden="true" />
 
       <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+        <div className="deliver-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
           <span className="pill pill--tight">AI-Powered Networking</span>
           <h2 className="mt-4 text-3xl font-semibold text-slate-900">Network Capabilities</h2>
           <p className="mt-2 text-sm text-slate-500">
@@ -804,7 +809,7 @@ function PartnerEcosystemPage() {
           </p>
         </div>
         <div
-          className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
+          className="absolute bottom-0 left-0 z-10 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
           aria-hidden="true"
         >
           <svg
@@ -1677,7 +1682,7 @@ function ContactPage({
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 }) {
   return (
-    <main className="relative overflow-hidden pt-24">
+    <main className="relative overflow-hidden">
       <section className="section-light contact-section" id="contact">
         <div className="contact-hero">
           <div className="contact-hero-content mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
@@ -2051,38 +2056,130 @@ function AboutPage() {
     },
   ]
 
+  const deliverSectionRef = useRef<HTMLElement | null>(null)
+  const [deliverVisible, setDeliverVisible] = useState(false)
+  const aiWorksRef = useRef<HTMLElement | null>(null)
+  const aiWorksAnimatedRef = useRef(false)
+
+  useEffect(() => {
+    const section = deliverSectionRef.current
+    if (!section) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setDeliverVisible(entry.isIntersecting)
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = aiWorksRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const setFinalCounts = () => {
+      const counters = section.querySelectorAll<HTMLElement>('[data-count]')
+      counters.forEach((counter) => {
+        const value = counter.dataset.value ?? counter.textContent ?? ''
+        const prefix = counter.dataset.prefix ?? ''
+        const suffix = counter.dataset.suffix ?? ''
+        counter.textContent = `${prefix}${value}${suffix}`
+      })
+    }
+
+    const animateCount = (counter: HTMLElement) => {
+      const end = Number.parseFloat(counter.dataset.value ?? '0')
+      const prefix = counter.dataset.prefix ?? ''
+      const suffix = counter.dataset.suffix ?? ''
+      const decimals = Number.parseInt(counter.dataset.decimals ?? '0', 10)
+      const duration = Number.parseInt(counter.dataset.duration ?? '1200', 10)
+      const startTime = performance.now()
+
+      const step = (now: number) => {
+        const progress = Math.min((now - startTime) / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        const current = end * eased
+        counter.textContent = `${prefix}${current.toFixed(decimals)}${suffix}`
+        if (progress < 1) {
+          requestAnimationFrame(step)
+        } else {
+          counter.textContent = `${prefix}${end.toFixed(decimals)}${suffix}`
+        }
+      }
+
+      requestAnimationFrame(step)
+    }
+
+    const animateCounts = () => {
+      if (aiWorksAnimatedRef.current) return
+      aiWorksAnimatedRef.current = true
+      const counters = section.querySelectorAll<HTMLElement>('[data-count]')
+      counters.forEach((counter) => animateCount(counter))
+    }
+
+    if (prefersReducedMotion) {
+      section.classList.add('is-visible')
+      setFinalCounts()
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          section.classList.add('is-visible')
+          animateCounts()
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <main className="relative overflow-hidden pt-24">
-      <section className="about-hero relative">
-        <div className="about-hero-content mx-auto max-w-7xl px-6 py-24">
-          <div className="about-kicker">
-            <span className="about-kicker-primary">About Pirlanta</span>
-            <span className="about-kicker-divider">|</span>
-            <span className="about-kicker-secondary">
-              <span className="about-kicker-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M12 3l2.5 5.6 6.1.6-4.6 4 1.4 6-5.4-3.1-5.4 3.1 1.4-6-4.6-4 6.1-.6L12 3z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              AI-Enhanced Services
-            </span>
+    <main className="relative overflow-hidden pt-16">
+      <section className="about-hero relative min-h-[calc(100vh-4rem)] flex items-center bg-dark-950 overflow-hidden">
+        <ConstellationBackground
+          className="about-hero-constellation"
+          count={90}
+          connectionDistance={160}
+          nodeColor="rgba(124, 193, 61, 0.85)"
+          lineColor="rgba(124, 193, 61, 0.1)"
+          nodeSize={2.2}
+          mouseRadius={180}
+          glow
+        />
+        <div className="about-hero-overlay" />
+        <div className="about-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-2 md:py-6">
+          <div className="max-w-3xl">
+            <div className="about-kicker-row">
+              <p className="about-kicker-primary">About Pirlanta</p>
+              <span className="about-kicker-divider">|</span>
+              <div className="about-kicker-secondary">
+                <span className="about-kicker-icon" aria-hidden="true">✦</span>
+                <span className="about-kicker-label">AI-Enhanced Services</span>
+              </div>
+            </div>
+            <h1 className="about-hero-title">
+              Expert-Led. <span className="text-gradient">AI-Powered.</span>
+            </h1>
+            <p className="about-hero-lead">
+              Founded to bridge enterprise IT complexity. Now leveraging AI to deliver faster
+              detection, smarter automation, and measurable outcomes.
+            </p>
+            <p className="about-hero-copy">
+              We combine OEM AI tools from Cisco, Fortinet, and industry leaders with deep
+              implementation expertise to transform how enterprises approach security.
+            </p>
           </div>
-          <h1 className="mt-5 text-4xl font-semibold text-white md:text-5xl">
-            Expert-Led. <span className="ai-accent">AI-Powered.</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/70 md:text-base">
-            Founded to bridge enterprise IT complexity. Now leveraging AI to deliver faster
-            detection, smarter automation, and measurable outcomes.
-          </p>
-          <p className="mt-3 max-w-2xl text-sm text-emerald-100/60 md:text-base">
-            We combine OEM AI tools from Cisco, Fortinet, and industry leaders with deep
-            implementation expertise to transform how enterprises approach security.
-          </p>
         </div>
         <div
           className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
@@ -2093,20 +2190,27 @@ function AboutPage() {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1200 120"
             preserveAspectRatio="none"
-            className="relative block w-[calc(100%+1.3px)] h-[60px] md:h-[100px] fill-white"
+            className="about-hero-wave"
           >
-            <path d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z" className="fill-white" />
+            <path
+              d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z"
+              className="fill-white"
+              fill="#ffffff"
+            />
           </svg>
         </div>
       </section>
 
-      <section className="section-light">
+
+
+      <section className="section-light min-h-screen" >
+        
         <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">What We Deliver</h2>
-          <p className="mt-2 text-sm text-slate-500">
+          <h2 className="deliver-heading">What We Deliver</h2>
+          <p className="deliver-subtitle">
             Measurable outcomes that protect your business and drive growth.
           </p>
-          <div className="deliver-grid mt-10">
+          <div className="deliver-grid mt-12">
             {deliverItems.map((item) => (
               <div key={item.title} className="deliver-card">
                 <div className="deliver-icon" aria-hidden="true">
@@ -2171,22 +2275,44 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="section-dark section-dark--muted">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-          <div>
-            <span className="pill pill--tight">Our AI Advantage</span>
-            <h2 className="mt-4 text-3xl font-semibold text-white">Why Pirlanta + AI Works</h2>
-            <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+      <section className="section-dark section-dark--muted ai-works-section" ref={aiWorksRef}>
+        <div className="ai-works-inner mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+          <div className="ai-works-copy">
+            <div className="ai-works-pill ai-works-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+              <span className="ai-works-pill-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M8 8V6a4 4 0 0 1 8 0v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M10 12h4M10 15h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </span>
+              Our AI Advantage
+            </div>
+            <h2 className="ai-works-title ai-works-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
+              Why Pirlanta + AI Works
+            </h2>
+            <p className="ai-works-lead ai-works-reveal" style={{ '--delay': '0.16s' } as CSSProperties}>
               AI alone isn’t enough. Our competitive advantage comes from combining OEM AI tools
               with deep implementation expertise and senior leadership.
             </p>
-            <div className="mt-6 grid gap-4 text-sm text-emerald-100/70">
-              <div className="ai-work-item">
-                <span className="ai-work-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
+            <div className="ai-works-list">
+              {/* <div className="ai-works-item ai-works-reveal" style={{ '--delay': '0.24s' } as CSSProperties}> */}
+              <div
+                className="ai-works-item ai-works-reveal flex items-center gap-4"
+                style={{ '--delay': '0.24s' } as CSSProperties}
+              >
+
+                {/* <span className="ai-works-icon" aria-hidden="true"> */}
+                <span className="ai-works-icon flex items-center justify-center" aria-hidden="true">
+
+
+                  {/* <svg viewBox="0 0 24 24" fill="none"> */}
+                  <svg viewBox="0 0 24 24" fill="none" className="block translate-y-[14px]">
+
                     <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
                     <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                    <path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M9 1v3M15 1v3M9 20v3M15 20v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M20 9h3M20 15h3M1 9h3M1 15h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </span>
                 <div>
@@ -2194,12 +2320,13 @@ function AboutPage() {
                   <span>Cisco XDR, Fortinet FortiAI, and leading AI platforms integrated into every solution.</span>
                 </div>
               </div>
-              <div className="ai-work-item">
-                <span className="ai-work-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
-                    <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
-                    <path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <div className="ai-works-item ai-works-reveal" style={{ '--delay': '0.32s' } as CSSProperties}>
+                <span className="ai-works-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" className="block translate-y-[14px]">
+                    <rect x="3" y="8" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
+                    <path d="M12 8V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M8.5 13h0.01M15.5 13h0.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                    <path d="M9 17h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </span>
                 <div>
@@ -2207,13 +2334,13 @@ function AboutPage() {
                   <span>Machine learning triage reduces alert fatigue and accelerates response times.</span>
                 </div>
               </div>
-              <div className="ai-work-item">
-                <span className="ai-work-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <div className="ai-works-item ai-works-reveal" style={{ '--delay': '0.4s' } as CSSProperties}>
+                <span className="ai-works-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" className="block translate-y-[14px]">
+                    <circle cx="9" cy="8" r="3.5" stroke="currentColor" strokeWidth="2" />
+                    <path d="M2.5 20v-1.2A5.8 5.8 0 0 1 8.3 13h1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx="17" cy="9.5" r="3" stroke="currentColor" strokeWidth="2" />
+                    <path d="M14.5 20v-1.1a4.5 4.5 0 0 1 4.5-4.5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </span>
                 <div>
@@ -2223,22 +2350,42 @@ function AboutPage() {
               </div>
             </div>
           </div>
-          <div className="ai-stats-grid">
-            <div className="ai-stat-card">
-              <strong>85%</strong>
-              <span>Reduction in MTTD</span>
+          <div className="ai-works-cards">
+            <div className="ai-works-card ai-works-reveal" style={{ '--delay': '0.18s' } as CSSProperties}>
+              <div className="ai-works-card-content">
+                <strong data-count data-value="85" data-suffix="%" data-duration="1200">
+                  85%
+                </strong>
+                <span>Reduction in MTTD</span>
+                <small>Cisco XDR</small>
+              </div>
             </div>
-            <div className="ai-stat-card">
-              <strong>&lt;1s</strong>
-              <span>Threat Detection</span>
+            <div className="ai-works-card ai-works-reveal" style={{ '--delay': '0.26s' } as CSSProperties}>
+              <div className="ai-works-card-content">
+                <strong data-count data-value="1" data-prefix="&lt;" data-suffix="s" data-duration="900">
+                  &lt;1s
+                </strong>
+                <span>Threat Detection</span>
+                <small>Fortinet FortiAI</small>
+              </div>
             </div>
-            <div className="ai-stat-card">
-              <strong>24×7</strong>
-              <span>AI-Augmented SOC</span>
+            <div className="ai-works-card ai-works-reveal" style={{ '--delay': '0.34s' } as CSSProperties}>
+              <div className="ai-works-card-content">
+                <strong data-count data-value="24" data-suffix="×7" data-duration="1100">
+                  24×7
+                </strong>
+                <span>AI-Augmented SOC</span>
+                <small>Always On</small>
+              </div>
             </div>
-            <div className="ai-stat-card">
-              <strong>48+</strong>
-              <span>Years Experience</span>
+            <div className="ai-works-card ai-works-reveal" style={{ '--delay': '0.42s' } as CSSProperties}>
+              <div className="ai-works-card-content">
+                <strong data-count data-value="48" data-suffix="+" data-duration="1200">
+                  48+
+                </strong>
+                <span>Years Experience</span>
+                <small>Combined Team</small>
+              </div>
             </div>
           </div>
         </div>
@@ -2568,6 +2715,7 @@ function AboutPage() {
 }
 
 export default function App() {
+  const location = useLocation()
   const [attacks, setAttacks] = useState<Attack[]>(seedAttacks)
   const [activeTypes] = useState<Record<AttackType, boolean>>({
     Malware: true,
@@ -2583,7 +2731,7 @@ export default function App() {
   const [systemsCount, setSystemsCount] = useState('156+')
   const [monitorsCount, setMonitorsCount] = useState('24/7')
   const [useSimulation, setUseSimulation] = useState(true)
-  const [threatDetectPercent, setThreatDetectPercent] = useState(1)
+  const [threatDetectPercent, setThreatDetectPercent] = useState(0)
   const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
@@ -2598,8 +2746,11 @@ export default function App() {
   const [contactError, setContactError] = useState('')
   const [typedFirst, setTypedFirst] = useState('')
   const [typedSecond, setTypedSecond] = useState('')
-  const [phase, setPhase] = useState<1 | 2>(1)
+  const [typePhase, setTypePhase] = useState<1 | 2 | 3>(1)
+  const [aiOpsMonitorCount, setAiOpsMonitorCount] = useState(0)
   const auditHeroRef = useRef<HTMLElement | null>(null)
+  const aiOpsSectionRef = useRef<HTMLElement | null>(null)
+  const aiOpsAnimatedRef = useRef(false)
   const auditLogRef = useRef<HTMLDivElement | null>(null)
   const auditLogs = useMemo(
     () => [
@@ -2657,6 +2808,153 @@ export default function App() {
     },
   ]
   const [activeReasonKey, setActiveReasonKey] = useState(reasonOptions[0].key)
+
+  useEffect(() => {
+    const firstText = 'Expert-Led.'
+    const secondText = 'AI-Powered.'
+    let firstIndex = 0
+    let secondIndex = 0
+    let timeoutId: number
+    let active = true
+
+    setTypedFirst('')
+    setTypedSecond('')
+    setTypePhase(1)
+
+    const typeSecond = () => {
+      if (!active) return
+      if (secondIndex <= secondText.length) {
+        setTypedSecond(secondText.slice(0, secondIndex))
+        secondIndex += 1
+        timeoutId = window.setTimeout(typeSecond, 60)
+        return
+      }
+      setTypePhase(3)
+    }
+
+    const typeFirst = () => {
+      if (!active) return
+      if (firstIndex <= firstText.length) {
+        setTypedFirst(firstText.slice(0, firstIndex))
+        firstIndex += 1
+        timeoutId = window.setTimeout(typeFirst, 60)
+        return
+      }
+      setTypePhase(2)
+      timeoutId = window.setTimeout(typeSecond, 240)
+    }
+
+    typeFirst()
+
+    return () => {
+      active = false
+      window.clearTimeout(timeoutId)
+    }
+  }, [])
+
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll('.services-fade, .aiops-fade'))
+    if (elements.length === 0) return
+
+    if (!('IntersectionObserver' in window)) {
+      elements.forEach((el) => el.classList.add('is-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
+    )
+
+    elements.forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      aiOpsAnimatedRef.current = false
+      setThreatDetectPercent(0)
+      setAiOpsMonitorCount(0)
+      return
+    }
+
+    const section = aiOpsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const animateValue = (
+      from: number,
+      to: number,
+      duration: number,
+      setter: (value: number) => void
+    ) => {
+      const start = performance.now()
+      const step = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        const value = Math.round(from + (to - from) * eased)
+        setter(value)
+        if (progress < 1) {
+          requestAnimationFrame(step)
+        } else {
+          setter(to)
+        }
+      }
+      requestAnimationFrame(step)
+    }
+
+    const revealSection = () => {
+      section
+        .querySelectorAll('.aiops-fade')
+        .forEach((el) => el.classList.add('is-visible'))
+    }
+
+    const startCounts = () => {
+      if (aiOpsAnimatedRef.current) return
+      aiOpsAnimatedRef.current = true
+      animateValue(0, 85, 1200, setThreatDetectPercent)
+      animateValue(0, 24, 1100, setAiOpsMonitorCount)
+    }
+
+    if (prefersReducedMotion) {
+      revealSection()
+      setThreatDetectPercent(85)
+      setAiOpsMonitorCount(24)
+      return
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      revealSection()
+      startCounts()
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            revealSection()
+            startCounts()
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.25, rootMargin: '0px 0px -10% 0px' }
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [location.pathname])
   const renderReasonIcon = (key: string) => {
     switch (key) {
       case 'integration':
@@ -2956,44 +3254,6 @@ export default function App() {
     }
   }, [])
 
-  useEffect(() => {
-    let rafId = 0
-    const duration = 1200
-    const start = performance.now()
-    const animate = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1)
-      const nextValue = Math.max(1, Math.round(1 + progress * (85 - 1)))
-      setThreatDetectPercent(nextValue)
-      if (progress < 1) {
-        rafId = requestAnimationFrame(animate)
-      }
-    }
-    rafId = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(rafId)
-  }, [])
-
-  const firstText = 'Expert-Led.'
-  const secondText = 'AI-Powered.'
-  const typingSpeed = 55
-  useEffect(() => {
-    if (phase === 1) {
-      if (typedFirst.length < firstText.length) {
-        const t = setTimeout(() => {
-          setTypedFirst(firstText.slice(0, typedFirst.length + 1))
-        }, typingSpeed)
-        return () => clearTimeout(t)
-      } else {
-        const pause = setTimeout(() => setPhase(2), 250)
-        return () => clearTimeout(pause)
-      }
-    }
-    if (phase === 2 && typedSecond.length < secondText.length) {
-      const t = setTimeout(() => {
-        setTypedSecond(secondText.slice(0, typedSecond.length + 1))
-      }, typingSpeed)
-      return () => clearTimeout(t)
-    }
-  }, [typedFirst, typedSecond, phase])
 
   useEffect(() => {
     setVisibleLogCount(0)
@@ -3166,20 +3426,28 @@ export default function App() {
         <Route path="/assessment" element={<Suspense fallback={<PageFallback />}><AssessmentPage /></Suspense>} />
         <Route path="/assessment/" element={<Suspense fallback={<PageFallback />}><AssessmentPage /></Suspense>} />
         <Route path="/" element={
-        <main className="relative overflow-x-hidden pt-20 sm:pt-24">
+        <main className="relative overflow-x-hidden">
 
 
           
 
 
-        <section className="hero-section relative flex items-center" id="home">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="hero-network" aria-hidden="true" />
+        <section className="hero-section home-hero relative flex items-center" id="home">
+          <ConstellationBackground
+            className="home-hero-constellation"
+            count={110}
+            connectionDistance={170}
+            nodeColor="rgba(124, 193, 61, 0.85)"
+            lineColor="rgba(124, 193, 61, 0.1)"
+            nodeSize={2.1}
+            mouseRadius={180}
+            glow
+          />
           <div className="hero-orb hero-orb--left" aria-hidden="true" />
           <div className="hero-orb hero-orb--right" aria-hidden="true" />
-            <div className="hero-content mx-auto grid max-w-7xl gap-6 px-4 py-16 sm:gap-8 sm:px-6 sm:py-20 md:gap-10 md:py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            <div className="hero-content mx-auto grid w-full max-w-7xl gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
             <div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 hero-fade hero-fade-1">
               <span className="badge-pill">
                 <span className="badge-dot" aria-hidden="true" />
                 48+ Years Experience
@@ -3189,32 +3457,25 @@ export default function App() {
                 AI-Enhanced Operations
               </span>
             </div>
-            {/* <h1 className="mt-6 inline-flex flex-nowrap items-baseline gap-2 whitespace-nowrap text-5xl font-semibold leading-tight text-white md:text-6xl">
-              <span className="text-white">Expert-Led.</span>
-              <span className="ai-accent"> AI-Powered.</span>
-            </h1> */}
-                <h1 className="mt-6 inline-flex flex-wrap items-baseline gap-2 text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
+                <h1 className="home-hero-title mt-6 inline-flex flex-wrap items-baseline gap-3 text-white hero-fade hero-fade-2">
                   <span className="typewriter">
                     {typedFirst}
-                    {phase === 1 && <span className="caret" />}
+                    {typePhase === 1 && <span className="caret" />}
                   </span>
-
                   <span className="ai-accent typewriter">
                     {typedSecond}
-                    {phase === 2 && <span className="caret accent" />}
+                    {typePhase === 2 && <span className="caret accent" />}
                   </span>
                 </h1>
 
-
-
-            <p className="mt-4 text-lg text-emerald-100 sm:text-xl">
+            <p className="mt-6 text-lg text-slate-300/90 sm:text-xl hero-fade hero-fade-3">
               Cybersecurity Services for the AI Era
             </p>
-            <p className="mt-4 max-w-xl text-base text-emerald-100/70 md:text-lg">
+            <p className="mt-3 max-w-xl text-base text-slate-400/85 md:text-lg hero-fade hero-fade-4">
               AI-driven threat detection, expert implementation, and measurable outcomes.
               Powered by Cisco, Fortinet, and industry-leading AI platforms.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-9 flex flex-wrap gap-4 hero-fade hero-fade-5">
               <a href="/contact">
                 <button className="hero-cta">
                   Get Started →
@@ -3228,7 +3489,7 @@ export default function App() {
             </div>
           </div>
 
-            <div className="relative w-full mt-6 sm:mt-8 md:mt-0" id="threat-map">
+            <div className="relative w-full mt-6 sm:mt-8 md:mt-0 hero-fade hero-fade-6 hero-globe-delay" id="threat-map">
             <div className="block">
               <div className="globe-shell">
                 <div className="globe-rings" aria-hidden="true">
@@ -3252,7 +3513,7 @@ export default function App() {
                     <span className="alert-label">MITIGATED</span>
                   </div>
                 </div>
-                <Suspense fallback={<div className="h-[360px] w-full rounded-2xl bg-slate-900/40" />}>
+                <Suspense fallback={<div className="globe-fallback" />}>
                   <ThreatGlobe
                     attacks={attacks}
                     activeTypes={activeTypes}
@@ -3275,13 +3536,17 @@ export default function App() {
                     </div>
                   </div>
                 )}
-                <div className="mt-4 flex flex-wrap justify-center gap-3 sm:mt-6">
+                <div className="-mt-2 flex flex-wrap justify-center gap-3 lg:justify-end">
                   {[
                     { label: 'Threats Blocked', value: threatsBlocked.toLocaleString(), icon: 'shield' },
                     { label: 'Systems', value: systemsCount, icon: 'activity' },
                     { label: 'Monitors', value: monitorsCount, icon: 'eye' },
-                  ].map((stat) => (
-                    <div key={stat.label} className="stat-card">
+                  ].map((stat, index) => (
+                    <div
+                      key={stat.label}
+                      className="stat-card hero-fade"
+                      style={{ animationDelay: `${0.8 + index * 0.1}s` }}
+                    >
                       <div className="stat-header">
                         <span className="stat-icon" aria-hidden="true">
                           {stat.icon === 'shield' && (
@@ -3342,16 +3607,13 @@ export default function App() {
             </div>
             </div>
           </div>
-          <div
-            className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
-            aria-hidden="true"
-          >
+          <div className="hero-wave" aria-hidden="true">
             <svg
               data-name="Layer 1"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 1200 120"
               preserveAspectRatio="none"
-              className="relative block w-[calc(100%+1.3px)] h-[60px] md:h-[100px] fill-white"
+              className="hero-wave-svg"
             >
               <path d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z" className="fill-white" />
             </svg>
@@ -3359,14 +3621,16 @@ export default function App() {
         </section>
         <section className="section-light pricing-section" id="services">
           <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20">
-            <span className="pill">
+            <span className="pill services-fade services-fade-1">
               <span className="pill-icon" aria-hidden="true">
                 ✦
               </span>
               AI-ENHANCED SERVICES
             </span>
-            <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl md:text-4xl">Our Services</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-500 md:text-base">
+            <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl md:text-4xl services-fade services-fade-2">
+              Our Services
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-500 md:text-base services-fade services-fade-3">
               Three integrated pillars of IT excellence, amplified by AI and delivered with
               senior expertise.
             </p>
@@ -3396,8 +3660,12 @@ export default function App() {
                   icon: 'network',
                   href: '/services/secure-network',
                 },
-              ].map((card) => (
-                <div key={card.title} className="group relative h-full">
+              ].map((card, index) => (
+                <div
+                  key={card.title}
+                  className="group relative h-full services-fade"
+                  style={{ animationDelay: `${0.25 + index * 0.15}s` }}
+                >
                   <div className="service-card-v2 text-left">
                     <div className="service-card-glow" aria-hidden="true" />
                     <div className="service-icon-box">
@@ -3479,37 +3747,37 @@ export default function App() {
             </div>
           </div>
         </section>
-        <section className="section-light ai-ops-section" id="ai-ops">
+        <section className="section-light ai-ops-section" id="ai-ops" ref={aiOpsSectionRef}>
           <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
-              <span className="pill pill--tight">
+              <span className="pill pill--tight aiops-fade aiops-fade-1">
                 <span className="pill-icon" aria-hidden="true">
                   ✦
                 </span>
                 AI NATIVE TECHNOLOGY
               </span>
-              <h2 className="mt-4 text-4xl font-semibold text-slate-900">
+              <h2 className="mt-4 text-4xl font-semibold text-slate-900 aiops-fade aiops-fade-2">
                 AI-Powered Security
                 <br />
                 Operations
               </h2>
-              <p className="mt-4 max-w-xl text-sm text-slate-500 md:text-base">
+              <p className="mt-4 max-w-xl text-sm text-slate-500 md:text-base aiops-fade aiops-fade-3">
                 We leverage AI tools from our CEM partners—Cisco XDR, Fortinet FortiAI, and
                 more—combined with our implementation expertise to deliver faster detection,
                 smarter automation, and measurable outcomes.
               </p>
               <div className="mt-6 flex flex-wrap gap-4">
-                <div className="stat-pill">
+                <div className="stat-pill aiops-fade aiops-fade-4">
                   <span className="stat-pill-value">{threatDetectPercent}%</span>
                   <span className="stat-pill-label">Faster Threat Detection</span>
                 </div>
-                <div className="stat-pill">
-                  <span className="stat-pill-value">24x7</span>
+                <div className="stat-pill aiops-fade aiops-fade-5">
+                  <span className="stat-pill-value">{aiOpsMonitorCount}x7</span>
                   <span className="stat-pill-label">AI-Augmented Monitoring</span>
                 </div>
               </div>
               <a href="/services/cybersecurity">
-                <button className="mt-6 rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600">
+                <button className="mt-6 rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600 aiops-fade aiops-fade-6">
                   Explore AI Capabilities →
                 </button>
               </a>
@@ -3536,8 +3804,12 @@ export default function App() {
                   copy: 'Proactive threat discovery using machine learning to detect anomalies and insider attacks.',
                   icon: 'radar',
                 },
-              ].map((item) => (
-                <div key={item.title} className="ai-card">
+              ].map((item, index) => (
+                <div
+                  key={item.title}
+                  className="ai-card aiops-fade"
+                  style={{ animationDelay: `${0.35 + index * 0.12}s` }}
+                >
                   <div className="ai-card-icon" aria-hidden="true">
                     {item.icon === 'shield' && (
                       <svg viewBox="0 0 24 24" fill="none">
@@ -3594,10 +3866,26 @@ export default function App() {
             </div>
           </div>
         </section>
-        <section className="audit-hero" ref={auditHeroRef} id="ai-audits">
+
+
+        {/* <section className="audit-hero" ref={auditHeroRef} id="ai-audits"> */}
+        <section
+          className="audit-hero min-h-screen flex items-center"
+          ref={auditHeroRef}
+          id="ai-audits"
+        >
+
           <div className="audit-bg" aria-hidden="true" />
           <div className="audit-glow" aria-hidden="true" />
-          <div className="audit-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+          {/* <div className="audit-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center"> */}
+          <motion.div
+              className="audit-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center w-full"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+            >
+
             <div>
               <span className="audit-badge audit-reveal" style={{ animationDelay: '0s' }}>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -3612,11 +3900,19 @@ export default function App() {
                 </svg>
                 New Threat Vector
               </span>
-              <h2 className="audit-title audit-reveal" style={{ animationDelay: '0.1s' }}>
+              {/* <h2 className="audit-title audit-reveal" style={{ animationDelay: '0.1s' }}> */}
+              <motion.h2
+                  className="audit-title"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  viewport={{ once: true }}
+                >
+
                 Secure Your AI-Built
                 <br />
                 Applications
-              </h2>
+              </motion.h2>
               <p className="audit-stat audit-reveal" style={{ animationDelay: '0.2s' }}>
                 <span>48%</span> of AI-generated code contains vulnerabilities.
               </p>
@@ -3631,11 +3927,21 @@ export default function App() {
                   { label: 'AI Prompt Injection Testing', icon: 'shield' },
                   { label: 'Remediation Guidance', icon: 'spark' },
                 ].map((item, idx) => (
-                  <div
-                    key={item.label}
-                    className="audit-feature audit-reveal"
-                    style={{ animationDelay: `${0.35 + idx * 0.08}s` }}
-                  >
+                  // <div
+                  //   key={item.label}
+                  //   className="audit-feature audit-reveal"
+                  //   style={{ animationDelay: `${0.35 + idx * 0.08}s` }}
+                  // >
+
+                  <motion.div
+                      key={item.label}
+                      className="audit-feature"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: idx * 0.08 }}
+                      viewport={{ once: true }}
+                    >
+
                     <span className="audit-feature-icon" aria-hidden="true">
                       {item.icon === 'search' && (
                         <svg viewBox="0 0 24 24" fill="none">
@@ -3668,7 +3974,7 @@ export default function App() {
                       )}
                     </span>
                     {item.label}
-                  </div>
+                  </motion.div>
                 ))}
               </div>
               <a href="/services/ai-code-audits">
@@ -3677,7 +3983,15 @@ export default function App() {
                 </button>
               </a>
             </div>
-            <div className="hidden lg:block audit-reveal" style={{ animationDelay: '0.5s' }}>
+            {/* <div className="hidden lg:block audit-reveal" style={{ animationDelay: '0.5s' }}> */}
+            <motion.div
+                className="hidden lg:block"
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+
               <div className="relative">
                 <div className="animated-border glass-card-dark rounded-2xl border border-white/10 p-8">
                   <div className="mb-6 flex items-center justify-between">
@@ -3718,10 +4032,16 @@ export default function App() {
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </section>
-        <section className="bg-dark-950 text-white py-24 md:py-32 lg:py-36 relative overflow-hidden" id="why-choose">
+
+        {/* <section className="bg-dark-950 text-white py-24 md:py-32 lg:py-36 relative overflow-hidden" id="why-choose"> */}
+        <section
+            className="bg-dark-950 text-white min-h-screen flex items-center relative overflow-hidden"
+            id="why-choose"
+          >
+
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -3729,7 +4049,15 @@ export default function App() {
                 'radial-gradient(80% 50% at 50% 0%, rgba(39, 102, 0, 0.15), transparent)',
             }}
           />
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"> */}
+          <motion.div
+              className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-120px" }}
+            >
+
             <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
               <AntigravityBackground className="absolute inset-0 w-full h-full" />
             </div>
@@ -3796,14 +4124,18 @@ export default function App() {
               </div>
 
 
-              <div className="hidden lg:block h-full" style={{ opacity: 1, transform: 'none' }}>
+              {/* <div className="hidden lg:block h-full" style={{ opacity: 1, transform: 'none' }}> */}
+              <motion.div
+                  className="hidden lg:block h-full"
+                  initial={{ opacity: 0, x: 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7, delay: 0.3 }}
+                  viewport={{ once: true }}
+                >
+
                 {(() => {
                   const active =
                     reasonOptions.find((item) => item.key === activeReasonKey) ?? reasonOptions[0]
-                  // const orbitLabels: Record<string, string[]> = {
-                  //   compliance: ['NIST', 'ISO', 'PCI-DSS', 'SOC2'],
-                  // }
-                  // const labels = orbitLabels[active.key] ?? []
                   const labels: string[] = []
                   return (
                     <div className="relative">
@@ -3813,33 +4145,7 @@ export default function App() {
                           <div className="relative z-10 flex-1 flex flex-col items-center p-8 text-center">
                             <div className="w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden">
                               <div key={active.key} className="focus-graphic">
-                                {/* {active.key === 'integration' && (
-                                  <div className="focus-graph">
-                                    <svg className="focus-graph-lines" viewBox="0 0 200 200" aria-hidden="true">
-                                      <line x1="100" y1="100" x2="100" y2="30" />
-                                      <line x1="100" y1="100" x2="160" y2="70" />
-                                      <line x1="100" y1="100" x2="160" y2="130" />
-                                      <line x1="100" y1="100" x2="100" y2="170" />
-                                      <line x1="100" y1="100" x2="40" y2="130" />
-                                      <line x1="100" y1="100" x2="40" y2="70" />
-                                      <line x1="40" y1="70" x2="100" y2="30" />
-                                      <line x1="100" y1="30" x2="160" y2="70" />
-                                      <line x1="160" y1="70" x2="160" y2="130" />
-                                      <line x1="160" y1="130" x2="100" y2="170" />
-                                      <line x1="100" y1="170" x2="40" y2="130" />
-                                      <line x1="40" y1="130" x2="40" y2="70" />
-                                    </svg>
-                                    <span className="focus-node focus-node--center" />
-                                    <span className="focus-node focus-node--top" />
-                                    <span className="focus-node focus-node--top-right" />
-                                    <span className="focus-node focus-node--bottom-right" />
-                                    <span className="focus-node focus-node--bottom" />
-                                    <span className="focus-node focus-node--bottom-left" />
-                                    <span className="focus-node focus-node--top-left" />
-                                    <span className="focus-node focus-node--mid-top" />
-                                    <span className="focus-node focus-node--mid-bottom" />
-                                  </div>
-                                )} */}
+                               
                                 {active.key === 'integration' && (
                                   <div className="focus-pipeline">
                                     <svg viewBox="0 0 220 200" className="focus-pipeline-svg" aria-hidden="true">
@@ -3869,39 +4175,11 @@ export default function App() {
                                       </g>
                                     </svg>
 
-                                    {/* Moving Data Packets */}
-                                    {/* <span className="pipe-packet pipe-packet--1" />
-                                    <span className="pipe-packet pipe-packet--2" />
-                                    <span className="pipe-packet pipe-packet--3" /> */}
+                                    
                                   </div>
                                 )}
 
 
-
-
-
-                                {/* {active.key === 'senior' && (
-                                  <div className="focus-graphic-icon focus-graphic-icon--person">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                      <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
-                                      <path
-                                        d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                      />
-                                    </svg>
-                                    <div className="senior-orbit" aria-hidden="true">
-                                      {Array.from({ length: 6 }).map((_, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="senior-orbit-dot"
-                                          style={{ ['--orbit-angle' as string]: `${idx * 60}deg` } as React.CSSProperties}
-                                        />
-                                      ))}
-                                    </div>
-                                  </div>
-                                )} */}
 
                                 {active.key === 'senior' && (
                                   <div className="senior-anim">
@@ -3925,29 +4203,6 @@ export default function App() {
                                   </div>
                                 )}
 
-
-
-
-                                {/* {active.key === 'ai' && (
-                                  <div className="focus-ai-graph">
-                                    <svg className="focus-ai-lines" viewBox="0 0 220 180" aria-hidden="true">
-                                      <line x1="40" y1="70" x2="110" y2="40" />
-                                      <line x1="110" y1="40" x2="180" y2="70" />
-                                      <line x1="40" y1="70" x2="90" y2="120" />
-                                      <line x1="180" y1="70" x2="130" y2="120" />
-                                      <line x1="90" y1="120" x2="130" y2="120" />
-                                      <line x1="110" y1="40" x2="110" y2="100" />
-                                    </svg>
-                                    {Array.from({ length: 12 }).map((_, idx) => (
-                                      <span key={idx} className="ai-node" />
-                                    ))}
-                                    <div className="ai-flow-labels" aria-hidden="true">
-                                      <span>Input</span>
-                                      <span>Process</span>
-                                      <span>Output</span>
-                                    </div>
-                                  </div>
-                                )} */}
 
                                 {active.key === 'ai' && (
                                     <div className="focus-graphic-icon focus-graphic-icon--ai-network">
@@ -3984,26 +4239,6 @@ export default function App() {
                                     </div>
                                   )}
 
-
-
-
-
-
-
-                                
-                                {/* {active.key === 'compliance' && (
-                                  <div className="focus-graphic-icon focus-graphic-icon--shield">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                      <path
-                                        d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </div>
-                                )} */}
 
                                 {active.key === 'compliance' && (
                                   <div className="focus-graphic-icon focus-graphic-icon--shield">
@@ -4056,10 +4291,12 @@ export default function App() {
                     </div>
                   )
                 })()}
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
+
+
         <section className="section-light" id="package-offerings">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <h2 className="text-4xl font-semibold text-slate-900">Package Offerings</h2>
@@ -4117,6 +4354,8 @@ export default function App() {
             </div>
           </div>
         </section>
+
+
         <section className="section-light partners-section" id="partners">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
             <h2 className="text-3xl font-semibold text-slate-900">Our Technology Partners</h2>
