@@ -244,9 +244,18 @@ function SecureNetworkPage() {
             </div>
           </div>
         </div>
+        <div className="hero-wave" aria-hidden="true">
+          <svg
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 140"
+            preserveAspectRatio="none"
+            className="hero-wave-svg"
+          >
+            <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="white" />
+          </svg>
+        </div>
       </section>
-      <div className="hero-wave" aria-hidden="true" />
-
       <section
         className={`section-light network-capabilities-section${capabilitiesVisible ? ' is-visible' : ''}`}
         ref={capabilitiesSectionRef}
@@ -851,9 +860,18 @@ function AiCodeAuditsPage() {
             </div>
           </div>
         </div>
+        <div className="hero-wave hero-wave--dark" aria-hidden="true">
+          <svg
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 140"
+            preserveAspectRatio="none"
+            className="hero-wave-svg hero-wave-svg--dark"
+          >
+            <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="#0c131a" />
+          </svg>
+        </div>
       </section>
-      <div className="hero-wave" aria-hidden="true" />
-
       <section
         ref={gapSectionRef}
         className={`ai-gap-section cyber-results-section${gapVisible ? ' is-visible' : ''}`}
@@ -3082,7 +3100,7 @@ function AboutPage() {
 
   return (
     <main className="relative overflow-hidden pt-16">
-      <section className="about-hero live-hero relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
+      <section className="about-hero live-hero relative flex items-center overflow-hidden">
         <HeroLiveBackground />
         <div className="about-hero-overlay" />
         <div className="about-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -3117,7 +3135,7 @@ function AboutPage() {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1200 140"
             preserveAspectRatio="none"
-            className="block w-[calc(100%+1.3px)] h-[150px] md:h-[200px] fill-white"
+            className="block w-[calc(100%+1.3px)] h-[80px] md:h-[100px] fill-white"
           >
             <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="white" />
           </svg>
@@ -4576,11 +4594,11 @@ export default function App() {
             <svg
               data-name="Layer 1"
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 1200 120"
+              viewBox="0 0 1200 140"
               preserveAspectRatio="none"
               className="hero-wave-svg"
             >
-              <path d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z" className="fill-white" />
+              <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="white" />
             </svg>
           </div>
         </section>

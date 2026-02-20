@@ -203,9 +203,18 @@ export default function DataCentrePage() {
             </div>
           </div>
         </div>
+        <div className="hero-wave" aria-hidden="true">
+          <svg
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 140"
+            preserveAspectRatio="none"
+            className="hero-wave-svg"
+          >
+            <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="white" />
+          </svg>
+        </div>
       </section>
-      <div className="hero-wave" aria-hidden="true" />
-
       <section
         className={`section-light data-capabilities-section${capabilitiesVisible ? ' is-visible' : ''}`}
         ref={capabilitiesSectionRef}

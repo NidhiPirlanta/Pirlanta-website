@@ -313,9 +313,24 @@ export default function CybersecurityPage() {
             </div>
           </div>
         </div>
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]">
+          <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" 
+          class="relative block w-[calc(100%+1.3px)] h-[60px] md:h-[100px] fill-white">
+          <path d="M0,0 Q600,120 1200,0 L1200,120 L0,120 Z" class="fill-white"></path>
+          </svg>
+          </div>
+        {/* <div className="hero-wave hero-wave--dark" aria-hidden="true">
+          <svg
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 140"
+            preserveAspectRatio="none"
+            className="hero-wave-svg hero-wave-svg--dark"
+          >
+            <path d="M0,0 Q600,130 1200,0 L1200,140 L0,140 Z" fill="#0c131a" />
+          </svg>
+        </div> */}
       </section>
-      <div className="hero-wave" aria-hidden="true" />
-
       <section
         className={`section-dark section-dark--muted cyber-results-section${resultsVisible ? ' is-visible' : ''}`}
         ref={resultsSectionRef}

@@ -2822,8 +2822,9 @@
 
   .about-hero {
     position: relative;
-    min-height: calc(100svh - 4rem);
-    min-height: calc(100vh - 4rem);
+    min-height: min(55vh, 520px);
+    padding-top: 2rem;
+    padding-bottom: 4rem;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
