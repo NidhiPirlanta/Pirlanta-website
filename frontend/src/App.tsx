@@ -4428,17 +4428,20 @@ export default function App() {
 
         <section className="hero-section home-hero relative flex items-center" id="home">
           <HeroLiveBackground />
-            <div className="hero-content mx-auto grid w-full max-w-7xl gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
-            <div>
-            <div className="flex flex-wrap gap-3 hero-fade hero-fade-1">
-              <span className="badge-pill">
-                <span className="badge-dot" aria-hidden="true" />
-                48+ Years Experience
-              </span>
-              <span className="badge-pill">
-                <span className="badge-sparkle" aria-hidden="true">✦</span>
-                AI-Enhanced Operations
-              </span>
+            <div className="hero-content mx-auto grid w-full max-w-7xl gap-10 px-5 sm:gap-12 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
+            <div className="min-w-0">
+            <div className="hero-fade hero-fade-1">
+              <div className="badge-pill-combined">
+                <span className="badge-pill-item">
+                  <span className="badge-dot" aria-hidden="true" />
+                  48+ Years Experience
+                </span>
+                <span className="badge-pill-divider" aria-hidden="true" />
+                <span className="badge-pill-item">
+                  <span className="badge-sparkle" aria-hidden="true">✦</span>
+                  AI-Enhanced Operations
+                </span>
+              </div>
             </div>
                 <h1 className="home-hero-title mt-6 inline-flex flex-wrap items-baseline gap-3 text-white hero-fade hero-fade-2">
                   <span className="typewriter">

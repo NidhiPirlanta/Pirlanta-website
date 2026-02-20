@@ -67,6 +67,11 @@
       padding-bottom: 2rem;
     }
 
+    .home-hero {
+      padding-top: 1.5rem;
+      padding-bottom: 2.5rem;
+    }
+
     .cyber-hero-section {
       min-height: auto;
       padding-bottom: 3rem;
@@ -121,6 +126,14 @@
 
   .home-hero .hero-globe-delay {
     animation-delay: 0.75s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero .hero-fade {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
   }
 
   .ai-hero-section {
@@ -357,6 +370,8 @@
     padding: 2rem 1rem;
     margin: 0 auto;
     color: #ffffff;
+    min-width: 0;
+    overflow-x: hidden;
   }
 
   .home-hero .hero-content {
@@ -1124,13 +1139,31 @@
   }
 
   .stat-card {
-    min-width: 120px;
+    min-width: 100px;
     border-radius: 16px;
     border: 1px solid rgba(120, 160, 125, 0.25);
     background: rgba(12, 16, 18, 0.82);
     padding: 0.55rem 0.85rem;
     box-shadow: 0 12px 24px rgba(4, 10, 8, 0.45);
     margin-top: 0;
+    flex: 1 1 auto;
+  }
+
+  @media (max-width: 767px) {
+    .stat-card {
+      min-width: 0;
+      flex: 1 1 0;
+      max-width: 100%;
+      padding: 0.5rem 0.6rem;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 0.85rem;
+    }
   }
 
   .stat-label {
