@@ -7,7 +7,7 @@ import { makeRandomAttack, seedAttacks, type Attack, type AttackType } from './d
 import { getApiBaseUrl, getBaseUrl } from './utils/baseUrl'
 import { preloadRoute } from './utils/routePreload'
 import AntigravityBackground from './components/AntigravityBackground'
-import ConstellationBackground from './components/ConstellationBackground'
+import HeroLiveBackground from './components/HeroLiveBackground'
 import Header from './components/Header'
 import offerShield from './assets/icons/offer-shield.svg'
 import offerWifi from './assets/icons/offer-wifi.svg'
@@ -30,6 +30,8 @@ const CheckPointSecurityPage = lazy(() => import('./components/CheckPointSecurit
 const AppleForEnterprisePage = lazy(() => import('./components/AppleForEnterprisePage'))
 const AppleForSMBPage = lazy(() => import('./components/AppleForSMBPage'))
 const JamfPage = lazy(() => import('./components/JamfPage'))
+const TermsPage = lazy(() => import('./components/Terms'))
+const RefundCancellationPage = lazy(() => import('./components/Refund&Cancellation'))
 
 type HoverInfo = {
   country: string
@@ -43,6 +45,10 @@ type HoverInfo = {
 
 
 function SecureNetworkPage() {
+  const capabilitiesSectionRef = useRef<HTMLElement | null>(null)
+  const [capabilitiesVisible, setCapabilitiesVisible] = useState(false)
+  const benefitsSectionRef = useRef<HTMLElement | null>(null)
+  const [benefitsVisible, setBenefitsVisible] = useState(false)
   const capabilityCards = [
     {
       title: 'AI-Powered Traffic Analysis',
@@ -82,7 +88,7 @@ function SecureNetworkPage() {
     {
       title: 'Network Assessment',
       copy: 'Comprehensive health and security assessment with AI-driven insights.',
-      icon: 'shield',
+      icon: 'clipboard',
     },
   ]
 
@@ -95,29 +101,119 @@ function SecureNetworkPage() {
   ]
 
   const networkFaqs = [
-    'What network security services do you provide in India?',
-    'Can you replace VPN with Zero Trust Network Access (ZTNA)?',
-    'How do you deploy SD-WAN with minimal disruption?',
-    'Do you integrate Secure Access Service Edge (SASE)?',
-    'Do you support multi-cloud interconnects and SaaS acceleration?',
-    'How do you monitor and troubleshoot networks post go-live?',
-    'Can you enforce identity-aware access with Cisco ISE/Duo?',
-    'Do you offer SLAs and day-2 operations support?',
-    'How do you handle branch rollouts at scale?',
-    'Can you audit existing networks for ZTNA/SASE readiness?',
+    {
+      question: 'What network security services do you provide in India?',
+      answer:
+        'We design and operate SD-WAN, ZTNA, and SASE solutions with identity-aware policy, observability, and automation across India.',
+    },
+    {
+      question: 'Can you replace VPN with Zero Trust Network Access (ZTNA)?',
+      answer:
+        'Yes, we implement identity and context-aware access that reduces lateral movement risk and improves user experience compared to traditional VPNs.',
+    },
+    {
+      question: 'How do you deploy SD-WAN with minimal disruption?',
+      answer:
+        'We use phased rollouts with validation and rollback plans to improve latency, uptime, and operations without business disruption.',
+    },
+    {
+      question: 'Do you integrate Secure Access Service Edge (SASE)?',
+      answer:
+        'Yes, we provide unified access and security for distributed teams and cloud apps, aligned to Zero Trust principles.',
+    },
+    {
+      question: 'Do you support multi-cloud interconnects and SaaS acceleration?',
+      answer:
+        'Yes, we design secure interconnects and optimize routing for cloud services and SaaS applications.',
+    },
+    {
+      question: 'How do you monitor and troubleshoot networks post go-live?',
+      answer:
+        'We provide deep observability, alerting, and automation to reduce mean time to resolution and change risk.',
+    },
+    {
+      question: 'Can you enforce identity-aware access with Cisco ISE/Duo?',
+      answer:
+        'Yes, we implement network access control (ISE) and MFA (Duo) for device/user trust, aligned to Zero Trust principles.',
+    },
+    {
+      question: 'Do you offer SLAs and day-2 operations support?',
+      answer:
+        'Yes, our operations include incident handling, policy changes, and capacity planning under agreed SLAs.',
+    },
+    {
+      question: 'How do you handle branch rollouts at scale?',
+      answer:
+        'We use factory-style provisioning, standardized templates, and remote validation to speed deployments.',
+    },
+    {
+      question: 'Can you audit existing networks for ZTNA/SASE readiness?',
+      answer:
+        'Yes, we perform readiness assessments and provide a roadmap with phases, risks, and expected outcomes.',
+    },
   ]
 
   const [openNetworkFaq, setOpenNetworkFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = capabilitiesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setCapabilitiesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setCapabilitiesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = benefitsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setBenefitsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setBenefitsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="cyber-page relative overflow-hidden pt-24">
-      <section className="hero-section relative flex items-center">
-        <div className="hero-network" aria-hidden="true" />
-        <div className="hero-orb hero-orb--left" aria-hidden="true" />
-        <div className="hero-orb hero-orb--right" aria-hidden="true" />
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="max-w-2xl">
-            <div className="service-icon-box">
+      <section className="hero-section live-hero network-hero-section relative flex items-center" >
+        <HeroLiveBackground />
+        <div className="network-hero-content mx-auto max-w-7xl px-6 py-24 relative z-10">
+          <div className="network-hero-copy-wrap">
+            <div className="network-hero-icon network-hero-fade network-hero-fade-1">
               <svg viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="6" r="2" stroke="currentColor" strokeWidth="2" />
                 <circle cx="6" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
@@ -125,161 +221,225 @@ function SecureNetworkPage() {
                 <path d="M12 8v4M10 14h4M8 16l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
-            <h1 className="mt-6 text-4xl font-semibold text-white md:text-5xl">Secure Network</h1>
-            <p className="mt-3 text-lg text-emerald-200">
+            <h1 className="network-hero-title network-hero-fade network-hero-fade-2">Secure Network</h1>
+            <p className="network-hero-kicker network-hero-fade network-hero-fade-3">
               AI-Powered Traffic Analysis. Self-Healing Networks. Intelligent Routing.
             </p>
-            <p className="mt-4 text-sm text-emerald-100/70 md:text-base">
+            <p className="network-hero-description network-hero-fade network-hero-fade-4">
               High-performance networks with AI-driven optimization, predictive failure prevention,
               and Zero Trust security built-in.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button className="rounded-full bg-emerald-700 px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:bg-emerald-600">
+            <div className="network-hero-actions network-hero-fade network-hero-fade-5">
+              <a href = "/contact">
+              <button className="network-hero-button network-hero-button--primary">
                 Get Started →
               </button>
-              <button className="rounded-full border border-emerald-200/40 px-7 py-3.5 text-base font-semibold text-emerald-100 transition hover:border-emerald-200">
+              </a>
+
+              <a href = "#capabilities">
+              <button className="network-hero-button network-hero-button--ghost">
                 View Capabilities
               </button>
+              </a>
             </div>
           </div>
         </div>
       </section>
       <div className="hero-wave" aria-hidden="true" />
 
-      <section className="section-light">
-        <div className="deliver-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
-          <span className="pill pill--tight">AI-Powered Networking</span>
-          <h2 className="mt-4 text-3xl font-semibold text-slate-900">Network Capabilities</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        className={`section-light network-capabilities-section${capabilitiesVisible ? ' is-visible' : ''}`}
+        ref={capabilitiesSectionRef}
+        id = "capabilities"
+      >
+        <div className="network-capabilities-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <span
+            className="pill pill--tight network-capabilities-pill network-cap-reveal"
+            style={{ '--delay': '0s' } as CSSProperties}
+          >
+            <span className="network-cap-pill-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
+                <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" />
+                <path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
+            AI-Powered Networking
+          </span>
+          <h2
+            className="network-capabilities-title network-cap-reveal"
+            style={{ '--delay': '0.08s' } as CSSProperties}
+          >
+            Network Capabilities
+          </h2>
+          <p
+            className="network-capabilities-subtitle network-cap-reveal"
+            style={{ '--delay': '0.16s' } as CSSProperties}
+          >
             AI-driven networking solutions for intelligent routing, predictive maintenance, and
             adaptive security.
           </p>
-          <div className="cyber-cap-grid mt-10">
-            {capabilityCards.map((item) => (
-              <div key={item.title} className="cyber-cap-card">
-                <div className="cyber-cap-icon" aria-hidden="true">
-                  {item.icon === 'pulse' && (
+          <div className="network-cap-grid">
+            {capabilityCards.map((item, index) => (
+              <div
+                key={item.title}
+                className={`network-cap-reveal ${
+                  index < 3 ? 'network-cap-card--primary' : 'network-cap-card--secondary'
+                }`}
+                style={{ '--delay': `${0.24 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="network-cap-card">
+                  <div className="network-cap-icon" aria-hidden="true">
+                    {item.icon === 'pulse' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12h4l3-6 4 12 3-6h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'server' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="5" width="16" height="6" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <rect x="4" y="13" width="16" height="6" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 8h.01M8 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'network' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="6" r="2" stroke="currentColor" strokeWidth="2" />
+                        <circle cx="6" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
+                        <circle cx="18" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M12 8v4M10 14h4M8 16l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'cloud' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M6 18a4 4 0 0 1 1-7 5 5 0 0 1 9 2h1a3 3 0 0 1 0 6H6z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                    {item.icon === 'wifi' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 10c4-4 12-4 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M7 13c3-3 7-3 10 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M10 16c2-2 4-2 6 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <circle cx="12" cy="19" r="1" fill="currentColor" />
+                      </svg>
+                    )}
+                    {item.icon === 'monitor' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="5" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 19h6M12 15v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'lock' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'clipboard' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="6" y="5" width="12" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <rect x="9" y="3" width="6" height="4" rx="1.5" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12h6M9 16h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'shield' && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
+                  {index < 3 && <span className="cap-tag">AI-Powered</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        ref={benefitsSectionRef}
+        className={`section-light network-benefits-section${benefitsVisible ? ' is-visible' : ''}`}
+      >
+        <div className="network-benefits-wrapper mx-auto max-w-7xl px-6">
+          <div className="network-benefits-grid">
+            <div className="network-benefits-copy">
+              <h2 className="network-benefits-title network-benefits-fade network-benefits-left network-benefits-delay-1">
+                Key Benefits
+              </h2>
+              <p className="network-benefits-subtitle network-benefits-fade network-benefits-left network-benefits-delay-2">
+                Transform your network infrastructure with solutions that deliver performance,
+                security, and cost efficiency.
+              </p>
+              <a href = "/contact">
+              <button className="network-benefits-button network-benefits-fade network-benefits-left network-benefits-delay-3">
+                Get Network Assessment →
+              </button>
+              </a>
+            </div>
+            <div className="cyber-benefits">
+              {benefitItems.map((item, index) => (
+                <div
+                  key={item}
+                  className={`cyber-benefit-card network-benefits-fade network-benefits-right network-benefits-delay-${index + 4}`}
+                >
+                  <span className="benefit-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M3 12h4l3-6 4 12 3-6h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'server' && (
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <rect x="4" y="5" width="16" height="6" rx="2" stroke="currentColor" strokeWidth="2" />
-                      <rect x="4" y="13" width="16" height="6" rx="2" stroke="currentColor" strokeWidth="2" />
-                      <path d="M8 8h.01M8 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'network' && (
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="6" r="2" stroke="currentColor" strokeWidth="2" />
-                      <circle cx="6" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
-                      <circle cx="18" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
-                      <path d="M12 8v4M10 14h4M8 16l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'cloud' && (
-                    <svg viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
                       <path
-                        d="M6 18a4 4 0 0 1 1-7 5 5 0 0 1 9 2h1a3 3 0 0 1 0 6H6z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                  {item.icon === 'wifi' && (
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M4 10c4-4 12-4 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      <path d="M7 13c3-3 7-3 10 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      <path d="M10 16c2-2 4-2 6 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      <circle cx="12" cy="19" r="1" fill="currentColor" />
-                    </svg>
-                  )}
-                  {item.icon === 'monitor' && (
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <rect x="4" y="5" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 19h6M12 15v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'lock' && (
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="2" />
-                      <path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'shield' && (
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"
+                        d="M9 12l2 2 4-4"
                         stroke="currentColor"
                         strokeWidth="2"
                         strokeLinecap="round"
-                        strokeLinejoin="round"
                       />
                     </svg>
-                  )}
+                  </span>
+                  <p>{item}</p>
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.copy}</p>
-                <span className="cap-tag">AI-Powered</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <section className="section-light network-faq-section">
+        <div className="network-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Key Benefits</h2>
-            <p className="mt-3 text-sm text-slate-500">
-              Transform your network infrastructure with solutions that deliver performance,
-              security, and cost efficiency.
-            </p>
-            <button className="mt-6 rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600">
-              Get Network Assessment →
-            </button>
-          </div>
-          <div className="cyber-benefits">
-            {benefitItems.map((item) => (
-              <div key={item} className="cyber-benefit-card">
-                <span className="benefit-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </span>
-                <p>{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Network FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="network-faq-title">Network FAQs</h2>
+            <p className="network-faq-subtitle">
               Common questions about SD-WAN, ZTNA, SASE, and network security services.
             </p>
-            <button className="mt-6 rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300">
+            <a href = "/contact">
+            <button className="network-faq-button">
               Ask a Question
             </button>
+            </a>
           </div>
-          <div className="cyber-faq">
-            {networkFaqs.map((question, index) => {
+          <div className="network-faq-list">
+            {networkFaqs.map((item, index) => {
               const isOpen = openNetworkFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  key={item.question}
+                  className={`network-faq-item ${isOpen ? 'network-faq-item--open' : ''}`}
                   onClick={() => setOpenNetworkFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className="faq-toggle">▾</span>
+                  <span className="network-faq-question">{item.question}</span>
+                  <span className="network-faq-toggle">▾</span>
+                  <span className="network-faq-answer">{item.answer}</span>
                 </button>
               )
             })}
@@ -333,29 +493,28 @@ function SecureNetworkPage() {
             </div>
             <div className="footer-column">
               <h4>Partners</h4>
-              <a href="#">Cisco</a>
-              <a href="#">Juniper Networks</a>
-              <a href="#">RSA</a>
-              <a href="#">CrowdStrike</a>
-              <a href="#">Fortinet</a>
-              <a href="#">Check Point</a>
-              <a href="#">Forcepoint</a>
-              <a href="#">Barracuda</a>
-              <a href="#">Apple</a>
-              <a href="#">Jamf</a>
+              <a href="/partners/networking/cisco">Cisco</a>
+              <a href="/partners/networking/juniper">Juniper Networks</a>
+              <a href="/partners/security/rsa">RSA</a>
+              <a href="/partners/security/crowdstrike">CrowdStrike</a>
+              <a href="/partners/security/fortinet">Fortinet</a>
+              <a href="/partners/security/checkpoint">Check Point</a>
+              <a href="/partners/security/forcepoint">Forcepoint</a>
+              <a href="/partners/security/barracuda">Barracuda</a>
+              <a href="/partners/endpoint/apple-enterprise">Apple</a>
+              <a href="/partners/endpoint/jamf">Jamf</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>
-              <a href="#">Terms of Service</a>
-              <a href="#">Refunds</a>
-              <a href="#">Cancellation</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/refund-cancellation">Refund & Cancellation</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
             <div className="footer-socials">
-              <span>✕</span>
-              <span>in</span>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
             </div>
           </div>
         </div>
@@ -366,10 +525,10 @@ function SecureNetworkPage() {
 
 function AiCodeAuditsPage() {
   const auditStats = [
-    { value: '48%', label: 'AI code has vulnerabilities', sub: 'Stanford Research' },
-    { value: '3x', label: 'More dependency risks', sub: 'OWASP AI Top 10' },
-    { value: '72%', label: 'Developers trust AI code without review', sub: 'GitHub Survey' },
-    { value: '40%', label: 'Code volume increases, same security teams', sub: 'Industry Average' },
+    { value: 48, suffix: '%', label: 'AI code has vulnerabilities', sub: 'Stanford Research' },
+    { value: 3, suffix: 'x', label: 'More dependency risks', sub: 'OWASP AI Top 10' },
+    { value: 72, suffix: '%', label: 'Developers trust AI code without review', sub: 'GitHub Survey' },
+    { value: 40, suffix: '%', label: 'Code volume increases, same security teams', sub: 'Industry Average' },
   ]
 
   const auditCaps = [
@@ -443,66 +602,282 @@ function AiCodeAuditsPage() {
   ]
 
   const auditFaqs = [
-    'What AI coding tools do you audit code from?',
-    'How is this different from a regular code audit?',
-    'What do we receive as a deliverable?',
-    'How long does an audit take?',
-    'Do you need access to our source code repository?',
-    'Can you audit infrastructure as code generated by AI?',
-    'Is our code kept confidential?',
-    'Do you offer ongoing monitoring after the initial audit?',
+    {
+      question: 'What AI coding tools do you audit code from?',
+      answer:
+        'We audit code generated by all major AI coding assistants including GitHub Copilot, Cursor, ChatGPT, Claude, Amazon CodeWhisperer, and Tabnine. Our testing methodology covers AI-specific patterns regardless of the tool used.',
+    },
+    {
+      question: 'How is this different from a regular code audit?',
+      answer:
+        'AI-generated code has distinct vulnerability patterns: hallucinated APIs, outdated library references, hardcoded credentials, and susceptibility to prompt injection. Our audit includes AI-specific test cases and rule sets that traditional audits miss.',
+    },
+    {
+      question: 'What do we receive as a deliverable?',
+      answer:
+        'You receive a comprehensive report including: executive summary, detailed vulnerability findings with severity ratings, code-level remediation guidance, compliance mapping, and a re-test verification after fixes are applied.',
+    },
+    {
+      question: 'How long does an audit take?',
+      answer:
+        'Typical audits complete within 1-3 weeks depending on codebase size and scope. We provide preliminary findings within the first week for critical vulnerabilities that need immediate attention.',
+    },
+    {
+      question: 'Do you need access to our source code repository?',
+      answer:
+        'Yes, we require read access to the repositories being audited. We support GitHub, GitLab, Bitbucket, and Azure DevOps. All access is governed by NDA and our security protocols.',
+    },
+    {
+      question: 'Can you audit infrastructure as code generated by AI?',
+      answer:
+        'Yes, we audit Terraform, CloudFormation, Kubernetes manifests, Docker configurations, and CI/CD pipelines. AI tools frequently generate insecure defaults in infrastructure code.',
+    },
+    {
+      question: 'Is our code kept confidential?',
+      answer:
+        'Absolutely. All engagements are governed by NDA. Code is accessed via secure channels, never stored on external systems, and all findings are encrypted. We follow ISO 27001 data handling practices.',
+    },
+    {
+      question: 'Do you offer ongoing monitoring after the initial audit?',
+      answer:
+        'Yes, we offer continuous security scanning as a managed service. This includes automated scanning on every commit, weekly reports, and quarterly manual reviews as your AI-generated codebase evolves.',
+    },
   ]
 
   const [openAuditFaq, setOpenAuditFaq] = useState<number | null>(null)
+  const gapSectionRef = useRef<HTMLElement | null>(null)
+  const [gapVisible, setGapVisible] = useState(false)
+  const [gapCounts, setGapCounts] = useState<number[]>(() => auditStats.map(() => 0))
+  const gapCountStarted = useRef(false)
+  const benefitsSectionRef = useRef<HTMLElement | null>(null)
+  const [benefitsVisible, setBenefitsVisible] = useState(false)
+  const stepsSectionRef = useRef<HTMLElement | null>(null)
+  const [stepsVisible, setStepsVisible] = useState(false)
+  const auditCapsSectionRef = useRef<HTMLElement | null>(null)
+  const [auditCapsVisible, setAuditCapsVisible] = useState(false)
+  const whoSectionRef = useRef<HTMLElement | null>(null)
+  const [whoVisible, setWhoVisible] = useState(false)
+
+  useEffect(() => {
+    const section = gapSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setGapVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setGapVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!gapVisible || gapCountStarted.current) return
+    gapCountStarted.current = true
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setGapCounts(auditStats.map((stat) => stat.value))
+      return
+    }
+
+    const duration = 3800
+    const start = performance.now()
+
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+    const animate = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = easeOutCubic(progress)
+      setGapCounts(auditStats.map((stat) => Math.round(stat.value * eased)))
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      }
+    }
+
+    requestAnimationFrame(animate)
+  }, [gapVisible])
+
+  useEffect(() => {
+    const section = benefitsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setBenefitsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setBenefitsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = stepsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setStepsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStepsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = whoSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhoVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhoVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = auditCapsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setAuditCapsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setAuditCapsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <main className="cyber-page relative overflow-hidden pt-24">
-      <section className="hero-section relative flex items-center">
-        <div className="hero-network" aria-hidden="true" />
-        <div className="hero-orb hero-orb--left" aria-hidden="true" />
-        <div className="hero-orb hero-orb--right" aria-hidden="true" />
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="max-w-2xl">
-            <div className="service-icon-box">
+      <section className="hero-section live-hero ai-hero-section relative flex items-center">
+        <HeroLiveBackground />
+        <div className="ai-hero-content mx-auto max-w-7xl px-6 py-24 relative z-10">
+          <div className="ai-hero-copy-wrap">
+            <div className="ai-hero-icon ai-hero-fade ai-hero-fade-1">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="2" />
               </svg>
             </div>
-            <h1 className="mt-6 text-4xl font-semibold text-white md:text-5xl">AI Code Audits</h1>
-            <p className="mt-3 text-lg text-emerald-200">
+            <h1 className="ai-hero-title ai-hero-fade ai-hero-fade-2">AI Code Audits</h1>
+            <p className="ai-hero-kicker ai-hero-fade ai-hero-fade-3">
               Secure Your Vibe-Coded Applications. Human-Verified. AI-Powered.
             </p>
-            <p className="mt-4 text-sm text-emerald-100/70 md:text-base">
+            <p className="ai-hero-description ai-hero-fade ai-hero-fade-4">
               Purpose-built security audits for AI-generated code from Cursor, Copilot, and ChatGPT.
               We find the vulnerabilities that automated scanners miss.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button className="rounded-full bg-emerald-700 px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:bg-emerald-600">
+            <div className="ai-hero-actions ai-hero-fade ai-hero-fade-5">
+              <a href = "/contact">
+              <button className="ai-hero-button ai-hero-button--primary">
                 Get Started →
               </button>
-              <button className="rounded-full border border-emerald-200/40 px-7 py-3.5 text-base font-semibold text-emerald-100 transition hover:border-emerald-200">
+              </a>
+              <a href = "#capabilities">
+              <button className="ai-hero-button ai-hero-button--ghost">
                 View Capabilities
               </button>
+              </a>
             </div>
           </div>
         </div>
       </section>
       <div className="hero-wave" aria-hidden="true" />
 
-      <section className="section-dark section-dark--muted">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <span className="pill pill--tight">The AI Code Security Gap</span>
-          <h2 className="mt-4 text-3xl font-semibold text-white">
+      <section
+        ref={gapSectionRef}
+        className={`ai-gap-section cyber-results-section${gapVisible ? ' is-visible' : ''}`}
+      >
+        <div className="mx-auto max-w-7xl px-6 py-24 text-center">
+          <span className="pill pill--tight cyber-results-pill ai-gap-pill">
+            <span className="ai-gap-pill-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 9v4M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </span>
+            The AI Code Security Gap
+          </span>
+          <h2 className="cyber-results-title ai-gap-title">
             AI Code Is Shipping Faster Than Security Can Keep Up
           </h2>
-          <p className="mt-2 text-sm text-emerald-100/70">
+          <p className="cyber-results-subtitle ai-gap-subtitle">
             Development teams are generating more code than ever, but security practices haven’t adapted.
           </p>
-          <div className="cyber-stat-grid mt-10">
-            {auditStats.map((stat) => (
-              <div key={stat.value} className="cyber-stat-card">
-                <strong>{stat.value}</strong>
+          <div className="cyber-stat-grid mt-12">
+            {auditStats.map((stat, index) => (
+              <div key={stat.label} className="cyber-stat-card">
+                <strong>{gapCounts[index]}{stat.suffix}</strong>
                 <span>{stat.label}</span>
                 <small>{stat.sub}</small>
               </div>
@@ -511,16 +886,31 @@ function AiCodeAuditsPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <span className="pill pill--tight">Comprehensive Coverage</span>
-          <h2 className="mt-4 text-3xl font-semibold text-slate-900">Audit Capabilities</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={auditCapsSectionRef}
+        className={`section-light audit-capabilities-section${auditCapsVisible ? ' is-visible' : ''}`}
+        id = "capabilities"
+      >
+        <div className="audit-capabilities-wrapper mx-auto w-full max-w-6xl px-4 py-24 text-center">
+          <span className="pill pill--tight audit-cap-pill audit-cap-fade audit-cap-fade-1">
+            <span className="audit-cap-pill-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 4l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 9.2l5-.7L12 4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+              </svg>
+            </span>
+            Comprehensive Coverage
+          </span>
+          <h2 className="audit-cap-title audit-cap-fade audit-cap-fade-2">Audit Capabilities</h2>
+          <p className="audit-cap-subtitle audit-cap-fade audit-cap-fade-3">
             End-to-end security testing designed specifically for AI-generated codebases.
           </p>
-          <div className="cyber-cap-grid mt-10">
-            {auditCaps.map((item) => (
-              <div key={item.title} className="cyber-cap-card">
+          <div className="cyber-cap-grid audit-cap-grid mt-12">
+            {auditCaps.map((item, index) => (
+              <div
+                key={item.title}
+                className="cyber-cap-card audit-cap-card cyber-cap-reveal"
+                style={{ '--delay': `${index * 0.08}s` } as CSSProperties}
+              >
                 <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'search' && (
                     <svg viewBox="0 0 24 24" fill="none">
@@ -586,20 +976,33 @@ function AiCodeAuditsPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">How It Works</h2>
-          <p className="mt-2 text-sm text-slate-500">
-            A proven four-step process from scoping to remediation.
-          </p>
-          <div className="ai-steps-grid mt-10">
+      <section
+        ref={stepsSectionRef}
+        className={`section-light ai-steps-section${stepsVisible ? ' is-visible' : ''}`}
+      >
+        <div className="ai-steps-wrapper mx-auto max-w-7xl px-6">
+          <div className="ai-steps-header ai-steps-fade ai-steps-delay-1">
+            <h2 className="ai-steps-title">How It Works</h2>
+            <p className="ai-steps-subtitle">
+              A proven four-step process from scoping to remediation.
+            </p>
+          </div>
+          <div className="ai-steps-grid">
             {howSteps.map((step) => (
-              <div key={step.step} className="ai-step-card">
+              <div
+                key={step.step}
+                className={`ai-step-card ai-steps-fade ai-steps-delay-${Number(step.step) + 1}`}
+              >
                 <span className="ai-step-number">{step.step}</span>
                 <div className="ai-step-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path
+                      d="M9 12l2 2 4-4"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </div>
                 <h3>{step.title}</h3>
@@ -610,46 +1013,96 @@ function AiCodeAuditsPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Key Benefits</h2>
-            <p className="mt-3 text-sm text-slate-500">
-              Purpose-built security testing that addresses the unique risks of AI-generated code.
-            </p>
-            <button className="mt-6 rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600">
-              Schedule an Audit →
-            </button>
-          </div>
-          <div className="cyber-benefits">
-            {benefits.map((item) => (
-              <div key={item} className="cyber-benefit-card">
-                <span className="benefit-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </span>
-                <p>{item}</p>
-              </div>
-            ))}
+      <section
+        ref={benefitsSectionRef}
+        className={`section-light ai-benefits-section${benefitsVisible ? ' is-visible' : ''}`}
+      >
+        <div className="ai-benefits-wrapper mx-auto max-w-7xl px-6">
+          <div className="ai-benefits-grid">
+            <div className="ai-benefits-copy">
+              <h2 className="ai-benefits-title ai-benefits-fade ai-benefits-left ai-benefits-delay-1">
+                Key Benefits
+              </h2>
+              <p className="ai-benefits-subtitle ai-benefits-fade ai-benefits-left ai-benefits-delay-2">
+                Purpose-built security testing that addresses the unique risks of AI-generated code.
+              </p>
+              <a href = "/contact">
+              <button className="ai-benefits-button ai-benefits-fade ai-benefits-left ai-benefits-delay-3">
+                Schedule an Audit →
+              </button>
+              </a>
+            </div>
+            <div className="cyber-benefits">
+              {benefits.map((item, index) => (
+                <div
+                  key={item}
+                  className={`cyber-benefit-card ai-benefits-fade ai-benefits-right ai-benefits-delay-${index + 4}`}
+                >
+                  <span className="benefit-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                      <path
+                        d="M9 12l2 2 4-4"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section-dark section-dark--muted">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-white">Who This Is For</h2>
-          <p className="mt-2 text-sm text-emerald-100/70">
+      <section
+        ref={whoSectionRef}
+        className={`section-dark section-dark--muted ai-who-section${whoVisible ? ' is-visible' : ''}`}
+      >
+        <div className="ai-who-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="ai-who-title ai-who-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Who This Is For
+          </h2>
+          <p className="ai-who-subtitle ai-who-reveal" style={{ '--delay': '0.12s' } as CSSProperties}>
             Any team using AI to write code needs security assurance.
           </p>
-          <div className="ai-who-grid mt-10">
-            {whoFor.map((item) => (
-              <div key={item.title} className="ai-who-card">
+          <div className="ai-who-grid">
+            {whoFor.map((item, index) => (
+              <div
+                key={item.title}
+                className="ai-who-card ai-who-reveal"
+                style={{ '--delay': `${0.2 + index * 0.08}s` } as CSSProperties}
+              >
                 <div className="ai-who-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z" stroke="currentColor" strokeWidth="2" />
-                  </svg>
+                  {item.icon === 'rocket' && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M14 3l7 7-6 6-7-7 6-6z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                      <path d="M9 15l-4 4m0-4h4v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M12 7l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
+                  {item.icon === 'building' && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="3" width="10" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                      <rect x="14" y="8" width="6" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
+                      <path d="M8 7h2M8 11h2M8 15h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
+                  {item.icon === 'badge' && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="9" r="4" stroke="currentColor" strokeWidth="2" />
+                      <path d="M8 14v6l4-2 4 2v-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                  {item.icon === 'user' && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <circle cx="9" cy="8" r="3.5" stroke="currentColor" strokeWidth="2" />
+                      <path d="M3 20v-1.2A5.8 5.8 0 0 1 8.8 13h0.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M14 9h7M17.5 5.5v7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.copy}</p>
@@ -659,29 +1112,32 @@ function AiCodeAuditsPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light audit-faq-section">
+        <div className="audit-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">AI Code Audit FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="audit-faq-title">AI Code Audit FAQs</h2>
+            <p className="audit-faq-subtitle">
               Common questions about our AI code security audit process and deliverables.
             </p>
-            <button className="mt-6 rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300">
+            <a href = "/contact">
+            <button className="audit-faq-button">
               Ask a Question
             </button>
+            </a>
           </div>
-          <div className="cyber-faq">
-            {auditFaqs.map((question, index) => {
+          <div className="audit-faq-list">
+            {auditFaqs.map((item, index) => {
               const isOpen = openAuditFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  key={item.question}
+                  className={`audit-faq-item ${isOpen ? 'audit-faq-item--open' : ''}`}
                   onClick={() => setOpenAuditFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className="faq-toggle">▾</span>
+                  <span className="audit-faq-question">{item.question}</span>
+                  <span className="audit-faq-toggle">▾</span>
+                  <span className="audit-faq-answer">{item.answer}</span>
                 </button>
               )
             })}
@@ -734,29 +1190,28 @@ function AiCodeAuditsPage() {
             </div>
             <div className="footer-column">
               <h4>Partners</h4>
-              <a href="#">Cisco</a>
-              <a href="#">Juniper Networks</a>
-              <a href="#">RSA</a>
-              <a href="#">CrowdStrike</a>
-              <a href="#">Fortinet</a>
-              <a href="#">Check Point</a>
-              <a href="#">Forcepoint</a>
-              <a href="#">Barracuda</a>
-              <a href="#">Apple</a>
-              <a href="#">Jamf</a>
+              <a href="/partners/networking/cisco">Cisco</a>
+              <a href="/partners/networking/juniper">Juniper Networks</a>
+              <a href="/partners/security/rsa">RSA</a>
+              <a href="/partners/security/crowdstrike">CrowdStrike</a>
+              <a href="/partners/security/fortinet">Fortinet</a>
+              <a href="/partners/security/checkpoint">Check Point</a>
+              <a href="/partners/security/forcepoint">Forcepoint</a>
+              <a href="/partners/security/barracuda">Barracuda</a>
+              <a href="/partners/endpoint/apple-enterprise">Apple</a>
+              <a href="/partners/endpoint/jamf">Jamf</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>
-              <a href="#">Terms of Service</a>
-              <a href="#">Refunds</a>
-              <a href="#">Cancellation</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/refund-cancellation">Refund & Cancellation</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
             <div className="footer-socials">
-              <span>✕</span>
-              <span>in</span>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
             </div>
           </div>
         </div>
@@ -767,43 +1222,77 @@ function AiCodeAuditsPage() {
 
 function PartnerEcosystemPage() {
   const partnerLogos = [
-    'Cisco',
-    'Palo Alto Networks',
-    'Juniper Networks',
-    'RSA',
-    'CrowdStrike',
-    'Fortinet',
-    'Check Point',
-    'Sophos',
-    'SonicWall',
-    'Forcepoint',
-    'Barracuda',
-    'Veeam',
-    'Apple',
-    'Jamf',
-    'AWS',
-    'Google Workspace',
-    'HPE',
-    'Microsoft',
-    'Samsung',
-    'Lenovo',
-    'EPOS',
-    'Logitech',
-    'NxtGen',
-    'Tata Tele',
-    'ViewSonic',
-    'WatchGuard',
+    { name: 'Cisco', src: '/PartnerLogo/Cisco.png', label: 'Select Integrator' },
+    { name: 'Palo Alto Networks', src: '/PartnerLogo/Paloalto.png', label: 'Solution Provider' },
+    { name: 'Juniper Networks', src: '/PartnerLogo/Juniper.png', label: 'Value Added Reseller' },
+    { name: 'RSA', src: '/PartnerLogo/RSA.png', label: 'Gold Partner' },
+    { name: 'CrowdStrike', src: '/PartnerLogo/Crowdstrike.png' },
+    { name: 'Fortinet', src: '/PartnerLogo/Fortinet.png' },
+    { name: 'Check Point', src: '/PartnerLogo/CheckPoint.png' },
+    { name: 'Sophos', src: '/PartnerLogo/Sophos.png' },
+    { name: 'SonicWall', src: '/PartnerLogo/sonicwall.png' },
+    { name: 'Forcepoint', src: '/PartnerLogo/Forcepoint.png' },
+    { name: 'Barracuda', src: '/PartnerLogo/Barracuda.png' },
+    { name: 'Veeam', src: '/PartnerLogo/Veeam.png', label: 'Cloud and Service Provider' },
+    { name: 'Apple', src: '/PartnerLogo/Apple.png', label: 'Distribution Partner Program' },
+    { name: 'Jamf', src: '/PartnerLogo/jamf.png', label: 'Registered Partner' },
+    { name: 'AWS', src: '/PartnerLogo/AWS.png' },
+    { name: 'Google Workspace', src: '/PartnerLogo/GoogleWorkspace.png' },
+    { name: 'Hewlett Packard Enterprise', src: '/PartnerLogo/Hewlett.png', label: 'Business Solution Provider' },
+    { name: 'Microsoft', src: '/PartnerLogo/Microsoft.png' },
+    { name: 'Samsung', src: '/PartnerLogo/Samsung.png' },
+    { name: 'Lenovo', src: '/PartnerLogo/Lenovo.png' },
+    { name: 'EPOS', src: '/PartnerLogo/Epos.png' },
+    { name: 'Logitech', src: '/PartnerLogo/Logitech.png' },
+    { name: 'NxtGen', src: '/PartnerLogo/Nxtgen.png' },
+    { name: 'Tata Tele', src: '/PartnerLogo/TataTele.png' },
+    { name: 'ViewSonic', src: '/PartnerLogo/Viewsonic.png' },
+    { name: 'Sitewall', src: '/PartnerLogo/Sitewall.png' },
   ]
+
+  const ecosystemSectionRef = useRef<HTMLElement | null>(null)
+  const [ecosystemVisible, setEcosystemVisible] = useState(false)
+
+  useEffect(() => {
+    const section = ecosystemSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setEcosystemVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setEcosystemVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <main className="partner-page relative overflow-hidden pt-24">
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24 text-center">
-          <span className="pill pill--tight">Technology Partners</span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Our Growing <span className="ai-accent">Partner Ecosystem</span>
+      <section className="partner-hero live-hero partner-ecosystem-hero relative min-h-[85vh] flex items-center">
+        <HeroLiveBackground />
+        <div className="partner-hero-content partner-ecosystem-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-20 text-center">
+          <span className="pill pill--tight partner-ecosystem-pill partner-hero-fade partner-hero-fade-1">
+            Technology Partners
+          </span>
+          <h1 className="partner-ecosystem-title partner-hero-fade partner-hero-fade-2">
+            Our Growing <span className="partner-ecosystem-accent">Partner</span>
+            <br />
+            <span className="partner-ecosystem-accent">Ecosystem</span>
           </h1>
-          <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+          <p className="partner-ecosystem-subtitle partner-hero-fade partner-hero-fade-3">
             We collaborate with industry-leading technology vendors to deliver comprehensive,
             best-in-class solutions for your business.
           </p>
@@ -824,16 +1313,29 @@ function PartnerEcosystemPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Our Technology Partners</h2>
-          <p className="mt-2 text-sm text-slate-500">
-            A comprehensive ecosystem of leading technology vendors.
-          </p>
-          <div className="partner-logo-grid mt-10">
-            {partnerLogos.map((name) => (
-              <div key={name} className="partner-logo-card">
-                <span>{name}</span>
+      <section
+        ref={ecosystemSectionRef}
+        className={`section-light ecosystem-partners-section${ecosystemVisible ? ' is-visible' : ''}`}
+      >
+        <div className="ecosystem-partners-wrapper mx-auto max-w-7xl px-6">
+          <div
+            className="ecosystem-partners-header ecosystem-partners-fade"
+            style={{ ['--delay' as const]: '0.1s' }}
+          >
+            <h2 className="ecosystem-partners-title">Our Technology Partners</h2>
+            <p className="ecosystem-partners-subtitle">
+              A comprehensive ecosystem of leading technology vendors.
+            </p>
+          </div>
+          <div className="ecosystem-partners-grid">
+            {partnerLogos.map((logo, index) => (
+              <div
+                key={logo.name}
+                className="ecosystem-partners-card ecosystem-partners-fade"
+                style={{ ['--delay' as const]: `${0.2 + index * 0.06}s` }}
+              >
+                <img src={logo.src} alt={logo.name} className="ecosystem-partners-logo" />
+                {logo.label && <span className="ecosystem-partners-label">{logo.label}</span>}
               </div>
             ))}
           </div>
@@ -887,28 +1389,27 @@ function PartnerEcosystemPage() {
             <div className="footer-column">
               <h4>Partners</h4>
               <a href="/partners/ecosystem">Partner Ecosystem</a>
-              <a href="#">Juniper Networks</a>
-              <a href="#">RSA</a>
-              <a href="#">CrowdStrike</a>
-              <a href="#">Fortinet</a>
-              <a href="#">Check Point</a>
-              <a href="#">Forcepoint</a>
-              <a href="#">Barracuda</a>
-              <a href="#">Apple</a>
-              <a href="#">Jamf</a>
+              <a href="/partners/networking/juniper">Juniper Networks</a>
+              <a href="/partners/security/rsa">RSA</a>
+              <a href="/partners/security/crowdstrike">CrowdStrike</a>
+              <a href="/partners/security/fortinet">Fortinet</a>
+              <a href="/partners/security/checkpoint">Check Point</a>
+              <a href="/partners/security/forcepoint">Forcepoint</a>
+              <a href="/partners/security/barracuda">Barracuda</a>
+              <a href="/partners/endpoint/apple-enterprise">Apple</a>
+              <a href="/partners/endpoint/jamf">Jamf</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>
-              <a href="#">Terms of Service</a>
-              <a href="#">Refunds</a>
-              <a href="#">Cancellation</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/refund-cancellation">Refund & Cancellation</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
             <div className="footer-socials">
-              <span>✕</span>
-              <span>in</span>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
             </div>
           </div>
         </div>
@@ -918,6 +1419,12 @@ function PartnerEcosystemPage() {
 }
 
 function PartnerCiscoPage() {
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
+  const solutionsSectionRef = useRef<HTMLElement | null>(null)
+  const [solutionsVisible, setSolutionsVisible] = useState(false)
+  const useCasesSectionRef = useRef<HTMLElement | null>(null)
+  const [useCasesVisible, setUseCasesVisible] = useState(false)
   const whyPoints = [
     'Certified Cisco Select Integrator Partner with proven deployment expertise',
     'End-to-end implementation from design to day-2 operations',
@@ -984,31 +1491,140 @@ function PartnerCiscoPage() {
   ]
 
   const ciscoFaqs = [
-    'What Cisco solutions does Pirlanta implement?',
-    'Can you help migrate from legacy VPN to Cisco ZTNA?',
-    'Do you provide Cisco ISE implementation services?',
-    'How do you handle SD‑WAN migrations?',
-    'Can you integrate Cisco with non‑Cisco security tools?',
-    'Do you offer managed services for Cisco deployments?',
+    {
+      question: 'What Cisco solutions does Pirlanta implement?',
+      answer:
+        'We implement the full Cisco security and networking portfolio including SD-WAN, ISE, Duo, Umbrella, ThousandEyes, Meraki, and collaboration solutions. Our focus is on integrated deployments that maximize your Cisco investment.',
+    },
+    {
+      question: 'Can you help migrate from legacy VPN to Cisco ZTNA?',
+      answer:
+        'Yes, we design and implement Zero Trust Network Access using Cisco Duo and Secure Access, replacing traditional VPN with identity-aware, context-based access controls.',
+    },
+    {
+      question: 'Do you provide Cisco ISE implementation services?',
+      answer:
+        'Yes, we offer complete ISE deployments including network access control, device profiling, guest access, and integration with your existing identity infrastructure.',
+    },
+    {
+      question: 'How do you handle SD-WAN migrations?',
+      answer:
+        'We use phased rollouts with validation and rollback plans. Our approach includes site surveys, pilot deployments, and progressive branch rollouts to minimize business disruption.',
+    },
+    {
+      question: 'Can you integrate Cisco with non-Cisco security tools?',
+      answer:
+        'Yes, we design hybrid environments integrating Cisco solutions with existing security stacks, SIEM platforms, and third-party tools for unified operations.',
+    },
+    {
+      question: 'Do you offer managed services for Cisco deployments?',
+      answer:
+        'Yes, we provide day-2 operations including monitoring, policy updates, incident handling, and capacity planning under defined SLAs.',
+    },
   ]
 
   const [openCiscoFaq, setOpenCiscoFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = solutionsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setSolutionsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSolutionsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = useCasesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setUseCasesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setUseCasesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24">
-          <div className="partner-logo">
-            <span>CISCO</span>
+      <section className="partner-hero live-hero cisco-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content cisco-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="cisco-hero-logo cisco-hero-fade cisco-hero-fade-1">
+            <img
+              src="/partners/world-cisco-png-logo-12.png"
+              alt="Cisco"
+              className="cisco-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight">Cisco Select Integrator Partner</span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Cisco <span className="ai-accent">Partner</span>
+          <span className="pill pill--tight cisco-hero-pill cisco-hero-fade cisco-hero-fade-2">
+            Cisco Select Integrator Partner
+          </span>
+          <h1 className="cisco-hero-title cisco-hero-fade cisco-hero-fade-3">
+            Cisco <span className="cisco-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+          <p className="cisco-hero-kicker cisco-hero-fade cisco-hero-fade-4">
             Enterprise Networking & Zero Trust Security
           </p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="cisco-hero-copy cisco-hero-fade cisco-hero-fade-5">
             As a Cisco Select Integrator Partner, we deliver integrated networking and security
             solutions—from SD‑WAN and SASE to identity‑based access control and network visibility.
           </p>
@@ -1029,60 +1645,81 @@ function PartnerCiscoPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Cisco?</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our Cisco partnership combines certified expertise with practical experience across
-              enterprise networking, security, and collaboration.
-            </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point">
-                  <span className="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="cisco-card">
-            <div className="partner-logo partner-logo--small">
-              <span>CISCO</span>
-            </div>
-            <h3>Cisco Select Integrator</h3>
-            <p>
-              Recognized for expertise in designing and deploying Cisco solutions across security,
-              networking, and collaboration domains.
-            </p>
-            <div className="cisco-badges">
-              <div>
-                <strong>SD‑WAN</strong>
-                <span>Certified</span>
+      <section
+        ref={whySectionRef}
+        className={`section-light cisco-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-why-wrapper mx-auto max-w-7xl px-6">
+          <div className="cisco-why-grid">
+            <div className="cisco-why-copy">
+              <h2 className="cisco-why-title cisco-why-fade cisco-why-delay-1">
+                Why Pirlanta for Cisco?
+              </h2>
+              <p className="cisco-why-subtitle cisco-why-fade cisco-why-delay-2">
+                Our Cisco partnership combines certified expertise with practical experience across
+                enterprise networking, security, and collaboration. We focus on integrated solutions
+                that deliver Zero Trust security and operational efficiency.
+              </p>
+              <div className="cisco-why-points">
+                {whyPoints.map((point, index) => (
+                  <div
+                    key={point}
+                    className={`cisco-point cisco-why-fade cisco-why-delay-${index + 3}`}
+                  >
+                    <span className="benefit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <strong>Security</strong>
-                <span>Specialized</span>
+            </div>
+            <div className="cisco-card cisco-why-card cisco-why-fade cisco-why-delay-8">
+              <div className="partner-logo partner-logo--small cisco-logo">
+                <img src="/partners/world-cisco-png-logo-12.png" alt="Cisco" />
+              </div>
+              <h3>Cisco Select Integrator</h3>
+              <p>
+                Recognized for expertise in designing and deploying Cisco solutions across security,
+                networking, and collaboration domains.
+              </p>
+              <div className="cisco-badges">
+                <div>
+                  <strong>SD‑WAN</strong>
+                  <span>Certified</span>
+                </div>
+                <div>
+                  <strong>Security</strong>
+                  <span>Specialized</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Cisco Solutions We Deliver</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={solutionsSectionRef}
+        className={`section-light cisco-solution-section${solutionsVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-solution-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="cisco-solution-title cisco-solution-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Cisco Solutions We Deliver
+          </h2>
+          <p className="cisco-solution-subtitle cisco-solution-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
             Comprehensive Cisco implementations spanning networking, security, and visibility.
           </p>
-          <div className="cisco-solution-grid mt-10">
-            {solutions.map((item) => (
-              <div key={item.title} className="cyber-cap-card cisco-solution-card">
+          <div className="cisco-solution-grid">
+            {solutions.map((item, index) => (
+              <div
+                key={item.title}
+                className="cisco-solution-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="cyber-cap-card cisco-solution-card">
                 <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'network' && (
                     <svg viewBox="0 0 24 24" fill="none">
@@ -1130,22 +1767,33 @@ function PartnerCiscoPage() {
                     <li key={bullet}>{bullet}</li>
                   ))}
                 </ul>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Common Use Cases</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={useCasesSectionRef}
+        className={`section-light cisco-use-section${useCasesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-use-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="cisco-use-title cisco-use-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Common Use Cases
+          </h2>
+          <p className="cisco-use-subtitle cisco-use-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
             How enterprises leverage our Cisco expertise.
           </p>
-          <div className="cisco-use-grid mt-10">
-            {useCases.map((item) => (
-              <div key={item.title} className="cyber-cap-card">
-                <div className="cyber-cap-icon" aria-hidden="true">
+          <div className="cisco-use-grid">
+            {useCases.map((item, index) => (
+              <div
+                key={item.title}
+                className="cisco-use-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="cyber-cap-card cisco-use-card">
+                  <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'monitor' && (
                     <svg viewBox="0 0 24 24" fill="none">
                       <rect x="4" y="5" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
@@ -1164,38 +1812,42 @@ function PartnerCiscoPage() {
                       <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
                     </svg>
                   )}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.copy}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light cisco-faq-section">
+        <div className="cisco-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Cisco FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="cisco-faq-title">Cisco FAQs</h2>
+            <p className="cisco-faq-subtitle">
               Common questions about our Cisco partnership and implementation services.
             </p>
-            <button className="mt-6 rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300">
+            <a href = "/contact">
+            <button className="cisco-faq-button">
               Ask a Question
             </button>
+            </a>
           </div>
-          <div className="cyber-faq">
-            {ciscoFaqs.map((question, index) => {
+          <div className="cisco-faq-list">
+            {ciscoFaqs.map((item, index) => {
               const isOpen = openCiscoFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  key={item.question}
+                  className={`cisco-faq-item ${isOpen ? 'cisco-faq-item--open' : ''}`}
                   onClick={() => setOpenCiscoFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className="faq-toggle">▾</span>
+                  <span className="cisco-faq-question">{item.question}</span>
+                  <span className="cisco-faq-toggle">▾</span>
+                  <span className="cisco-faq-answer">{item.answer}</span>
                 </button>
               )
             })}
@@ -1252,28 +1904,27 @@ function PartnerCiscoPage() {
             <div className="footer-column">
               <h4>Partners</h4>
               <a href="/partners/ecosystem">Partner Ecosystem</a>
-              <a href="#">Juniper Networks</a>
-              <a href="#">RSA</a>
-              <a href="#">CrowdStrike</a>
-              <a href="#">Fortinet</a>
-              <a href="#">Check Point</a>
-              <a href="#">Forcepoint</a>
-              <a href="#">Barracuda</a>
-              <a href="#">Apple</a>
-              <a href="#">Jamf</a>
+              <a href="/partners/networking/juniper">Juniper Networks</a>
+              <a href="/partners/security/rsa">RSA</a>
+              <a href="/partners/security/crowdstrike">CrowdStrike</a>
+              <a href="/partners/security/fortinet">Fortinet</a>
+              <a href="/partners/security/checkpoint">Check Point</a>
+              <a href="/partners/security/forcepoint">Forcepoint</a>
+              <a href="/partners/security/barracuda">Barracuda</a>
+              <a href="/partners/endpoint/apple-enterprise">Apple</a>
+              <a href="/partners/endpoint/jamf">Jamf</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>
-              <a href="#">Terms of Service</a>
-              <a href="#">Refunds</a>
-              <a href="#">Cancellation</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/refund-cancellation">Refund & Cancellation</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
             <div className="footer-socials">
-              <span>✕</span>
-              <span>in</span>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
             </div>
           </div>
         </div>
@@ -1283,6 +1934,12 @@ function PartnerCiscoPage() {
 }
 
 function PartnerJuniperPage() {
+  const solutionsSectionRef = useRef<HTMLElement | null>(null)
+  const [solutionsVisible, setSolutionsVisible] = useState(false)
+  const useCasesSectionRef = useRef<HTMLElement | null>(null)
+  const [useCasesVisible, setUseCasesVisible] = useState(false)
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
   const whyPoints = [
     'Juniper Networks Partner with AI-native networking expertise',
     'AI-driven operations reducing complexity and troubleshooting time',
@@ -1349,32 +2006,140 @@ function PartnerJuniperPage() {
   ]
 
   const juniperFaqs = [
-    'What is Juniper Mist AI and how does it work?',
-    'Can Juniper replace our existing wireless infrastructure?',
-    'What is Apstra and how does it help data centres?',
-    'Does Juniper offer SD-WAN solutions?',
-    'Can Juniper solutions integrate with our existing network?',
-    'Do you provide managed services for Juniper networks?',
+    {
+      question: 'What is Juniper Mist AI and how does it work?',
+      answer:
+        'Mist AI uses machine learning to provide predictive insights, automate troubleshooting, and optimize wireless, wired, and WAN experiences. The Marvis virtual assistant identifies issues before they impact users.',
+    },
+    {
+      question: 'Can Juniper replace our existing wireless infrastructure?',
+      answer:
+        'Yes, Juniper Mist Access Points with AI-driven cloud management provide superior user experience, location services, and self-healing capabilities compared to traditional wireless solutions.',
+    },
+    {
+      question: 'What is Apstra and how does it help data centres?',
+      answer:
+        'Apstra provides intent-based networking for data centres with automated provisioning, continuous validation, and multi-vendor support for reliable, efficient operations.',
+    },
+    {
+      question: 'Does Juniper offer SD-WAN solutions?',
+      answer:
+        'Yes, Juniper Session Smart SD-WAN uses AI-native intelligence for application-aware routing, zero-trust security, and simplified operations without overlay tunnels.',
+    },
+    {
+      question: 'Can Juniper solutions integrate with our existing network?',
+      answer:
+        'Yes, Juniper solutions including Apstra support multi-vendor environments. We design integrations that leverage existing investments while adding AI-native capabilities.',
+    },
+    {
+      question: 'Do you provide managed services for Juniper networks?',
+      answer:
+        'Yes, we offer day-2 operations including AI-assisted monitoring, configuration management, and optimization for Juniper deployments.',
+    },
   ]
 
   const [openJuniperFaq, setOpenJuniperFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = solutionsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setSolutionsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSolutionsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = useCasesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setUseCasesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setUseCasesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24">
-          <div className="partner-logo juniper-logo">
-            <span className="juniper-brand">Juniper</span>
-            <span className="juniper-networks">NETWORKS</span>
+      <section className="partner-hero live-hero juniper-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content juniper-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="juniper-hero-logo juniper-hero-fade juniper-hero-fade-1">
+            <img
+              src="/partners/Juniper_Networks_logo.svg.png"
+              alt="Juniper Networks"
+              className="juniper-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight">Juniper Networks Partner</span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Juniper Networks <span className="ai-accent">Partner</span>
+          <span className="pill pill--tight juniper-hero-pill juniper-hero-fade juniper-hero-fade-2">
+            Juniper Networks Partner
+          </span>
+          <h1 className="juniper-hero-title juniper-hero-fade juniper-hero-fade-3">
+            Juniper Networks <span className="juniper-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+          <p className="juniper-hero-kicker juniper-hero-fade juniper-hero-fade-4">
             AI-Native Networking for the Modern Enterprise
           </p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="juniper-hero-copy juniper-hero-fade juniper-hero-fade-5">
             As a Juniper Networks Partner, we deliver AI-driven networking solutions—from Mist wireless
             and SD-WAN to Apstra data centre automation for simplified, intelligent operations.
           </p>
@@ -1395,61 +2160,79 @@ function PartnerJuniperPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Juniper?</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our Juniper partnership brings AI-native networking to your enterprise, with predictive
-              insights, self-healing infrastructure, and intent-based automation that simplifies operations.
-            </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point">
-                  <span className="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="cisco-card">
-            <div className="partner-logo partner-logo--small juniper-logo">
-              <span className="juniper-brand">Juniper</span>
-              <span className="juniper-networks">NETWORKS</span>
-            </div>
-            <h3>Juniper Networks Partner</h3>
-            <p>
-              Certified to implement AI-native networking solutions including Mist, Apstra, and
-              enterprise routing.
-            </p>
-            <div className="cisco-badges">
-              <div>
-                <strong>Mist AI</strong>
-                <span>Certified</span>
+      <section
+        ref={whySectionRef}
+        className={`section-light juniper-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="juniper-why-wrapper mx-auto max-w-7xl px-6">
+          <div className="juniper-why-grid">
+            <div className="juniper-why-copy">
+              <h2 className="juniper-why-title juniper-why-fade juniper-why-delay-1">
+                Why Pirlanta for Juniper?
+              </h2>
+              <p className="juniper-why-subtitle juniper-why-fade juniper-why-delay-2">
+                Our Juniper partnership brings AI-native networking to your enterprise, with predictive
+                insights, self-healing infrastructure, and intent-based automation that simplifies operations.
+              </p>
+              <div className="juniper-why-points">
+                {whyPoints.map((point, index) => (
+                  <div
+                    key={point}
+                    className={`cisco-point juniper-why-fade juniper-why-delay-${index + 3}`}
+                  >
+                    <span className="benefit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <strong>Apstra</strong>
-                <span>Specialized</span>
+            </div>
+            <div className="cisco-card juniper-why-card juniper-why-fade juniper-why-delay-8">
+              <div className="partner-logo partner-logo--small juniper-logo">
+                <img src="/partners/Juniper_Networks_logo.svg.png" alt="Juniper Networks" />
+              </div>
+              <h3>Juniper Networks Partner</h3>
+              <p>
+                Certified to implement AI-native networking solutions including Mist, Apstra, and
+                enterprise routing.
+              </p>
+              <div className="cisco-badges">
+                <div>
+                  <strong>Mist AI</strong>
+                  <span>Certified</span>
+                </div>
+                <div>
+                  <strong>Apstra</strong>
+                  <span>Specialized</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Juniper Solutions We Deliver</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={solutionsSectionRef}
+        className={`section-light juniper-solution-section${solutionsVisible ? ' is-visible' : ''}`}
+      >
+        <div className="juniper-solution-wrapper mx-auto max-w-6xl px-6 py-24 text-center">
+          <h2 className="juniper-solution-title juniper-solution-fade" style={{ '--delay': '0s' } as CSSProperties}>
+            Juniper Solutions We Deliver
+          </h2>
+          <p className="juniper-solution-subtitle juniper-solution-fade" style={{ '--delay': '0.08s' } as CSSProperties}>
             AI-native networking for wireless, WAN, data centre, and security.
           </p>
-          <div className="cisco-solution-grid mt-10">
-            {solutions.map((item) => (
-              <div key={item.title} className="cyber-cap-card cisco-solution-card">
+          <div className="juniper-solution-grid">
+            {solutions.map((item, index) => (
+              <div
+                key={item.title}
+                className="cyber-cap-card juniper-solution-card juniper-solution-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
                 <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'wifi' && (
                     <svg viewBox="0 0 24 24" fill="none">
@@ -1508,16 +2291,26 @@ function PartnerJuniperPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Common Use Cases</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={useCasesSectionRef}
+        className={`section-light juniper-use-section${useCasesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="juniper-use-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="juniper-use-title juniper-use-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Common Use Cases
+          </h2>
+          <p className="juniper-use-subtitle juniper-use-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
             How enterprises leverage Juniper AI-native networking.
           </p>
-          <div className="cisco-use-grid mt-10">
-            {useCases.map((item) => (
-              <div key={item.title} className="cyber-cap-card">
-                <div className="cyber-cap-icon" aria-hidden="true">
+          <div className="juniper-use-grid">
+            {useCases.map((item, index) => (
+              <div
+                key={item.title}
+                className="juniper-use-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="cyber-cap-card juniper-use-card">
+                  <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'wireless' && (
                     <svg viewBox="0 0 24 24" fill="none">
                       <rect x="4" y="5" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
@@ -1537,41 +2330,43 @@ function PartnerJuniperPage() {
                       <path d="M10 12h4M7 9v6M17 9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   )}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.copy}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light juniper-faq-section">
+        <div className="juniper-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Juniper FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="juniper-faq-title">Juniper FAQs</h2>
+            <p className="juniper-faq-subtitle">
               Common questions about Mist AI, Apstra, and Juniper networking solutions.
             </p>
             <a
               href="/contact"
-              className="mt-6 inline-flex rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300"
+              className="juniper-faq-button"
             >
               Ask a Question
             </a>
           </div>
-          <div className="cyber-faq">
-            {juniperFaqs.map((question, index) => {
+          <div className="juniper-faq-list">
+            {juniperFaqs.map((item, index) => {
               const isOpen = openJuniperFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  key={item.question}
+                  className={`juniper-faq-item ${isOpen ? 'juniper-faq-item--open' : ''}`}
                   onClick={() => setOpenJuniperFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className="faq-toggle">▾</span>
+                  <span className="juniper-faq-question">{item.question}</span>
+                  <span className="juniper-faq-toggle">▾</span>
+                  <span className="juniper-faq-answer">{item.answer}</span>
                 </button>
               )
             })}
@@ -1630,27 +2425,26 @@ function PartnerJuniperPage() {
               <a href="/partners/ecosystem">Partner Ecosystem</a>
               <a href="/partners/networking/cisco">Cisco</a>
               <a href="/partners/networking/juniper">Juniper Networks</a>
-              <a href="#">RSA</a>
-              <a href="#">CrowdStrike</a>
-              <a href="#">Fortinet</a>
-              <a href="#">Check Point</a>
-              <a href="#">Forcepoint</a>
-              <a href="#">Barracuda</a>
-              <a href="#">Apple</a>
-              <a href="#">Jamf</a>
+              <a href="/partners/security/rsa">RSA</a>
+              <a href="/partners/security/crowdstrike">CrowdStrike</a>
+              <a href="/partners/security/fortinet">Fortinet</a>
+              <a href="/partners/security/checkpoint">Check Point</a>
+              <a href="/partners/security/forcepoint">Forcepoint</a>
+              <a href="/partners/security/barracuda">Barracuda</a>
+              <a href="/partners/endpoint/apple-enterprise">Apple</a>
+              <a href="/partners/endpoint/jamf">Jamf</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>
-              <a href="#">Terms of Service</a>
-              <a href="#">Refunds</a>
-              <a href="#">Cancellation</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/refund-cancellation">Refund & Cancellation</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
             <div className="footer-socials">
-              <span>✕</span>
-              <span>in</span>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
             </div>
           </div>
         </div>
@@ -1682,26 +2476,29 @@ function ContactPage({
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 }) {
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative overflow-hidden pt-24">
       <section className="section-light contact-section" id="contact">
-        <div className="contact-hero">
-          <div className="contact-hero-content mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-            <span className="pill pill--tight">
-              <span className="pill-icon" aria-hidden="true">
-                ✦
-              </span>
+        <div className="partner-hero live-hero cisco-hero relative">
+          <HeroLiveBackground />
+          <div className="partner-hero-content cisco-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <span className="pill pill--tight cisco-hero-pill cisco-hero-fade cisco-hero-fade-1">
               Contact Us
             </span>
-            <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl md:text-4xl">
-              Let&apos;s Start the <br />
-              <span className="contact-hero-accent"> Conversation</span>
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm text-slate-500 md:text-base">
-              Ready to secure your infrastructure? Get in touch for a free consultation and
-              discover how we can help protect and optimize your IT environment.
+            <h1 className="cisco-hero-title cisco-hero-fade cisco-hero-fade-2">
+              Let&apos;s Start the <span className="cisco-hero-accent">Conversation</span>
+            </h1>
+            <p className="cisco-hero-kicker cisco-hero-fade cisco-hero-fade-3">
+              Ready to secure your infrastructure?
+            </p>
+            <p className="cisco-hero-copy cisco-hero-fade cisco-hero-fade-4">
+              Get in touch for a free consultation and discover how we can help protect and
+              optimize your IT environment.
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]" aria-hidden="true">
+          <div
+            className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px]"
+            aria-hidden="true"
+          >
             <svg
               data-name="Layer 1"
               xmlns="http://www.w3.org/2000/svg"
@@ -2010,16 +2807,19 @@ function AboutPage() {
       title: 'Cybersecurity',
       copy: 'AI-driven threat detection, MDR, and compliance—with 95% faster response times.',
       icon: 'shield',
+      href: '/services/cybersecurity',
     },
     {
       title: 'Data Centre',
       copy: 'AI-optimized infrastructure with predictive scaling and intelligent disaster recovery.',
       icon: 'database',
+      href: '/services/data-centre-cloud',
     },
     {
       title: 'Network',
       copy: 'AI-powered traffic analysis, self-healing networks, and intelligent SD-WAN.',
       icon: 'network',
+      href: '/services/network-sd-wan',
     },
   ]
 
@@ -2058,8 +2858,14 @@ function AboutPage() {
 
   const deliverSectionRef = useRef<HTMLElement | null>(null)
   const [deliverVisible, setDeliverVisible] = useState(false)
+  const industriesSectionRef = useRef<HTMLElement | null>(null)
+  const [industriesVisible, setIndustriesVisible] = useState(false)
+  const approachSectionRef = useRef<HTMLElement | null>(null)
+  const approachCountAnimatedRef = useRef(false)
+  const pillarsSectionRef = useRef<HTMLElement | null>(null)
   const aiWorksRef = useRef<HTMLElement | null>(null)
   const aiWorksAnimatedRef = useRef(false)
+  const bengaluruRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const section = deliverSectionRef.current
@@ -2070,6 +2876,136 @@ function AboutPage() {
         setDeliverVisible(entry.isIntersecting)
       },
       { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = bengaluruRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      section.classList.add('is-visible')
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          section.classList.add('is-visible')
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = industriesSectionRef.current
+    if (!section) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIndustriesVisible(entry.isIntersecting)
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = approachSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const setFinalCount = () => {
+      const counter = section.querySelector<HTMLElement>('[data-approach-count]')
+      if (!counter) return
+      const value = counter.dataset.value ?? counter.textContent ?? ''
+      const suffix = counter.dataset.suffix ?? ''
+      counter.textContent = `${value}${suffix}`
+    }
+
+    const animateCount = () => {
+      if (approachCountAnimatedRef.current) return
+      approachCountAnimatedRef.current = true
+      const counter = section.querySelector<HTMLElement>('[data-approach-count]')
+      if (!counter) return
+      const end = Number.parseFloat(counter.dataset.value ?? '0')
+      const suffix = counter.dataset.suffix ?? ''
+      const duration = Number.parseInt(counter.dataset.duration ?? '3600', 10)
+      const startTime = performance.now()
+
+      const step = (now: number) => {
+        const progress = Math.min((now - startTime) / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        const current = Math.round(end * eased)
+        counter.textContent = `${current}${suffix}`
+        if (progress < 1) {
+          requestAnimationFrame(step)
+        } else {
+          counter.textContent = `${end}${suffix}`
+        }
+      }
+
+      requestAnimationFrame(step)
+    }
+
+    if (prefersReducedMotion) {
+      section.classList.add('is-visible')
+      setFinalCount()
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          section.classList.add('is-visible')
+          animateCount()
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = pillarsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (prefersReducedMotion) {
+      section.classList.add('is-visible')
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          section.classList.add('is-visible')
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
     )
 
     observer.observe(section)
@@ -2146,21 +3082,12 @@ function AboutPage() {
 
   return (
     <main className="relative overflow-hidden pt-16">
-      <section className="about-hero relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
-        <ConstellationBackground
-          className="about-hero-constellation"
-          count={90}
-          connectionDistance={160}
-          nodeColor="rgba(211, 255, 79, 0.85)"
-          lineColor="rgba(211, 255, 79, 0.12)"
-          nodeSize={2.2}
-          mouseRadius={180}
-          glow
-        />
+      <section className="about-hero live-hero relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
+        <HeroLiveBackground />
         <div className="about-hero-overlay" />
-        <div className="about-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-2 md:py-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="about-kicker-row">
+        <div className="about-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="about-hero-text">
+            <div className="about-kicker-row about-hero-fade about-hero-fade-1">
               <p className="about-kicker-primary">About Pirlanta</p>
               <span className="about-kicker-divider">|</span>
               <div className="about-kicker-secondary">
@@ -2168,14 +3095,14 @@ function AboutPage() {
                 <span className="about-kicker-label">AI-Enhanced Services</span>
               </div>
             </div>
-            <h1 className="about-hero-title">
+            <h1 className="about-hero-title about-hero-fade about-hero-fade-2">
               Expert-Led. <span className="text-gradient">AI-Powered.</span>
             </h1>
-            <p className="about-hero-lead">
+            <p className="about-hero-lead about-hero-fade about-hero-fade-3">
               Founded to bridge enterprise IT complexity. Now leveraging AI to deliver faster
               detection, smarter automation, and measurable outcomes.
             </p>
-            <p className="about-hero-copy">
+            <p className="about-hero-copy about-hero-fade about-hero-fade-4">
               We combine OEM AI tools from Cisco, Fortinet, and industry leaders with our
               deep implementation expertise to transform how enterprises approach security.
             </p>
@@ -2197,9 +3124,11 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="section-light min-h-screen" >
-        
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+      <section
+        className={`section-light deliver-section${deliverVisible ? ' is-visible' : ''}`}
+        ref={deliverSectionRef}
+      >
+        <div className="deliver-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
           <h2 className="deliver-heading">What We Deliver</h2>
           <p className="deliver-subtitle">
             Measurable outcomes that protect your business and drive growth.
@@ -2385,17 +3314,17 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+      <section className="section-light about-approach-section" ref={approachSectionRef}>
+        <div className="about-approach-grid mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Our Approach</h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <h2 className="approach-reveal text-3xl font-semibold text-slate-900">Our Approach</h2>
+            <p className="approach-reveal approach-lead mt-2 text-sm text-slate-500">
               We operate on four foundational pillars that ensure every engagement delivers
               lasting value and measurable results.
             </p>
-            <div className="mt-6 grid gap-4">
+            <div className="approach-list mt-6 grid gap-4">
               {approachItems.map((item) => (
-                <div key={item.title} className="approach-row">
+                <div key={item.title} className="approach-row approach-reveal">
                   <span className="approach-icon" aria-hidden="true">
                     {item.icon === 'bolt' && (
                       <svg viewBox="0 0 24 24" fill="none">
@@ -2458,7 +3387,7 @@ function AboutPage() {
               ))}
             </div>
           </div>
-          <div className="approach-card">
+          <div className="approach-card approach-reveal">
             <h3>The Converged Advantage</h3>
             <p>
               Cybersecurity, data infrastructure, and network services are interconnected.
@@ -2467,7 +3396,7 @@ function AboutPage() {
             </p>
             <div className="approach-stats">
               <div>
-                <strong>48+</strong>
+                <strong data-approach-count data-value="48" data-suffix="+" data-duration="3600">48+</strong>
                 <span>Years Experience</span>
               </div>
               <div>
@@ -2479,15 +3408,15 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Three Integrated Pillars</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section className="section-light about-pillars-section" ref={pillarsSectionRef}>
+        <div className="about-pillars-content mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="pillar-reveal text-3xl font-semibold text-slate-900">Three Integrated Pillars</h2>
+          <p className="pillar-reveal mt-2 text-sm text-slate-500">
             Our services work together to provide comprehensive IT excellence.
           </p>
           <div className="pillar-grid mt-10">
             {pillarItems.map((item) => (
-              <div key={item.title} className="pillar-card">
+              <div key={item.title} className="pillar-card pillar-reveal">
                 <div
                   className={`pillar-icon ${
                     item.icon === 'shield'
@@ -2527,20 +3456,25 @@ function AboutPage() {
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.copy}</p>
-                <span className="pillar-link">Learn more →</span>
+                <a className="pillar-link" href={item.href}>
+                  Learn more →
+                </a>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Industries We Serve</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        className={`section-light industries-section${industriesVisible ? ' is-visible' : ''}`}
+        ref={industriesSectionRef}
+      >
+        <div className="industries-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="industries-heading">Industries We Serve</h2>
+          <p className="industries-subtitle">
             Delivering secure solutions across diverse sectors with industry-specific expertise.
           </p>
-          <div className="industry-grid mt-8">
+          <div className="industry-grid mt-12">
             {industries.map((industry) => (
               <div key={industry.title} className="industry-card">
                 <div className="industry-icon" aria-hidden="true">
@@ -2593,39 +3527,42 @@ function AboutPage() {
                     </svg>
                   )}
                 </div>
-                <span>{industry.title}</span>
-                <small>{industry.subtitle}</small>
+                <span className="industry-title">{industry.title}</span>
+                <small className="industry-subtitle">{industry.subtitle}</small>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">
-              Based in Bengaluru, Serving India
+      <section className="section-light bengaluru-section" ref={bengaluruRef}>
+        <div className="bengaluru-inner mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div className="bengaluru-copy">
+            <h2 className="bengaluru-title bengaluru-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+              Based in Bengaluru,
+              <br />
+              Serving India
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our headquarters in Bengaluru position us at the heart of India’s technology hub,
+            <p className="bengaluru-lead bengaluru-reveal" style={{ '--delay': '0.1s' } as CSSProperties}>
+              Our headquarters in Bengaluru positions us at the heart of India’s technology hub,
               enabling us to serve enterprises across the nation with local expertise and global
               standards.
             </p>
-            <div className="mt-6 text-sm text-slate-600">
-              <p className="font-semibold text-slate-800">Headquarters</p>
-              <p>
-                C/O Flex Coworks, 2nd Floor, 71, 15th Cross Road, Dollar Layout, J. P. Nagar,
-                Bengaluru - 560078
+            <div className="bengaluru-meta bengaluru-reveal" style={{ '--delay': '0.2s' } as CSSProperties}>
+              <p className="bengaluru-meta-title">Headquarters</p>
+              <p className="bengaluru-meta-copy">
+                C/O Flex Coworks, 2nd Floor, 71, 15th Cross Road,
+                <br />
+                Dollar Layout, J. P. Nagar, Bengaluru – 560078
               </p>
-              <p className="mt-4 font-semibold text-slate-800">Contact</p>
-              <p>+91 94296 93558</p>
-              <p>secure@pirlanta.in</p>
+              <p className="bengaluru-meta-title bengaluru-meta-title--spaced">Contact</p>
+              <p className="bengaluru-meta-copy">+91 94296 93558</p>
+              <p className="bengaluru-meta-copy">secure@pirlanta.in</p>
             </div>
           </div>
-          <div className="about-photo">
+          <div className="bengaluru-photo bengaluru-reveal" style={{ '--delay': '0.15s' } as CSSProperties}>
             <img
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
+              src="GroupPic.jpeg"
               alt="Pirlanta team"
             />
           </div>
@@ -2677,29 +3614,28 @@ function AboutPage() {
             </div>
             <div className="footer-column">
               <h4>Partners</h4>
-              <a href="#">Cisco</a>
-              <a href="#">Juniper Networks</a>
-              <a href="#">RSA</a>
-              <a href="#">CrowdStrike</a>
-              <a href="#">Fortinet</a>
-              <a href="#">Check Point</a>
-              <a href="#">Forcepoint</a>
-              <a href="#">Barracuda</a>
-              <a href="#">Apple</a>
-              <a href="#">Jamf</a>
+              <a href="/partners/networking/cisco">Cisco</a>
+              <a href="/partners/networking/juniper">Juniper Networks</a>
+              <a href="/partners/security/rsa">RSA</a>
+              <a href="/partners/security/crowdstrike">CrowdStrike</a>
+              <a href="/partners/security/fortinet">Fortinet</a>
+              <a href="/partners/security/checkpoint">Check Point</a>
+              <a href="/partners/security/forcepoint">Forcepoint</a>
+              <a href="/partners/security/barracuda">Barracuda</a>
+              <a href="/partners/endpoint/apple-enterprise">Apple</a>
+              <a href="/partners/endpoint/jamf">Jamf</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>
-              <a href="#">Terms of Service</a>
-              <a href="#">Refunds</a>
-              <a href="#">Cancellation</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/refund-cancellation">Refund & Cancellation</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
             <div className="footer-socials">
-              <span>✕</span>
-              <span>in</span>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
             </div>
           </div>
         </div>
@@ -2763,6 +3699,8 @@ export default function App() {
   const partnerTrackRef = useRef<HTMLDivElement | null>(null)
   const partnerPauseRef = useRef(0)
   const [partnersPaused, setPartnersPaused] = useState(false)
+  const partnersSectionRef = useRef<HTMLElement | null>(null)
+  const [partnersVisible, setPartnersVisible] = useState(false)
   const reasonOptions = [
     {
       key: 'integration',
@@ -2847,7 +3785,9 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll('.services-fade, .aiops-fade'))
+    const elements = Array.from(
+      document.querySelectorAll('.services-fade, .aiops-fade, .package-fade')
+    )
     if (elements.length === 0) return
 
     if (!('IntersectionObserver' in window)) {
@@ -3232,6 +4172,10 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+  }, [location.pathname])
+
+  useEffect(() => {
     let raf: number
     const handleMove = (event: MouseEvent) => {
       if (raf) return
@@ -3353,6 +4297,42 @@ export default function App() {
     return () => cancelAnimationFrame(rafId)
   }, [partnersPaused])
 
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setPartnersVisible(false)
+      return
+    }
+
+    const section = partnersSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setPartnersVisible(true)
+      return
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      setPartnersVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPartnersVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [location.pathname])
+
   const filteredAttacks = useMemo(
     () => attacks.filter((attack) => activeTypes[attack.attack_type]),
     [attacks, activeTypes]
@@ -3415,6 +4395,8 @@ export default function App() {
         <Route path="/partners/endpoint/apple-enterprise" element={<Suspense fallback={<PageFallback />}><AppleForEnterprisePage /></Suspense>} />
         <Route path="/partners/endpoint/apple-smb" element={<Suspense fallback={<PageFallback />}><AppleForSMBPage /></Suspense>} />
         <Route path="/partners/endpoint/jamf" element={<Suspense fallback={<PageFallback />}><JamfPage /></Suspense>} />
+        <Route path="/terms" element={<Suspense fallback={<PageFallback />}><TermsPage /></Suspense>} />
+        <Route path="/refund-cancellation" element={<Suspense fallback={<PageFallback />}><RefundCancellationPage /></Suspense>} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage contactForm={contactForm} contactStatus={contactStatus} contactError={contactError} onChange={handleContactChange} onSubmit={handleContactSubmit} />} />
         <Route path="/assessment" element={<Suspense fallback={<PageFallback />}><AssessmentPage /></Suspense>} />
@@ -3427,18 +4409,7 @@ export default function App() {
 
 
         <section className="hero-section home-hero relative flex items-center" id="home">
-          <ConstellationBackground
-            className="home-hero-constellation"
-            count={110}
-            connectionDistance={170}
-            nodeColor="rgba(124, 193, 61, 0.85)"
-            lineColor="rgba(124, 193, 61, 0.1)"
-            nodeSize={2.1}
-            mouseRadius={180}
-            glow
-          />
-          <div className="hero-orb hero-orb--left" aria-hidden="true" />
-          <div className="hero-orb hero-orb--right" aria-hidden="true" />
+          <HeroLiveBackground />
             <div className="hero-content mx-auto grid w-full max-w-7xl gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
             <div>
             <div className="flex flex-wrap gap-3 hero-fade hero-fade-1">
@@ -3868,9 +4839,6 @@ export default function App() {
           ref={auditHeroRef}
           id="ai-audits"
         >
-
-          <div className="audit-bg" aria-hidden="true" />
-          <div className="audit-glow" aria-hidden="true" />
           {/* <div className="audit-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center"> */}
           <motion.div
               className="audit-content mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center w-full"
@@ -4293,8 +5261,10 @@ export default function App() {
 
         <section className="section-light" id="package-offerings">
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-            <h2 className="text-4xl font-semibold text-slate-900">Package Offerings</h2>
-            <p className="mt-3 text-sm text-slate-500 md:text-base">
+            <h2 className="text-4xl font-semibold text-slate-900 package-fade package-fade-1">
+              Package Offerings
+            </h2>
+            <p className="mt-3 text-sm text-slate-500 md:text-base package-fade package-fade-2">
               Flexible engagement models designed to meet your security needs at every stage of
               growth.
             </p>
@@ -4324,10 +5294,17 @@ export default function App() {
                     'Full-stack cyber transformation with AI-driven defense and compliance.',
                   bullets: ['Everything in CONNECT', 'AI-Driven Detection', 'Custom Playbooks', 'Dedicated Account Team', 'Executive Reporting', 'DR as a Service'],
                 },
-              ].map((plan) => (
+              ].map((plan, index) => (
                 <div
                   key={plan.name}
-                  className={`pricing-card ${plan.featured ? 'pricing-card--featured' : ''}`}
+                  className={`pricing-card package-fade ${
+                    plan.featured ? 'pricing-card--featured' : ''
+                  }`}
+                  style={
+                    {
+                      '--package-delay': `${0.45 + index * 0.18}s`,
+                    } as CSSProperties
+                  }
                 >
                   <div className="pricing-icon-wrap" aria-hidden="true">
                     <img className="pricing-icon" src={plan.icon} alt="" loading="lazy" />
@@ -4350,10 +5327,16 @@ export default function App() {
         </section>
 
 
-        <section className="section-light partners-section" id="partners">
+        <section
+          className={`section-light partners-section${partnersVisible ? ' is-visible' : ''}`}
+          id="partners"
+          ref={partnersSectionRef}
+        >
           <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-            <h2 className="text-3xl font-semibold text-slate-900">Our Technology Partners</h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <h2 className="partners-title partners-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+              Our Technology Partners
+            </h2>
+            <p className="partners-subtitle partners-reveal" style={{ '--delay': '0.12s' } as CSSProperties}>
               We partner with industry leaders to deliver best-in-class solutions.
             </p>
             <div className="partners-marquee">
@@ -4397,15 +5380,15 @@ export default function App() {
           </div>
         </section>
         <section className="section-light faq-section" id="faq">
-          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div className="faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
-              <h2 className="text-3xl font-semibold text-slate-900">Frequently Asked Questions</h2>
-              <p className="mt-3 text-sm text-slate-500 md:text-base">
+              <h2 className="faq-title">Frequently Asked Questions</h2>
+              <p className="faq-subtitle">
                 Get answers to common questions about our cybersecurity, network, and data centre
                 services.
               </p>
               <a href="/contact">
-                <button className="mt-6 rounded-full border border-emerald-200/60 px-5 py-2 text-sm font-semibold text-emerald-700">
+                <button className="faq-cta">
                   Still have questions? Contact Us
                 </button>
               </a>
@@ -4468,35 +5451,34 @@ export default function App() {
               <div className="footer-column">
                 <h4>Services</h4>
                 <a href="/services/cybersecurity">Cybersecurity</a>
-                <a href="#">Data Centre</a>
-                <a href="#">Secure Network</a>
+                <a href="/services/data-centre-cloud">Data Centre</a>
+                <a href="/services/network-sd-wan">Secure Network</a>
               </div>
               <div className="footer-column">
                 <h4>Partners</h4>
-                <a href="#">Cisco</a>
-                <a href="#">Juniper Networks</a>
-                <a href="#">RSA</a>
-                <a href="#">CrowdStrike</a>
-                <a href="#">Fortinet</a>
-                <a href="#">Check Point</a>
-                <a href="#">Forcepoint</a>
-                <a href="#">Barracuda</a>
-                <a href="#">Apple</a>
-                <a href="#">Jamf</a>
+                <a href="/partners/networking/cisco">Cisco</a>
+                <a href="/partners/networking/juniper">Juniper Networks</a>
+                <a href="/partners/security/rsa">RSA</a>
+                <a href="/partners/security/crowdstrike">CrowdStrike</a>
+                <a href="/partners/security/fortinet">Fortinet</a>
+                <a href="/partners/security/checkpoint">Check Point</a>
+                <a href="/partners/security/forcepoint">Forcepoint</a>
+                <a href="/partners/security/barracuda">Barracuda</a>
+                <a href="/partners/endpoint/apple-enterprise">Apple</a>
+                <a href="/partners/endpoint/jamf">Jamf</a>
               </div>
               <div className="footer-column">
                 <h4>Legal</h4>
-                <a href="#">Terms of Service</a>
-                <a href="#">Refunds</a>
-                <a href="#">Cancellation</a>
+                <a href="/terms">Terms of Service</a>
+                <a href="/refund-cancellation">Refund & Cancellation</a>
               </div>
             </div>
             <div className="footer-bottom">
               <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
               <div className="footer-socials">
-                <span>✕</span>
-                <span>in</span>
-              </div>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
+            </div>
             </div>
           </div>
         </section>

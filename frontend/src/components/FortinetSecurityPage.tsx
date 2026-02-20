@@ -1,8 +1,12 @@
-import { useState } from 'react'
-import AntigravityBackground from './AntigravityBackground'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import HeroLiveBackground from './HeroLiveBackground'
 import SiteFooter from './SiteFooter'
 
 export default function FortinetSecurityPage() {
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
+  const useCasesSectionRef = useRef<HTMLElement | null>(null)
+  const [useCasesVisible, setUseCasesVisible] = useState(false)
   const whyPoints = [
     'Authorized Fortinet Partner with Security Fabric expertise',
     'Unified security architecture reducing complexity and gaps',
@@ -69,32 +73,114 @@ export default function FortinetSecurityPage() {
   ]
 
   const faqs = [
-    'What Fortinet solutions does Pirlanta implement?',
-    'What is the Fortinet Security Fabric?',
-    'Can FortiGate replace our existing firewall?',
-    'Do you provide FortiMail email security?',
-    'Can Fortinet secure our SD-WAN deployment?',
-    'Do you offer managed services for Fortinet?',
+    {
+      question: 'What Fortinet solutions does Pirlanta implement?',
+      answer:
+        'We implement the full Fortinet Security Fabric including FortiGate NGFW, FortiMail, FortiAP, FortiSwitch, FortiEDR, FortiSASE, and SD-WAN solutions for integrated security.',
+    },
+    {
+      question: 'What is the Fortinet Security Fabric?',
+      answer:
+        "The Security Fabric is Fortinet's integrated architecture that connects all security products for unified visibility, automated threat response, and simplified management across your environment.",
+    },
+    {
+      question: 'Can FortiGate replace our existing firewall?',
+      answer:
+        'Yes, FortiGate NGFWs offer industry-leading performance and security effectiveness. We design migration plans that minimize disruption while maximizing security improvement.',
+    },
+    {
+      question: 'Do you provide FortiMail email security?',
+      answer:
+        'Yes, we deploy FortiMail for comprehensive email protection including anti-spam, anti-phishing, malware detection, and data loss prevention with Microsoft 365 integration.',
+    },
+    {
+      question: 'Can Fortinet secure our SD-WAN deployment?',
+      answer:
+        'Yes, Fortinet Secure SD-WAN integrates NGFW security with SD-WAN functionality, providing secure connectivity without requiring separate security appliances.',
+    },
+    {
+      question: 'Do you offer managed services for Fortinet?',
+      answer:
+        'Yes, we provide day-2 operations including monitoring, policy management, firmware updates, and incident response for Fortinet deployments.',
+    },
   ]
 
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = useCasesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setUseCasesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setUseCasesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24 relative">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="partner-logo fortinet-logo" aria-label="Fortinet">
-            <img src="/partners/fortinet-logo.svg" alt="Fortinet" />
+      <section className="partner-hero live-hero fortinet-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content fortinet-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
+          <div className="fortinet-hero-logo fortinet-hero-fade fortinet-hero-fade-1">
+            <img
+              src="/partners/fortinet-logo.svg"
+              alt="Fortinet"
+              className="fortinet-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight">Authorized Fortinet Partner</span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Fortinet <span className="ai-accent">Partner</span>
+          <span className="pill pill--tight fortinet-hero-pill fortinet-hero-fade fortinet-hero-fade-2">
+            Authorized Fortinet Partner
+          </span>
+          <h1 className="fortinet-hero-title fortinet-hero-fade fortinet-hero-fade-3">
+            Fortinet <span className="fortinet-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+          <p className="fortinet-hero-kicker fortinet-hero-fade fortinet-hero-fade-4">
             Security Fabric for Complete Protection
           </p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="fortinet-hero-copy fortinet-hero-fade fortinet-hero-fade-5">
             As an Authorized Fortinet Partner, we deliver integrated security solutions—from next-generation firewalls to SD-WAN and endpoint protection through the Fortinet Security Fabric.
           </p>
         </div>
@@ -114,43 +200,54 @@ export default function FortinetSecurityPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Fortinet?</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our Fortinet partnership enables us to deliver the complete Security Fabric, providing integrated protection across network, endpoint, and cloud with unified visibility and automated response.
-            </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point">
-                  <span className="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="cisco-card">
-            <div className="partner-logo partner-logo--small fortinet-logo" aria-label="Fortinet">
-              <img src="/partners/fortinet-logo.svg" alt="Fortinet" />
-            </div>
-            <h3>Authorized Fortinet Partner</h3>
-            <p>
-              Certified to implement and support the complete Fortinet Security Fabric portfolio for enterprise protection.
-            </p>
-            <div className="cisco-badges">
-              <div>
-                <strong>NGFW</strong>
-                <span>Certified</span>
+      <section
+        ref={whySectionRef}
+        className={`section-light cisco-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-why-wrapper mx-auto max-w-7xl px-6">
+          <div className="cisco-why-grid">
+            <div className="cisco-why-copy">
+              <h2 className="cisco-why-title cisco-why-fade cisco-why-delay-1">
+                Why Pirlanta for Fortinet?
+              </h2>
+              <p className="cisco-why-subtitle cisco-why-fade cisco-why-delay-2">
+                Our Fortinet partnership enables us to deliver the complete Security Fabric, providing integrated
+                protection across network, endpoint, and cloud with unified visibility and automated response.
+              </p>
+              <div className="cisco-why-points">
+                {whyPoints.map((point, index) => (
+                  <div
+                    key={point}
+                    className={`cisco-point cisco-why-fade cisco-why-delay-${index + 3}`}
+                  >
+                    <span className="benefit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <strong>SD-WAN</strong>
-                <span>Specialized</span>
+            </div>
+            <div className="cisco-card cisco-why-card cisco-why-fade cisco-why-delay-8">
+              <div className="partner-logo partner-logo--small fortinet-logo" aria-label="Fortinet">
+                <img src="/partners/fortinet-logo.svg" alt="Fortinet" />
+              </div>
+              <h3>Authorized Fortinet Partner</h3>
+              <p>
+                Certified to implement and support the complete Fortinet Security Fabric portfolio for enterprise protection.
+              </p>
+              <div className="cisco-badges">
+                <div>
+                  <strong>NGFW</strong>
+                  <span>Certified</span>
+                </div>
+                <div>
+                  <strong>SD-WAN</strong>
+                  <span>Specialized</span>
+                </div>
               </div>
             </div>
           </div>
@@ -218,16 +315,26 @@ export default function FortinetSecurityPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Common Use Cases</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={useCasesSectionRef}
+        className={`section-light fortinet-use-section${useCasesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="fortinet-use-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="fortinet-use-title fortinet-use-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Common Use Cases
+          </h2>
+          <p className="fortinet-use-subtitle fortinet-use-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
             How enterprises leverage Fortinet through Pirlanta.
           </p>
-          <div className="cisco-use-grid mt-10">
-            {useCases.map((item) => (
-              <div key={item.title} className="cyber-cap-card">
-                <div className="cyber-cap-icon" aria-hidden="true">
+          <div className="fortinet-use-grid">
+            {useCases.map((item, index) => (
+              <div
+                key={item.title}
+                className="fortinet-use-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="cyber-cap-card fortinet-use-card">
+                  <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'shield' && (
                     <svg viewBox="0 0 24 24" fill="none">
                       <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z" stroke="currentColor" strokeWidth="2" />
@@ -248,40 +355,42 @@ export default function FortinetSecurityPage() {
                       <path d="M8 8h.01M8 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   )}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.copy}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light cisco-faq-section">
+        <div className="cisco-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Fortinet FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="cisco-faq-title">Fortinet FAQs</h2>
+            <p className="cisco-faq-subtitle">
               Common questions about Fortinet Security Fabric, FortiGate, and our implementation services.
             </p>
             <a href="/contact">
-              <button className="mt-6 rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300">
+              <button className="cisco-faq-button">
                 Ask a Question
               </button>
             </a>
           </div>
-          <div className="cyber-faq">
-            {faqs.map((question, index) => {
+          <div className="cisco-faq-list">
+            {faqs.map((item, index) => {
               const isOpen = openFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  key={item.question}
+                  className={`cisco-faq-item ${isOpen ? 'cisco-faq-item--open' : ''}`}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className="faq-toggle">▾</span>
+                  <span className="cisco-faq-question">{item.question}</span>
+                  <span className="cisco-faq-toggle">▾</span>
+                  <span className="cisco-faq-answer">{item.answer}</span>
                 </button>
               )
             })}

@@ -51,17 +51,16 @@ export default function SiteFooter() {
       </div>
       <div className="footer-column">
         <h4>Legal</h4>
-        <a href="#">Terms of Service</a>
-        <a href="#">Refunds</a>
-        <a href="#">Cancellation</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/refund-cancellation">Refund & Cancellation</a>
       </div>
     </div>
     <div className="footer-bottom">
       <span>© 2026 Pirlanta IT Solutions Pvt. Ltd. All rights reserved.</span>
       <div className="footer-socials">
-        <span>✕</span>
-        <span>in</span>
-      </div>
+              <a href="https://x.com/LtdPirlanta/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on X">✕</a>
+              <a href="http://linkedin.com/company/pirlantait/" target="_blank" rel="noopener noreferrer" aria-label="Pirlanta on LinkedIn">in</a>
+            </div>
     </div>
     </>
   )

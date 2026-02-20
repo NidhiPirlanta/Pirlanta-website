@@ -1,7 +1,13 @@
-import { useState } from 'react'
-import AntigravityBackground from './AntigravityBackground'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import HeroLiveBackground from './HeroLiveBackground'
 
 export default function JamfPage() {
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
+  const solutionsSectionRef = useRef<HTMLElement | null>(null)
+  const [solutionsVisible, setSolutionsVisible] = useState(false)
+  const useCasesSectionRef = useRef<HTMLElement | null>(null)
+  const [useCasesVisible, setUseCasesVisible] = useState(false)
   const whyPoints = [
     'Registered Jamf Partner with trained deployment specialists',
     'Same-day support for new Apple OS releases',
@@ -56,33 +62,141 @@ export default function JamfPage() {
   ]
 
   const faqs = [
-    'What is Jamf and why is it important for Apple devices?',
-    'Can you migrate us from another MDM solution to Jamf?',
-    'What is the difference between Jamf Pro and Jamf Now?',
-    'Does Jamf work with employee-owned devices (BYOD)?',
-    'How does Jamf Protect differ from traditional antivirus?',
-    'Do you offer ongoing managed services for Jamf?',
+    {
+      question: 'What is Jamf and why is it important for Apple devices?',
+      answer:
+        'Jamf is the industry-leading Apple device management platform trusted by organizations worldwide. It enables IT teams to deploy, manage, and secure Mac, iPad, iPhone, and Apple TV devices at scale while maintaining the native Apple experience users expect.',
+    },
+    {
+      question: 'Can you migrate us from another MDM solution to Jamf?',
+      answer:
+        'Yes, we provide complete migration services from other MDM platforms such as Microsoft Intune, VMware Workspace ONE, Kandji, Mosyle, or manual management. Our migration process ensures zero downtime and preserves your existing configurations where possible.',
+    },
+    {
+      question: 'What is the difference between Jamf Pro and Jamf Now?',
+      answer:
+        'Jamf Pro is the enterprise solution with advanced workflows, smart groups, custom scripting, and deep integration capabilities. Jamf Now is designed for SMBs with straightforward requirements—it offers essential MDM features in a simpler, more cost-effective package.',
+    },
+    {
+      question: 'Does Jamf work with employee-owned devices (BYOD)?',
+      answer:
+        'Yes, Jamf supports both corporate-owned and BYOD deployments. With User Enrollment, employees can enroll personal devices while maintaining privacy—IT manages work apps and data without access to personal content.',
+    },
+    {
+      question: 'How does Jamf Protect differ from traditional antivirus?',
+      answer:
+        'Jamf Protect is purpose-built for macOS, leveraging Apple security frameworks rather than fighting against them. It provides real-time threat prevention, behavioral detection, and compliance enforcement without impacting Mac performance or user experience.',
+    },
+    {
+      question: 'Do you offer ongoing managed services for Jamf?',
+      answer:
+        'Yes, we provide managed MDM services including policy updates, app deployments, OS upgrade planning, compliance reporting, and incident support under defined SLAs. This allows your IT team to focus on strategic initiatives.',
+    },
   ]
 
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = solutionsSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setSolutionsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSolutionsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = useCasesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setUseCasesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setUseCasesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
       {/* Hero Section */}
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="partner-logo flex items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-white font-bold tracking-wider">
-            jamf
+      <section className="partner-hero live-hero jamf-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content jamf-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="jamf-hero-logo jamf-hero-fade jamf-hero-fade-1">
+            <img
+              src="/partners/JAMF.png"
+              alt="Jamf"
+              className="jamf-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight mt-3 inline-block rounded border border-emerald-500/60 bg-emerald-700/60 px-4 py-1.5 text-sm font-medium text-white">
+          <span className="pill pill--tight jamf-hero-pill jamf-hero-fade jamf-hero-fade-2">
             Registered Partner
           </span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Jamf <span className="ai-accent">Partner</span>
+          <h1 className="jamf-hero-title jamf-hero-fade jamf-hero-fade-3">
+            Jamf <span className="jamf-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-emerald-300">Apple Device Management & Security</p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="jamf-hero-kicker jamf-hero-fade jamf-hero-fade-4">
+            Apple Device Management & Security
+          </p>
+          <p className="jamf-hero-copy jamf-hero-fade jamf-hero-fade-5">
             As a Jamf Registered Partner, we help organizations deploy, manage, and secure their Apple ecosystem—from zero-touch deployment to endpoint protection and identity management.
           </p>
         </div>
@@ -94,18 +208,24 @@ export default function JamfPage() {
       </section>
 
       {/* Why Pirlanta for Jamf */}
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Jamf?</h2>
-            <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={whySectionRef}
+        className={`section-light jamf-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="jamf-why-wrapper mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="jamf-why-copy">
+            <h2 className="jamf-why-title jamf-why-fade jamf-why-delay-1">Why Pirlanta for Jamf?</h2>
+            <p className="jamf-why-subtitle jamf-why-fade jamf-why-delay-2">
               Apple devices work best when managed with Apple-native tools. Our Jamf expertise ensures your Mac, iPad, and iPhone fleet is deployed efficiently, secured comprehensively, and maintained seamlessly—without compromising the user experience.
             </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point flex items-start gap-3">
-                  <span className="benefit-icon mt-0.5 shrink-0 text-emerald-600">
-                    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+            <div className="jamf-why-points">
+              {whyPoints.map((point, index) => (
+                <div
+                  key={point}
+                  className={`jamf-why-point jamf-why-fade jamf-why-delay-${index + 3}`}
+                >
+                  <span className="jamf-why-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
                       <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
                       <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
@@ -115,22 +235,22 @@ export default function JamfPage() {
               ))}
             </div>
           </div>
-          <div className="cisco-card rounded-2xl border border-slate-200 bg-emerald-50/30 p-8 shadow-sm">
-            <div className="partner-logo partner-logo--small flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 font-bold tracking-wider text-slate-900">
-              jamf
+          <div className="jamf-why-card jamf-why-fade jamf-why-delay-8">
+            <div className="jamf-why-logo">
+              <img src="/partners/JAMF.png" alt="Jamf" className="jamf-why-logo-img" />
             </div>
-            <h3 className="mt-4 text-xl font-semibold text-slate-900">Jamf Registered Partner</h3>
-            <p className="mt-2 text-sm text-slate-600">
+            <h3>Jamf Registered Partner</h3>
+            <p>
               Trained and certified to deploy Jamf solutions across enterprise environments, from initial planning through ongoing operations.
             </p>
-            <div className="mt-6 flex gap-4">
-              <div className="flex-1 rounded-lg border-2 border-emerald-600 bg-white p-4 text-center">
-                <strong className="block text-emerald-700">MDM</strong>
-                <span className="text-sm text-slate-600">Specialists</span>
+            <div className="jamf-why-metrics">
+              <div className="jamf-why-metric">
+                <strong>MDM</strong>
+                <span>Specialists</span>
               </div>
-              <div className="flex-1 rounded-lg border-2 border-emerald-600 bg-white p-4 text-center">
-                <strong className="block text-emerald-700">Apple</strong>
-                <span className="text-sm text-slate-600">Focused</span>
+              <div className="jamf-why-metric">
+                <strong>Apple</strong>
+                <span>Focused</span>
               </div>
             </div>
           </div>
@@ -138,16 +258,24 @@ export default function JamfPage() {
       </section>
 
       {/* Jamf Solutions We Deploy */}
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Jamf Solutions We Deploy</h2>
-          <p className="mt-2 text-sm text-slate-500">
-            Comprehensive Apple device management and security for organizations of every size.
-          </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {solutions.map((item) => (
-              <div key={item.title} className="cyber-cap-card cisco-solution-card rounded-xl border border-slate-200 bg-white p-6 text-left">
-                <div className="cyber-cap-icon mb-4 text-emerald-600">
+      <section
+        ref={solutionsSectionRef}
+        className={`section-light jamf-solutions-section${solutionsVisible ? ' is-visible' : ''}`}
+      >
+        <div className="jamf-solutions-wrapper mx-auto max-w-7xl px-6">
+          <div className="jamf-solutions-header jamf-solutions-fade jamf-solutions-delay-1">
+            <h2 className="jamf-solutions-title">Jamf Solutions We Deploy</h2>
+            <p className="jamf-solutions-subtitle">
+              Comprehensive Apple device management and security for organizations of every size.
+            </p>
+          </div>
+          <div className="jamf-solutions-grid">
+            {solutions.map((item, index) => (
+              <div
+                key={item.title}
+                className={`jamf-solutions-card jamf-solutions-fade jamf-solutions-delay-${index + 2}`}
+              >
+                <div className="jamf-solutions-icon">
                   {item.icon === 'monitor' && (
                     <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10" stroke="currentColor" strokeWidth="2">
                       <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -171,12 +299,13 @@ export default function JamfPage() {
                     </svg>
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{item.copy}</p>
-                <ul className="mt-3 space-y-1 text-sm text-slate-500">
+                <h3 className="jamf-solutions-name">{item.title}</h3>
+                <p className="jamf-solutions-copy">{item.copy}</p>
+                <ul className="jamf-solutions-list">
                   {item.bullets.map((bullet) => (
-                    <li key={bullet} className="flex items-center gap-2">
-                      <span className="text-emerald-600">•</span> {bullet}
+                    <li key={bullet} className="jamf-solutions-bullet">
+                      <span className="jamf-solutions-dot" aria-hidden="true" />
+                      <span>{bullet}</span>
                     </li>
                   ))}
                 </ul>
@@ -187,38 +316,49 @@ export default function JamfPage() {
       </section>
 
       {/* Common Use Cases */}
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Common Use Cases</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={useCasesSectionRef}
+        className={`section-light jamf-use-section${useCasesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="jamf-use-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="jamf-use-title jamf-use-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Common Use Cases
+          </h2>
+          <p className="jamf-use-subtitle jamf-use-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
             How organizations leverage our Jamf expertise.
           </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
-            {useCases.map((item) => (
-              <div key={item.title} className="cyber-cap-card rounded-xl border border-slate-200 bg-white p-6 text-left">
-                <div className="cyber-cap-icon mb-4 text-emerald-600">
-                  {item.icon === 'gear' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="3" />
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'migration' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10" stroke="currentColor" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M16 17h6m-3-3v6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'shield' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
+          <div className="jamf-use-grid">
+            {useCases.map((item, index) => (
+              <div
+                key={item.title}
+                className="jamf-use-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="cyber-cap-card jamf-use-card">
+                  <div className="cyber-cap-icon" aria-hidden="true">
+                    {item.icon === 'gear' && (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'migration' && (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M16 17h6m-3-3v6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                    {item.icon === 'shield' && (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -226,36 +366,30 @@ export default function JamfPage() {
       </section>
 
       {/* Jamf FAQs */}
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light cisco-faq-section">
+        <div className="cisco-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Jamf FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="cisco-faq-title">Jamf FAQs</h2>
+            <p className="cisco-faq-subtitle">
               Common questions about Jamf and our implementation services.
             </p>
-            <a href="/contact" className="mt-6 inline-block rounded-full border-2 border-emerald-600 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
+            <a href="/contact" className="cisco-faq-button">
               Ask a Question
             </a>
           </div>
-          <div className="cyber-faq space-y-2">
-            {faqs.map((question, index) => {
+          <div className="cisco-faq-list">
+            {faqs.map((item, index) => {
               const isOpen = openFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item w-full rounded-lg border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:border-emerald-200 hover:bg-slate-50 ${isOpen ? 'border-emerald-300 bg-emerald-50/50' : ''}`}
+                  key={item.question}
+                  className={`cisco-faq-item ${isOpen ? 'cisco-faq-item--open' : ''}`}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span className="flex items-center justify-between">
-                    {question}
-                    <span className={`ml-2 shrink-0 text-emerald-600 transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
-                  </span>
-                  {isOpen && (
-                    <p className="mt-2 text-xs text-slate-500">
-                      Contact us to learn more about our Jamf implementation and support services.
-                    </p>
-                  )}
+                  <span className="cisco-faq-question">{item.question}</span>
+                  <span className="cisco-faq-toggle">▾</span>
+                  <span className="cisco-faq-answer">{item.answer}</span>
                 </button>
               )
             })}

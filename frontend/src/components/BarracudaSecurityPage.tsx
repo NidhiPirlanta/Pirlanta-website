@@ -1,9 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import AntigravityBackground from './AntigravityBackground'
+import HeroLiveBackground from './HeroLiveBackground'
 import SiteFooter from './SiteFooter'
 
 export default function BarracudaSecurityPage() {
+  const useCasesSectionRef = useRef<HTMLElement | null>(null)
+  const [useCasesVisible, setUseCasesVisible] = useState(false)
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
   const whyPoints = [
     'Barracuda Certified Partner with implementation and support expertise',
     'Unified email, backup, and security solutions from a single vendor',
@@ -70,32 +74,114 @@ export default function BarracudaSecurityPage() {
   ]
 
   const faqs = [
-    'What email security solutions does Pirlanta offer with Barracuda?',
-    'Can Barracuda protect Microsoft 365 environments?',
-    'What is Barracuda XDR and how does it work?',
-    'Do you provide backup for cloud applications?',
-    'How does Barracuda Zero Trust Access differ from VPN?',
-    'Can you protect web applications with Barracuda WAF?',
+    {
+      question: 'What email security solutions does Pirlanta offer with Barracuda?',
+      answer:
+        'We deploy Barracuda Email Protection including advanced threat protection, impersonation detection, link protection, and email encryption for comprehensive email security.',
+    },
+    {
+      question: 'Can Barracuda protect Microsoft 365 environments?',
+      answer:
+        'Yes, Barracuda provides native integration with Microsoft 365 for email security, backup, and archiving. We implement and manage the full M365 protection stack.',
+    },
+    {
+      question: 'What is Barracuda XDR and how does it work?',
+      answer:
+        'Barracuda XDR correlates threats across email, endpoints, servers, and cloud workloads to provide unified detection and automated response, reducing alert fatigue and investigation time.',
+    },
+    {
+      question: 'Do you provide backup for cloud applications?',
+      answer:
+        'Yes, we implement Barracuda Cloud-to-Cloud Backup for Microsoft 365 and Google Workspace, ensuring protection against accidental deletion, ransomware, and compliance requirements.',
+    },
+    {
+      question: 'How does Barracuda Zero Trust Access differ from VPN?',
+      answer:
+        'Barracuda Zero Trust Access provides application-level access based on identity and device posture, eliminating the network-wide access risks associated with traditional VPN.',
+    },
+    {
+      question: 'Can you protect web applications with Barracuda WAF?',
+      answer:
+        'Yes, we deploy Barracuda WAF to protect web applications and APIs from OWASP Top 10 threats, bot attacks, and DDoS with cloud-delivered or on-premises options.',
+    },
   ]
 
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = useCasesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setUseCasesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setUseCasesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24 relative">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="partner-logo barracuda-logo" aria-label="Barracuda">
-            <span>Barracuda</span>
+      <section className="partner-hero live-hero barracuda-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content barracuda-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
+          <div className="barracuda-hero-logo barracuda-hero-fade barracuda-hero-fade-1">
+            <img
+              src="/partners/Barracuda_Networks.png"
+              alt="Barracuda"
+              className="barracuda-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight">Barracuda Certified Partner</span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Barracuda <span className="ai-accent">Partner</span>
+          <span className="pill pill--tight barracuda-hero-pill barracuda-hero-fade barracuda-hero-fade-2">
+            Barracuda Certified Partner
+          </span>
+          <h1 className="barracuda-hero-title barracuda-hero-fade barracuda-hero-fade-3">
+            Barracuda <span className="barracuda-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-sm text-emerald-100/70 md:text-base">
+          <p className="barracuda-hero-kicker barracuda-hero-fade barracuda-hero-fade-4">
             Email Security, XDR &amp; Cloud Backup
           </p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="barracuda-hero-copy barracuda-hero-fade barracuda-hero-fade-5">
             As a Barracuda Certified Partner, we deliver integrated email protection, extended
             detection and response, and cloud backup solutions for modern enterprises.
           </p>
@@ -116,44 +202,55 @@ export default function BarracudaSecurityPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Barracuda?</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our Barracuda partnership enables us to deliver comprehensive email security, data protection,
-              and XDR solutions with cloud-native simplicity and AI-powered threat detection.
-            </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point">
-                  <span className="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="cisco-card">
-            <div className="partner-logo partner-logo--small barracuda-logo" aria-label="Barracuda">
-              <span>Barracuda</span>
-            </div>
-            <h3>Barracuda Certified Partner</h3>
-            <p>
-              Certified to implement and support the full Barracuda portfolio including email, backup, and security solutions.
-            </p>
-            <div className="cisco-badges">
-              <div>
-                <strong>Email</strong>
-                <span>Protection</span>
+      <section
+        ref={whySectionRef}
+        className={`section-light cisco-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-why-wrapper mx-auto max-w-7xl px-6">
+          <div className="cisco-why-grid">
+            <div className="cisco-why-copy">
+              <h2 className="cisco-why-title cisco-why-fade cisco-why-delay-1">
+                Why Pirlanta for Barracuda?
+              </h2>
+              <p className="cisco-why-subtitle cisco-why-fade cisco-why-delay-2">
+                Our Barracuda partnership enables us to deliver comprehensive email security, data
+                protection, and XDR solutions with cloud-native simplicity and AI-powered threat detection.
+              </p>
+              <div className="cisco-why-points">
+                {whyPoints.map((point, index) => (
+                  <div
+                    key={point}
+                    className={`cisco-point cisco-why-fade cisco-why-delay-${index + 3}`}
+                  >
+                    <span className="benefit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <strong>XDR</strong>
-                <span>Certified</span>
+            </div>
+            <div className="cisco-card cisco-why-card cisco-why-fade cisco-why-delay-8">
+              <div className="partner-logo partner-logo--small barracuda-logo" aria-label="Barracuda">
+                <img src="/partners/Barracuda_Networks.png" alt="Barracuda" />
+              </div>
+              <h3>Barracuda Certified Partner</h3>
+              <p>
+                Certified to implement and support the full Barracuda portfolio including email, backup,
+                and security solutions.
+              </p>
+              <div className="cisco-badges">
+                <div>
+                  <strong>Email</strong>
+                  <span>Protection</span>
+                </div>
+                <div>
+                  <strong>XDR</strong>
+                  <span>Certified</span>
+                </div>
               </div>
             </div>
           </div>
@@ -219,16 +316,26 @@ export default function BarracudaSecurityPage() {
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Common Use Cases</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={useCasesSectionRef}
+        className={`section-light barracuda-use-section${useCasesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="barracuda-use-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="barracuda-use-title barracuda-use-reveal" style={{ '--delay': '0s' } as CSSProperties}>
+            Common Use Cases
+          </h2>
+          <p className="barracuda-use-subtitle barracuda-use-reveal" style={{ '--delay': '0.08s' } as CSSProperties}>
             How enterprises leverage Barracuda through Pirlanta.
           </p>
-          <div className="cisco-use-grid mt-10">
-            {useCases.map((item) => (
-              <div key={item.title} className="cyber-cap-card">
-                <div className="cyber-cap-icon" aria-hidden="true">
+          <div className="barracuda-use-grid">
+            {useCases.map((item, index) => (
+              <div
+                key={item.title}
+                className="barracuda-use-reveal"
+                style={{ '--delay': `${0.16 + index * 0.08}s` } as CSSProperties}
+              >
+                <div className="cyber-cap-card barracuda-use-card">
+                  <div className="cyber-cap-icon" aria-hidden="true">
                   {item.icon === 'email' && (
                     <svg viewBox="0 0 24 24" fill="none">
                       <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
@@ -248,40 +355,42 @@ export default function BarracudaSecurityPage() {
                       <path d="M7 16l4-4 4 4 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   )}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.copy}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light cisco-faq-section">
+        <div className="cisco-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Barracuda FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="cisco-faq-title">Barracuda FAQs</h2>
+            <p className="cisco-faq-subtitle">
               Common questions about Barracuda email security, XDR, and backup solutions.
             </p>
             <Link to="/contact">
-              <button className="mt-6 rounded-full border border-emerald-200 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300">
+              <button className="cisco-faq-button">
                 Ask a Question
               </button>
             </Link>
           </div>
-          <div className="cyber-faq">
-            {faqs.map((question, index) => {
+          <div className="cisco-faq-list">
+            {faqs.map((item, index) => {
               const isOpen = openFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item ${isOpen ? 'cyber-faq-item--open' : ''}`}
+                  key={item.question}
+                  className={`cisco-faq-item ${isOpen ? 'cisco-faq-item--open' : ''}`}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className="faq-toggle">▾</span>
+                  <span className="cisco-faq-question">{item.question}</span>
+                  <span className="cisco-faq-toggle">▾</span>
+                  <span className="cisco-faq-answer">{item.answer}</span>
                 </button>
               )
             })}

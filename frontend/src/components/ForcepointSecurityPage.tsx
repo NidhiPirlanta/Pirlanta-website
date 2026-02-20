@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import AntigravityBackground from './AntigravityBackground'
+import { useEffect, useRef, useState } from 'react'
+import HeroLiveBackground from './HeroLiveBackground'
 
 export default function ForcepointSecurityPage() {
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
   const whyPoints = [
     'Unified data security with single policy across cloud, web, email, and endpoint',
     'AI-native classification and discovery for sensitive data protection',
@@ -74,33 +76,89 @@ export default function ForcepointSecurityPage() {
   ]
 
   const faqs = [
-    "What is Forcepoint's data-first approach to security?",
-    'How does Forcepoint DLP differ from traditional solutions?',
-    'What is Data Security Posture Management (DSPM)?',
-    'Can Forcepoint protect data in cloud applications?',
-    'Does Forcepoint offer insider threat protection?',
-    'How does Forcepoint help with compliance?',
+    {
+      question: "What is Forcepoint's data-first approach to security?",
+      answer:
+        'Forcepoint focuses on protecting data wherever it resides and moves. Their approach uses AI to discover, classify, and protect sensitive data with unified policies across cloud, web, email, endpoint, and network—enabling organizations to work freely while staying secure.',
+    },
+    {
+      question: 'How does Forcepoint DLP differ from traditional solutions?',
+      answer:
+        'Forcepoint DLP provides unified policy enforcement across all data channels from a single platform. Create a policy once and enforce it everywhere—cloud, web, email, endpoint, and network—eliminating the complexity of managing multiple point solutions.',
+    },
+    {
+      question: 'What is Data Security Posture Management (DSPM)?',
+      answer:
+        'DSPM helps organizations discover and classify structured and unstructured data using AI, assess data security risks, and prioritize remediation. It provides visibility into where sensitive data resides and how it flows across your environment.',
+    },
+    {
+      question: 'Can Forcepoint protect data in cloud applications?',
+      answer:
+        'Yes, Forcepoint CASB provides comprehensive cloud application security including shadow IT discovery, cloud app governance, inline and API-based protection, and SaaS security posture management.',
+    },
+    {
+      question: 'Does Forcepoint offer insider threat protection?',
+      answer:
+        "Yes, Forcepoint's Data Detection and Response (DDR) monitors user behavior and data interactions to identify and prevent insider threats, whether malicious or accidental, with continuous surveillance and risk-based policies.",
+    },
+    {
+      question: 'How does Forcepoint help with compliance?',
+      answer:
+        'Forcepoint includes pre-built templates for major regulations including GDPR, HIPAA, PCI-DSS, and industry-specific requirements. Policies can be customized and enforced consistently across all channels.',
+    },
   ]
 
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
       {/* Hero Section */}
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="partner-logo flex items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-white font-bold tracking-wider">
-            Forcepoint
+      <section className="partner-hero live-hero forcepoint-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content forcepoint-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="forcepoint-hero-logo forcepoint-hero-fade forcepoint-hero-fade-1">
+            <img
+              src="/partners/Forcepoint_Logo_New.webp"
+              alt="Forcepoint"
+              className="forcepoint-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight mt-3 inline-block rounded border border-emerald-500/60 bg-slate-800 px-4 py-1.5 text-sm font-medium text-white">
+          <span className="pill pill--tight forcepoint-hero-pill forcepoint-hero-fade forcepoint-hero-fade-2">
             Forcepoint Partner
           </span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Forcepoint <span className="ai-accent">Partner</span>
+          <h1 className="forcepoint-hero-title forcepoint-hero-fade forcepoint-hero-fade-3">
+            Forcepoint <span className="forcepoint-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-emerald-300">Data-First Security for the Modern Enterprise</p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="forcepoint-hero-kicker forcepoint-hero-fade forcepoint-hero-fade-4">
+            Data-First Security for the Modern Enterprise
+          </p>
+          <p className="forcepoint-hero-copy forcepoint-hero-fade forcepoint-hero-fade-5">
             As a Forcepoint Partner, we deliver AI-native data security solutions—from unified DLP and CASB to DSPM and Secure Web Gateway—protecting your sensitive data across every channel.
           </p>
         </div>
@@ -112,43 +170,54 @@ export default function ForcepointSecurityPage() {
       </section>
 
       {/* Why Pirlanta for Forcepoint */}
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Forcepoint?</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our Forcepoint partnership enables comprehensive data protection with a unified platform that secures sensitive information across cloud, web, email, endpoint, and network—without slowing down your business.
-            </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point flex items-start gap-3">
-                  <span className="benefit-icon mt-0.5 shrink-0 text-emerald-600">
-                    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="cisco-card rounded-2xl border border-slate-200 bg-slate-50/50 p-8 shadow-sm">
-            <div className="partner-logo partner-logo--small flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 font-bold tracking-wider text-slate-900">
-              Forcepoint
-            </div>
-            <h3 className="mt-4 text-xl font-semibold text-slate-900">Forcepoint Partner</h3>
-            <p className="mt-2 text-sm text-slate-600">
-              Delivering data-first security solutions that protect sensitive information wherever it resides and moves.
-            </p>
-            <div className="mt-6 flex gap-4">
-              <div className="flex-1 rounded-lg border-2 border-emerald-600 bg-white p-4 text-center">
-                <strong className="block text-emerald-700">DLP</strong>
-                <span className="text-sm text-slate-600">Unified</span>
+      <section
+        ref={whySectionRef}
+        className={`section-light cisco-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-why-wrapper mx-auto max-w-7xl px-6">
+          <div className="cisco-why-grid">
+            <div className="cisco-why-copy">
+              <h2 className="cisco-why-title cisco-why-fade cisco-why-delay-1">
+                Why Pirlanta for Forcepoint?
+              </h2>
+              <p className="cisco-why-subtitle cisco-why-fade cisco-why-delay-2">
+                Our Forcepoint partnership enables comprehensive data protection with a unified platform that secures sensitive
+                information across cloud, web, email, endpoint, and network—without slowing down your business.
+              </p>
+              <div className="cisco-why-points">
+                {whyPoints.map((point, index) => (
+                  <div
+                    key={point}
+                    className={`cisco-point cisco-why-fade cisco-why-delay-${index + 3}`}
+                  >
+                    <span className="benefit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
-              <div className="flex-1 rounded-lg border-2 border-emerald-600 bg-white p-4 text-center">
-                <strong className="block text-emerald-700">CASB</strong>
-                <span className="text-sm text-slate-600">Cloud Security</span>
+            </div>
+            <div className="cisco-card cisco-why-card cisco-why-fade cisco-why-delay-8">
+              <div className="partner-logo partner-logo--small forcepoint-logo" aria-label="Forcepoint">
+                <img src="/partners/Forcepoint_Logo_New.webp" alt="Forcepoint" />
+              </div>
+              <h3>Forcepoint Partner</h3>
+              <p>
+                Delivering data-first security solutions that protect sensitive information wherever it resides and moves.
+              </p>
+              <div className="cisco-badges">
+                <div>
+                  <strong>DLP</strong>
+                  <span>Unified</span>
+                </div>
+                <div>
+                  <strong>CASB</strong>
+                  <span>Cloud Security</span>
+                </div>
               </div>
             </div>
           </div>
@@ -264,36 +333,30 @@ export default function ForcepointSecurityPage() {
       </section>
 
       {/* Forcepoint FAQs */}
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light cisco-faq-section">
+        <div className="cisco-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Forcepoint FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="cisco-faq-title">Forcepoint FAQs</h2>
+            <p className="cisco-faq-subtitle">
               Common questions about Forcepoint data security solutions.
             </p>
-            <a href="/contact" className="mt-6 inline-block rounded-full border-2 border-emerald-600 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
+            <a href="/contact" className="cisco-faq-button">
               Ask a Question
             </a>
           </div>
-          <div className="cyber-faq space-y-2">
-            {faqs.map((question, index) => {
+          <div className="cisco-faq-list">
+            {faqs.map((item, index) => {
               const isOpen = openFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item w-full rounded-lg border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:border-emerald-200 hover:bg-slate-50 ${isOpen ? 'border-emerald-300 bg-emerald-50/50' : ''}`}
+                  key={item.question}
+                  className={`cisco-faq-item ${isOpen ? 'cisco-faq-item--open' : ''}`}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span className="flex items-center justify-between">
-                    {question}
-                    <span className={`ml-2 shrink-0 text-emerald-600 transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
-                  </span>
-                  {isOpen && (
-                    <p className="mt-2 text-xs text-slate-500">
-                      Contact us to learn more about our Forcepoint data security implementation and support services.
-                    </p>
-                  )}
+                  <span className="cisco-faq-question">{item.question}</span>
+                  <span className="cisco-faq-toggle">▾</span>
+                  <span className="cisco-faq-answer">{item.answer}</span>
                 </button>
               )
             })}

@@ -55,7 +55,7 @@ export default function Header({ scrolled }: HeaderProps) {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center gap-3">
           <Link to="/">
-            <img src="/pir-logo.png" alt="Pirlanta" className="h-10 w-auto" />
+            <img src="/pir-logo.png" alt="Pirlanta" className="h-11 w-auto sm:h-12" />
           </Link>
         </div>
         <nav className="hidden items-center gap-3 text-sm text-slate-600 md:flex">
@@ -112,7 +112,7 @@ export default function Header({ scrolled }: HeaderProps) {
           </div>
           <div className="relative" ref={partnersRef}>
             <button
-              className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${partnersDropdownOpen ? 'text-primary bg-primary-100' : 'text-primary bg-primary-50'}`}
+              className={`nav-item inline-flex items-center gap-1 ${partnersDropdownOpen ? 'nav-item--active' : ''}`}
               type="button"
               onClick={() => {
                 setPartnersDropdownOpen((o) => !o)
@@ -120,10 +120,7 @@ export default function Header({ scrolled }: HeaderProps) {
               }}
               aria-expanded={partnersDropdownOpen}
             >
-              Partners
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`lucide lucide-chevron-down ml-1 h-4 w-4 transition-transform ${partnersDropdownOpen ? 'rotate-180' : ''}`}>
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+              Partners <span className={`text-xs transition-transform ${partnersDropdownOpen ? 'rotate-180' : ''}`}>▾</span>
             </button>
             <div className={`partners-dropdown absolute top-full left-0 pt-2 transition-all duration-200 ${partnersDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
               <div className="flex items-start gap-4">

@@ -17,6 +17,12 @@
     box-shadow: 0 8px 16px rgba(39, 102, 0, 0.12);
   }
 
+  .nav-item--nohover:hover {
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+  }
+
   .mobile-menu-overlay {
     background: radial-gradient(ellipse 80% 50% at top right, rgba(217, 234, 198, 0.35) 0%, transparent 55%), #ffffff;
     backdrop-filter: blur(8px);

@@ -1,30 +1,39 @@
-import AntigravityBackground from './AntigravityBackground'
+import { useEffect, useRef, useState } from 'react'
+import HeroLiveBackground from './HeroLiveBackground'
 
 export default function AppleForEnterprisePage() {
+  const devicesSectionRef = useRef<HTMLElement | null>(null)
+  const [devicesVisible, setDevicesVisible] = useState(false)
   const devices = [
     {
       title: 'Mac for Enterprise',
       products: 'MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio',
       copy: 'Power your workforce with the reliability, performance, and security that macOS delivers across every role in the organization.',
-      icon: 'mac',
+      image: '/hero_static__c9sislzzicq6_large.png',
+      alt: 'MacBook lineup',
+      imageClass: 'apple-device-image--mac',
     },
     {
       title: 'iPad for Frontline & Operations',
       products: 'iPad, iPad Air, iPad Pro',
       copy: 'Equip field teams, warehouse staff, and operations with iPads built for mobility, durability, and enterprise app deployment.',
-      icon: 'ipad',
+      image: '/ipad_pro_73be02a34.jpg',
+      alt: 'iPad Pro',
+      imageClass: 'apple-device-image--ipad',
     },
     {
       title: 'iPhone for Work',
       products: 'iPhone models for executives, sales & support teams',
       copy: 'Keep executives, sales teams, and customer-facing staff connected with secure, managed iPhones.',
-      icon: 'iphone',
+      image: '/iphone_16__drr03yfz644m_large.jpg',
+      alt: 'iPhone',
+      imageClass: 'apple-device-image--iphone',
     },
     {
       title: 'Accessories',
       products: 'AirPods, adapters, keyboards, mice, displays',
       copy: 'Complete your Apple deployment with certified accessories — from AirPods for calls to displays for workstations.',
-      icon: 'accessories',
+      iconSet: 'accessories',
     },
   ]
 
@@ -94,37 +103,125 @@ export default function AppleForEnterprisePage() {
     },
   ]
 
+  useEffect(() => {
+    const section = devicesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setDevicesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setDevicesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  const deliverSectionRef = useRef<HTMLElement | null>(null)
+  const [deliverVisible, setDeliverVisible] = useState(false)
+  const bundlesSectionRef = useRef<HTMLElement | null>(null)
+  const [bundlesVisible, setBundlesVisible] = useState(false)
+
+  useEffect(() => {
+    const section = deliverSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setDeliverVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setDeliverVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = bundlesSectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setBundlesVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setBundlesVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
       {/* Hero Section */}
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24 text-center">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="partner-logo flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="mx-auto h-14 w-14 text-white">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-            </svg>
+      <section className="partner-hero live-hero apple-enterprise-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content apple-enterprise-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="apple-enterprise-hero-logo apple-enterprise-hero-fade apple-enterprise-hero-fade-1">
+            <img
+              src="/partners/apple.png"
+              alt="Apple"
+              className="apple-enterprise-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight mt-4 inline-block rounded border border-emerald-500/60 bg-slate-800 px-4 py-1.5 text-sm font-medium text-white">
+          <span className="pill pill--tight apple-enterprise-hero-pill apple-enterprise-hero-fade apple-enterprise-hero-fade-2">
             Distribution Partner Program
           </span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Enterprise Apple Procurement, <span className="ai-accent">Made Simple</span>
+          <h1 className="apple-enterprise-hero-title apple-enterprise-hero-fade apple-enterprise-hero-fade-3">
+            Enterprise Apple Procurement,
+            <span className="block apple-enterprise-hero-accent">Made Simple</span>
           </h1>
-          <p className="mt-3 text-lg text-emerald-100/90">Enable your workforce with Apple devices at scale.</p>
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="apple-enterprise-hero-kicker apple-enterprise-hero-fade apple-enterprise-hero-fade-4">
+            Enable your workforce with Apple devices at scale.
+          </p>
+          <p className="apple-enterprise-hero-copy apple-enterprise-hero-fade apple-enterprise-hero-fade-5">
             Pirlanta simplifies Apple procurement for enterprises — handling volume orders, enterprise pricing, role-based device recommendations, and phased rollouts so your teams get the right Apple hardware, on time, at the right price.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="apple-enterprise-hero-actions apple-enterprise-hero-fade apple-enterprise-hero-fade-6">
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-600"
+              className="apple-enterprise-hero-button apple-enterprise-hero-button--primary"
             >
               Request Enterprise Pricing →
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border-2 border-white/40 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="apple-enterprise-hero-button apple-enterprise-hero-button--ghost"
             >
               Contact Us
             </a>
@@ -138,44 +235,56 @@ export default function AppleForEnterprisePage() {
       </section>
 
       {/* Apple Devices for Every Enterprise Role */}
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Apple Devices for Every Enterprise Role</h2>
-          <p className="mt-2 text-sm text-slate-500">
-            From executive laptops to frontline tablets — procure the right Apple device for every team.
-          </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {devices.map((item) => (
-              <div key={item.title} className="rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-                <div className="mb-4 flex h-16 items-center justify-center text-emerald-600">
-                  {item.icon === 'mac' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12" stroke="currentColor" strokeWidth="2">
-                      <rect x="2" y="4" width="20" height="14" rx="2" />
-                      <path d="M6 8h12M6 12h8" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'ipad' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12" stroke="currentColor" strokeWidth="2">
-                      <rect x="5" y="2" width="14" height="20" rx="2" />
-                      <circle cx="12" cy="20" r="1.5" />
-                    </svg>
-                  )}
-                  {item.icon === 'iphone' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12" stroke="currentColor" strokeWidth="2">
-                      <rect x="6" y="2" width="12" height="20" rx="2" />
-                      <path d="M12 18h.01" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {item.icon === 'accessories' && (
-                    <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
+      <section
+        ref={devicesSectionRef}
+        className={`section-light apple-device-section${devicesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="apple-device-wrapper mx-auto max-w-7xl px-6">
+          <div className="apple-device-header apple-device-fade apple-device-delay-1">
+            <h2 className="apple-device-title">Apple Devices for Every Enterprise Role</h2>
+            <p className="apple-device-subtitle">
+              From executive laptops to frontline tablets — procure the right Apple device for every team.
+            </p>
+          </div>
+          <div className="apple-device-grid">
+            {devices.map((item, index) => (
+              <div
+                key={item.title}
+                className={`apple-device-card apple-device-fade apple-device-delay-${index + 2}${item.iconSet ? ' apple-device-card--accessories' : ''}`}
+              >
+                <div className="apple-device-media">
+                  {item.iconSet === 'accessories' ? (
+                    <div className="apple-device-accessories" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M6 14a6 6 0 0 1 12 0v2a3 3 0 0 1-3 3h-1v-5h-4v5H9a3 3 0 0 1-3-3v-2z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                        <path d="M4 14v1M20 14v1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="6" width="18" height="8" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M7 16v2M17 16v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                        <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M8 20h8M12 16v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M12 15v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                  ) : (
+                    <img
+                      src={item.image}
+                      alt={item.alt}
+                      className={`apple-device-image ${item.imageClass ?? ''}`}
+                      loading="lazy"
+                    />
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-1 text-xs font-medium text-emerald-600">{item.products}</p>
-                <p className="mt-2 text-sm text-slate-600">{item.copy}</p>
+                <h3 className="apple-device-name">{item.title}</h3>
+                <p className="apple-device-products">{item.products}</p>
+                <p className="apple-device-copy">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -183,16 +292,19 @@ export default function AppleForEnterprisePage() {
       </section>
 
       {/* What Pirlanta Delivers */}
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">What Pirlanta Delivers</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={deliverSectionRef}
+        className={`section-light apple-deliver-section${deliverVisible ? ' is-visible' : ''}`}
+      >
+        <div className="apple-deliver-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="apple-deliver-title">What Pirlanta Delivers</h2>
+          <p className="apple-deliver-subtitle">
             End-to-end Apple procurement support built for enterprise scale.
           </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+          <div className="apple-deliver-grid mt-12">
             {delivers.map((item) => (
-              <div key={item.title} className="rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-                <div className="mb-4 text-emerald-600">
+              <div key={item.title} className="apple-deliver-card">
+                <div className="apple-deliver-icon" aria-hidden="true">
                   {item.icon === 'box' && (
                     <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10" stroke="currentColor" strokeWidth="2">
                       <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
@@ -218,8 +330,8 @@ export default function AppleForEnterprisePage() {
                     </svg>
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{item.copy}</p>
+                <h3>{item.title}</h3>
+                <p>{item.copy}</p>
               </div>
             ))}
           </div>
@@ -227,23 +339,27 @@ export default function AppleForEnterprisePage() {
       </section>
 
       {/* Recommended Bundles */}
-      <section className="section-light">
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-semibold text-slate-900">Recommended Bundles</h2>
-          <p className="mt-2 text-sm text-slate-500">
+      <section
+        ref={bundlesSectionRef}
+        className={`section-light apple-bundles-section${bundlesVisible ? ' is-visible' : ''}`}
+      >
+        <div className="apple-bundles-wrapper mx-auto max-w-7xl px-6 py-20 text-center">
+          <h2 className="apple-bundles-title">Recommended Bundles</h2>
+          <p className="apple-bundles-subtitle">
             Pre-configured device packages for common enterprise roles.
           </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="apple-bundles-grid mt-12">
             {bundles.map((bundle) => (
-              <div key={bundle.title} className="rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm">
-                <h3 className="text-lg font-semibold text-slate-900">{bundle.title}</h3>
-                <p className="mt-1 text-sm text-slate-500">{bundle.purpose}</p>
-                <ul className="mt-4 space-y-2">
+              <div key={bundle.title} className="apple-bundles-card">
+                <h3>{bundle.title}</h3>
+                <p className="apple-bundles-purpose">{bundle.purpose}</p>
+                <ul className="apple-bundles-list">
                   {bundle.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
-                      <span className="mt-1 shrink-0 text-emerald-600">
-                        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+                    <li key={item} className="apple-bundles-item">
+                      <span className="apple-bundles-check" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                          <path d="M8.5 12.5l2.5 2.5 4.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </span>
                       {item}

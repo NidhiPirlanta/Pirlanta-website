@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import AntigravityBackground from './AntigravityBackground'
+import { useEffect, useRef, useState } from 'react'
+import HeroLiveBackground from './HeroLiveBackground'
 
 export default function CheckPointSecurityPage() {
+  const whySectionRef = useRef<HTMLElement | null>(null)
+  const [whyVisible, setWhyVisible] = useState(false)
   const whyPoints = [
     'Prevention-first security approach blocking threats before breach',
     'Unified Infinity architecture across network, cloud, and endpoints',
@@ -83,33 +85,89 @@ export default function CheckPointSecurityPage() {
   ]
 
   const faqs = [
-    "What is Check Point's prevention-first approach?",
-    'Can Check Point protect our cloud workloads?',
-    'How does Check Point handle ransomware?',
-    'Can Check Point replace our existing firewall?',
-    'Does Check Point support remote and hybrid workers?',
-    'How does Infinity architecture simplify security?',
+    {
+      question: "What is Check Point's prevention-first approach?",
+      answer:
+        'Unlike detection-focused solutions, Check Point emphasizes preventing attacks before they execute. Using ThreatCloud AI and SandBlast technologies, threats are blocked in real-time before causing damage—not just detected after the fact.',
+    },
+    {
+      question: 'Can Check Point protect our cloud workloads?',
+      answer:
+        'Yes, CloudGuard provides comprehensive cloud-native security including workload protection, application security, network security, and posture management across AWS, Azure, Google Cloud, and other environments.',
+    },
+    {
+      question: 'How does Check Point handle ransomware?',
+      answer:
+        'Harmony Endpoint includes dedicated anti-ransomware capabilities that detect and prevent ransomware behavior, automatically quarantine threats, and can roll back any encrypted files to their pre-attack state.',
+    },
+    {
+      question: 'Can Check Point replace our existing firewall?',
+      answer:
+        'Yes, Quantum Security Gateways are enterprise-grade next-gen firewalls with integrated threat prevention. We design migration plans that ensure security continuity while maximizing the advanced capabilities.',
+    },
+    {
+      question: 'Does Check Point support remote and hybrid workers?',
+      answer:
+        'Harmony SASE provides secure access for remote workers through ZTNA, secure web gateway, and integrated SD-WAN. Harmony Mobile protects employee devices regardless of location.',
+    },
+    {
+      question: 'How does Infinity architecture simplify security?',
+      answer:
+        'Infinity consolidates security across network, cloud, mobile, and endpoint into a unified architecture with centralized management, shared threat intelligence, and consistent policies—reducing tool sprawl and operational overhead.',
+    },
   ]
 
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  useEffect(() => {
+    const section = whySectionRef.current
+    if (!section) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      setWhyVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setWhyVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <main className="partner-page relative overflow-hidden pt-24">
       {/* Hero Section */}
-      <section className="partner-hero relative">
-        <div className="partner-hero-content mx-auto max-w-7xl px-6 py-24">
-          <AntigravityBackground className="hero-antigravity" />
-          <div className="partner-logo flex items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-white font-bold tracking-wider">
-            CHECK POINT™
+      <section className="partner-hero live-hero checkpoint-hero relative">
+        <HeroLiveBackground />
+        <div className="partner-hero-content checkpoint-hero-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="checkpoint-hero-logo checkpoint-hero-fade checkpoint-hero-fade-1">
+            <img
+              src="/partners/Check_Point_logo_2022.svg"
+              alt="Check Point"
+              className="checkpoint-hero-logo-img"
+            />
           </div>
-          <span className="pill pill--tight mt-3 inline-block rounded border border-emerald-500/60 bg-slate-800 px-4 py-1.5 text-sm font-medium text-white">
+          <span className="pill pill--tight checkpoint-hero-pill checkpoint-hero-fade checkpoint-hero-fade-2">
             Check Point Technology Partner
           </span>
-          <h1 className="mt-4 text-4xl font-semibold text-white md:text-5xl">
-            Check Point <span className="ai-accent">Partner</span>
+          <h1 className="checkpoint-hero-title checkpoint-hero-fade checkpoint-hero-fade-3">
+            Check Point <span className="checkpoint-hero-accent">Partner</span>
           </h1>
-          <p className="mt-3 text-emerald-300">Prevention-First Security Across Every Attack Surface</p>
-          <p className="mt-4 max-w-2xl text-sm text-emerald-100/60 md:text-base">
+          <p className="checkpoint-hero-kicker checkpoint-hero-fade checkpoint-hero-fade-4">
+            Prevention-First Security Across Every Attack Surface
+          </p>
+          <p className="checkpoint-hero-copy checkpoint-hero-fade checkpoint-hero-fade-5">
             We deliver Check Point&apos;s prevention-first security portfolio—from Quantum next-gen firewalls to CloudGuard cloud protection and Harmony unified user security for comprehensive threat prevention.
           </p>
         </div>
@@ -121,43 +179,54 @@ export default function CheckPointSecurityPage() {
       </section>
 
       {/* Why Pirlanta for Check Point */}
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Why Pirlanta for Check Point?</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Our Check Point practice brings prevention-first security to your organization, delivering the Infinity architecture that unifies protection across network, cloud, and users with real-time threat intelligence.
-            </p>
-            <div className="mt-6 grid gap-3 text-sm text-slate-600">
-              {whyPoints.map((point) => (
-                <div key={point} className="cisco-point flex items-start gap-3">
-                  <span className="benefit-icon mt-0.5 shrink-0 text-emerald-600">
-                    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-                      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="cisco-card rounded-2xl border border-slate-200 bg-emerald-50/30 p-8 shadow-sm">
-            <div className="partner-logo partner-logo--small flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 font-bold tracking-wider text-slate-900">
-              CHECK POINT™
-            </div>
-            <h3 className="mt-4 text-xl font-semibold text-slate-900">Check Point Technology Partner</h3>
-            <p className="mt-2 text-sm text-slate-600">
-              Implementing the full Check Point Infinity portfolio for prevention-first enterprise security.
-            </p>
-            <div className="mt-6 flex gap-4">
-              <div className="flex-1 rounded-lg border-2 border-emerald-600 bg-white p-4 text-center">
-                <strong className="block text-emerald-700">Quantum</strong>
-                <span className="text-sm text-slate-600">NGFW</span>
+      <section
+        ref={whySectionRef}
+        className={`section-light cisco-why-section${whyVisible ? ' is-visible' : ''}`}
+      >
+        <div className="cisco-why-wrapper mx-auto max-w-7xl px-6">
+          <div className="cisco-why-grid">
+            <div className="cisco-why-copy">
+              <h2 className="cisco-why-title cisco-why-fade cisco-why-delay-1">
+                Why Pirlanta for Check Point?
+              </h2>
+              <p className="cisco-why-subtitle cisco-why-fade cisco-why-delay-2">
+                Our Check Point practice brings prevention-first security to your organization, delivering the Infinity architecture
+                that unifies protection across network, cloud, and users with real-time threat intelligence.
+              </p>
+              <div className="cisco-why-points">
+                {whyPoints.map((point, index) => (
+                  <div
+                    key={point}
+                    className={`cisco-point cisco-why-fade cisco-why-delay-${index + 3}`}
+                  >
+                    <span className="benefit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
-              <div className="flex-1 rounded-lg border-2 border-emerald-600 bg-white p-4 text-center">
-                <strong className="block text-emerald-700">Infinity</strong>
-                <span className="text-sm text-slate-600">Architecture</span>
+            </div>
+            <div className="cisco-card cisco-why-card cisco-why-fade cisco-why-delay-8">
+              <div className="partner-logo partner-logo--small checkpoint-logo" aria-label="Check Point">
+                <img src="/partners/Check_Point_logo_2022.svg" alt="Check Point" />
+              </div>
+              <h3>Check Point Technology Partner</h3>
+              <p>
+                Implementing the full Check Point Infinity portfolio for prevention-first enterprise security.
+              </p>
+              <div className="cisco-badges">
+                <div>
+                  <strong>Quantum</strong>
+                  <span>NGFW</span>
+                </div>
+                <div>
+                  <strong>Infinity</strong>
+                  <span>Architecture</span>
+                </div>
               </div>
             </div>
           </div>
@@ -286,36 +355,30 @@ export default function CheckPointSecurityPage() {
       </section>
 
       {/* Check Point FAQs */}
-      <section className="section-light">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="section-light cisco-faq-section">
+        <div className="cisco-faq-grid mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-semibold text-slate-900">Check Point FAQs</h2>
-            <p className="mt-3 text-sm text-slate-500">
+            <h2 className="cisco-faq-title">Check Point FAQs</h2>
+            <p className="cisco-faq-subtitle">
               Common questions about Check Point Infinity, Quantum, CloudGuard, and Harmony solutions.
             </p>
-            <a href="/contact" className="mt-6 inline-block rounded-full border-2 border-emerald-600 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
+            <a href="/contact" className="cisco-faq-button">
               Ask a Question
             </a>
           </div>
-          <div className="cyber-faq space-y-2">
-            {faqs.map((question, index) => {
+          <div className="cisco-faq-list">
+            {faqs.map((item, index) => {
               const isOpen = openFaq === index
               return (
                 <button
-                  key={question}
-                  className={`cyber-faq-item w-full rounded-lg border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:border-emerald-200 hover:bg-slate-50 ${isOpen ? 'border-emerald-300 bg-emerald-50/50' : ''}`}
+                  key={item.question}
+                  className={`cisco-faq-item ${isOpen ? 'cisco-faq-item--open' : ''}`}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   type="button"
                 >
-                  <span className="flex items-center justify-between">
-                    {question}
-                    <span className={`ml-2 shrink-0 text-emerald-600 transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
-                  </span>
-                  {isOpen && (
-                    <p className="mt-2 text-xs text-slate-500">
-                      Contact us to learn more about our Check Point implementation and support services.
-                    </p>
-                  )}
+                  <span className="cisco-faq-question">{item.question}</span>
+                  <span className="cisco-faq-toggle">▾</span>
+                  <span className="cisco-faq-answer">{item.answer}</span>
                 </button>
               )
             })}
