@@ -39,13 +39,13 @@ export default function Terms() {
   }, [])
 
   return (
-    <main className="partner-page relative overflow-hidden pt-24">
+    <main className="partner-page terms-page relative overflow-hidden pt-24">
       <section
         className="partner-hero live-hero partner-ecosystem-hero relative min-h-[85vh] flex items-center"
         id="terms"
       >
         <HeroLiveBackground />
-        <div className="partner-hero-content partner-ecosystem-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-20 text-center">
+        <div className="partner-hero-content partner-ecosystem-content w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-12 sm:py-20 text-center">
           <span className="pill pill--tight partner-ecosystem-pill partner-hero-fade partner-hero-fade-1">
             Last updated: January 2026
           </span>
@@ -74,7 +74,7 @@ export default function Terms() {
         </div>
       </section>
 
-      <div className="flex-grow pt-20 relative z-10">
+      <div className="flex-grow pt-12 sm:pt-20 relative z-10">
 
         <section
           className={`terms-content-section${termsVisible ? ' is-visible' : ''}`}

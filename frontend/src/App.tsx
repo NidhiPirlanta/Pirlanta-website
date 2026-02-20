@@ -1,5 +1,5 @@
 import { Suspense, lazy, type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Link, Route, Routes, useLocation } from 'react-router-dom'
 
 import { motion } from "framer-motion";
 
@@ -1239,21 +1239,21 @@ function AiCodeAuditsPage() {
 }
 
 function PartnerEcosystemPage() {
-  const partnerLogos = [
-    { name: 'Cisco', src: '/PartnerLogo/Cisco.png', label: 'Select Integrator' },
+  const partnerLogos: Array<{ name: string; src: string; label?: string; href?: string }> = [
+    { name: 'Cisco', src: '/PartnerLogo/Cisco.png', label: 'Select Integrator', href: '/partners/networking/cisco' },
     { name: 'Palo Alto Networks', src: '/PartnerLogo/Paloalto.png', label: 'Solution Provider' },
-    { name: 'Juniper Networks', src: '/PartnerLogo/Juniper.png', label: 'Value Added Reseller' },
-    { name: 'RSA', src: '/PartnerLogo/RSA.png', label: 'Gold Partner' },
-    { name: 'CrowdStrike', src: '/PartnerLogo/Crowdstrike.png' },
-    { name: 'Fortinet', src: '/PartnerLogo/Fortinet.png' },
-    { name: 'Check Point', src: '/PartnerLogo/CheckPoint.png' },
+    { name: 'Juniper Networks', src: '/PartnerLogo/Juniper.png', label: 'Value Added Reseller', href: '/partners/networking/juniper' },
+    { name: 'RSA', src: '/PartnerLogo/RSA.png', label: 'Gold Partner', href: '/partners/security/rsa' },
+    { name: 'CrowdStrike', src: '/PartnerLogo/Crowdstrike.png', href: '/partners/security/crowdstrike' },
+    { name: 'Fortinet', src: '/PartnerLogo/Fortinet.png', href: '/partners/security/fortinet' },
+    { name: 'Check Point', src: '/PartnerLogo/CheckPoint.png', href: '/partners/security/checkpoint' },
     { name: 'Sophos', src: '/PartnerLogo/Sophos.png' },
     { name: 'SonicWall', src: '/PartnerLogo/sonicwall.png' },
-    { name: 'Forcepoint', src: '/PartnerLogo/Forcepoint.png' },
-    { name: 'Barracuda', src: '/PartnerLogo/Barracuda.png' },
+    { name: 'Forcepoint', src: '/PartnerLogo/Forcepoint.png', href: '/partners/security/forcepoint' },
+    { name: 'Barracuda', src: '/PartnerLogo/Barracuda.png', href: '/partners/security/barracuda' },
     { name: 'Veeam', src: '/PartnerLogo/Veeam.png', label: 'Cloud and Service Provider' },
-    { name: 'Apple', src: '/PartnerLogo/Apple.png', label: 'Distribution Partner Program' },
-    { name: 'Jamf', src: '/PartnerLogo/jamf.png', label: 'Registered Partner' },
+    { name: 'Apple', src: '/PartnerLogo/Apple.png', label: 'Distribution Partner Program', href: '/partners/endpoint/apple-smb' },
+    { name: 'Jamf', src: '/PartnerLogo/jamf.png', label: 'Registered Partner', href: '/partners/endpoint/jamf' },
     { name: 'AWS', src: '/PartnerLogo/AWS.png' },
     { name: 'Google Workspace', src: '/PartnerLogo/GoogleWorkspace.png' },
     { name: 'Hewlett Packard Enterprise', src: '/PartnerLogo/Hewlett.png', label: 'Business Solution Provider' },
@@ -1338,7 +1338,7 @@ function PartnerEcosystemPage() {
         <div className="ecosystem-partners-wrapper mx-auto max-w-7xl px-6">
           <div
             className="ecosystem-partners-header ecosystem-partners-fade"
-            style={{ ['--delay' as const]: '0.1s' }}
+            style={{ '--delay': '0.1s' } as React.CSSProperties & { '--delay': string }}
           >
             <h2 className="ecosystem-partners-title">Our Technology Partners</h2>
             <p className="ecosystem-partners-subtitle">
@@ -1346,16 +1346,36 @@ function PartnerEcosystemPage() {
             </p>
           </div>
           <div className="ecosystem-partners-grid">
-            {partnerLogos.map((logo, index) => (
-              <div
-                key={logo.name}
-                className="ecosystem-partners-card ecosystem-partners-fade"
-                style={{ ['--delay' as const]: `${0.2 + index * 0.06}s` }}
-              >
-                <img src={logo.src} alt={logo.name} className="ecosystem-partners-logo" />
-                {logo.label && <span className="ecosystem-partners-label">{logo.label}</span>}
-              </div>
-            ))}
+            {partnerLogos.map((logo, index) => {
+              const cardContent = (
+                <>
+                  <img src={logo.src} alt={logo.name} className="ecosystem-partners-logo" />
+                  {logo.label && <span className="ecosystem-partners-label">{logo.label}</span>}
+                </>
+              )
+              const fadeStyle = { '--delay': `${0.2 + index * 0.06}s` } as React.CSSProperties & { '--delay': string }
+              if (logo.href) {
+                return (
+                  <Link
+                    key={logo.name}
+                    to={logo.href}
+                    className="ecosystem-partners-card ecosystem-partners-fade ecosystem-partners-card--link"
+                    style={fadeStyle}
+                  >
+                    {cardContent}
+                  </Link>
+                )
+              }
+              return (
+                <div
+                  key={logo.name}
+                  className="ecosystem-partners-card ecosystem-partners-fade"
+                  style={fadeStyle}
+                >
+                  {cardContent}
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>

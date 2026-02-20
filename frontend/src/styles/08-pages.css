@@ -81,6 +81,61 @@
   text-transform: none;
 }
 
+/* Assessment page mobile */
+@media (max-width: 768px) {
+  .assessment-prereg-wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .assessment-prereg-card,
+  .assessment-card {
+    padding: 1.25rem 1rem !important;
+  }
+  .assessment-banner-headline h2 {
+    font-size: 1.5rem;
+  }
+  .assessment-prereg-stack {
+    gap: 1.5rem;
+  }
+  .assessment-page .assessment-form {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .assessment-question {
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .assessment-prereg-wrapper {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .assessment-prereg-card,
+  .assessment-card {
+    padding: 1rem 0.75rem !important;
+  }
+  .assessment-banner-headline h2 {
+    font-size: 1.35rem;
+  }
+  .assessment-benefits-list {
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+  }
+  .assessment-banner {
+    padding: 1rem !important;
+  }
+  .terms-modal-overlay {
+    padding: 1rem;
+  }
+  .terms-modal-body {
+    padding: 1rem 1.25rem;
+  }
+  .terms-modal-body h2 {
+    font-size: 1.15rem;
+  }
+}
+
 /* Terms & Conditions Modal */
 .terms-modal-overlay {
   position: fixed;

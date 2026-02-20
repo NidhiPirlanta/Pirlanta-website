@@ -83,7 +83,7 @@
     background: #ffffff;
     border: 1px solid #e5e7eb;
     padding: 1.2rem 1rem;
-    min-height: 120px;
+    min-height: 130px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -95,17 +95,31 @@
   }
 
   .ecosystem-partners-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(15, 23, 42, 0.12);
-    box-shadow: 0 18px 28px rgba(15, 23, 42, 0.1);
+    transform: translateY(-6px);
+    border-color: rgba(39, 102, 0, 0.2);
+    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(39, 102, 0, 0.08);
+  }
+
+  .ecosystem-partners-card:hover .ecosystem-partners-logo {
+    transform: scale(1.08);
+  }
+
+  .ecosystem-partners-card--link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ecosystem-partners-card--link:hover {
+    color: inherit;
   }
 
   .ecosystem-partners-logo {
     width: 100%;
-    max-width: 120px;
-    max-height: 42px;
+    max-width: 150px;
+    max-height: 56px;
     object-fit: contain;
     display: block;
+    transition: transform 0.25s ease;
   }
 
   .ecosystem-partners-label {
@@ -135,13 +149,84 @@
 
   @media (max-width: 1023px) {
     .ecosystem-partners-grid {
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
   }
 
   @media (max-width: 768px) {
     .ecosystem-partners-section {
       min-height: auto;
+    }
+
+    .ecosystem-partners-wrapper {
+      padding: 2rem 1.25rem;
+    }
+
+    .ecosystem-partners-header {
+      margin-bottom: 2rem;
+    }
+
+    .ecosystem-partners-title {
+      font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+    }
+
+    .ecosystem-partners-subtitle {
+      font-size: 0.95rem;
+    }
+
+    .ecosystem-partners-grid {
+      gap: 1rem;
+    }
+
+    .ecosystem-partners-card {
+      padding: 1rem 0.85rem;
+      min-height: 110px;
+    }
+
+    .ecosystem-partners-logo {
+      max-width: 120px;
+      max-height: 44px;
+    }
+
+    .ecosystem-partners-label {
+      font-size: 0.65rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ecosystem-partners-wrapper {
+      padding: 1.5rem 1rem;
+    }
+
+    .ecosystem-partners-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .ecosystem-partners-title {
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+    }
+
+    .ecosystem-partners-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .ecosystem-partners-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .ecosystem-partners-card {
+      padding: 0.85rem 0.65rem;
+      min-height: 98px;
+    }
+
+    .ecosystem-partners-logo {
+      max-width: 100px;
+      max-height: 38px;
+    }
+
+    .ecosystem-partners-label {
+      font-size: 0.6rem;
     }
   }
 
@@ -153,6 +238,10 @@
     }
 
     .ecosystem-partners-card:hover {
+      transform: none;
+    }
+
+    .ecosystem-partners-card:hover .ecosystem-partners-logo {
       transform: none;
     }
   }

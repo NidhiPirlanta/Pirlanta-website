@@ -79,21 +79,70 @@
 }
 
 @media (max-width: 768px) {
+  .terms-page .partner-ecosystem-hero {
+    min-height: auto;
+    padding: 3rem 0 4rem;
+  }
+
+  .terms-page .partner-ecosystem-title {
+    font-size: clamp(1.65rem, 6vw, 2.2rem);
+  }
+
+  .terms-page .partner-ecosystem-subtitle {
+    font-size: 0.95rem;
+  }
+
   .terms-content-section {
-    padding: 72px 0 96px;
+    padding: 48px 0 72px;
   }
 
   .terms-body {
-    gap: 40px;
+    gap: 36px;
+    padding: 0 1.25rem;
+    max-width: 100%;
   }
 
   .terms-title {
-    font-size: 1.6rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
+
+  .terms-block {
+    gap: 12px;
   }
 
   .terms-paragraph,
   .terms-list,
   .terms-contact {
-    font-size: 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .terms-list {
+    margin-left: 16px;
+    padding-left: 4px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-content-section {
+    padding: 32px 0 56px;
+  }
+
+  .terms-body {
+    padding: 0 1rem;
+    gap: 28px;
+  }
+
+  .terms-title {
+    font-size: 1.2rem;
+  }
+
+  .terms-paragraph,
+  .terms-list,
+  .terms-contact {
+    font-size: 0.875rem;
   }
 }

@@ -1124,9 +1124,111 @@
       min-height: auto;
     }
 
+    .cyber-benefits-wrapper {
+      padding: 2rem 0;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .cyber-benefits-grid {
+      gap: 2rem;
+    }
+
+    .cyber-benefits-copy {
+      max-width: 100%;
+    }
+
+    .cyber-benefits-title {
+      font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+    }
+
+    .cyber-benefits-subtitle {
+      font-size: 0.95rem;
+      margin-top: 0.75rem;
+    }
+
     .cyber-benefits-button {
       width: 100%;
       justify-content: center;
+      margin-top: 1.5rem;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .cyber-benefits-section .cyber-benefits {
+      gap: 1rem;
+    }
+
+    .cyber-benefits-section .cyber-benefit-card {
+      padding: 1rem 1.25rem;
+      grid-template-columns: 36px 1fr;
+      gap: 0.85rem;
+    }
+
+    .cyber-benefits-section .cyber-benefit-card p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .cyber-benefits-section .benefit-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .cyber-benefits-section .benefit-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .cyber-benefits-section .benefits-left,
+    .cyber-benefits-section .benefits-right {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cyber-benefits-wrapper {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .cyber-benefits-grid {
+      gap: 1.5rem;
+    }
+
+    .cyber-benefits-title {
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+    }
+
+    .cyber-benefits-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .cyber-benefits-button {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    .cyber-benefits-section .cyber-benefit-card {
+      padding: 0.9rem 1rem;
+      grid-template-columns: 32px 1fr;
+      gap: 0.75rem;
+    }
+
+    .cyber-benefits-section .cyber-benefit-card p {
+      font-size: 0.8125rem;
+    }
+
+    .cyber-benefits-section .benefit-icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .cyber-benefits-section .benefit-icon svg {
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -1337,9 +1439,106 @@
       min-height: auto;
     }
 
+    .data-benefits-wrapper {
+      padding: 2rem 1.25rem;
+    }
+
+    .data-benefits-grid {
+      gap: 2rem;
+    }
+
+    .data-benefits-copy {
+      max-width: 100%;
+    }
+
+    .data-benefits-title {
+      font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+    }
+
+    .data-benefits-subtitle {
+      font-size: 0.95rem;
+      margin-top: 0.75rem;
+    }
+
     .data-benefits-button {
       width: 100%;
       justify-content: center;
+      margin-top: 1.5rem;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .data-benefits-section .cyber-benefits {
+      gap: 1rem;
+    }
+
+    .data-benefits-section .cyber-benefit-card {
+      padding: 1rem 1.25rem;
+      grid-template-columns: 36px 1fr;
+      gap: 0.85rem;
+    }
+
+    .data-benefits-section .cyber-benefit-card p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .data-benefits-section .benefit-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .data-benefits-section .benefit-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .data-benefits-section .data-benefits-left,
+    .data-benefits-section .data-benefits-right {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .data-benefits-wrapper {
+      padding: 1.5rem 1rem;
+    }
+
+    .data-benefits-grid {
+      gap: 1.5rem;
+    }
+
+    .data-benefits-title {
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+    }
+
+    .data-benefits-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .data-benefits-button {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    .data-benefits-section .cyber-benefit-card {
+      padding: 0.9rem 1rem;
+      grid-template-columns: 32px 1fr;
+      gap: 0.75rem;
+    }
+
+    .data-benefits-section .cyber-benefit-card p {
+      font-size: 0.8125rem;
+    }
+
+    .data-benefits-section .benefit-icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .data-benefits-section .benefit-icon svg {
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -1550,9 +1749,106 @@
       min-height: auto;
     }
 
+    .network-benefits-wrapper {
+      padding: 2rem 1.25rem;
+    }
+
+    .network-benefits-grid {
+      gap: 2rem;
+    }
+
+    .network-benefits-copy {
+      max-width: 100%;
+    }
+
+    .network-benefits-title {
+      font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+    }
+
+    .network-benefits-subtitle {
+      font-size: 0.95rem;
+      margin-top: 0.75rem;
+    }
+
     .network-benefits-button {
       width: 100%;
       justify-content: center;
+      margin-top: 1.5rem;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .network-benefits-section .cyber-benefits {
+      gap: 1rem;
+    }
+
+    .network-benefits-section .cyber-benefit-card {
+      padding: 1rem 1.25rem;
+      grid-template-columns: 36px 1fr;
+      gap: 0.85rem;
+    }
+
+    .network-benefits-section .cyber-benefit-card p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .network-benefits-section .benefit-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .network-benefits-section .benefit-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .network-benefits-section .network-benefits-left,
+    .network-benefits-section .network-benefits-right {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .network-benefits-wrapper {
+      padding: 1.5rem 1rem;
+    }
+
+    .network-benefits-grid {
+      gap: 1.5rem;
+    }
+
+    .network-benefits-title {
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+    }
+
+    .network-benefits-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .network-benefits-button {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    .network-benefits-section .cyber-benefit-card {
+      padding: 0.9rem 1rem;
+      grid-template-columns: 32px 1fr;
+      gap: 0.75rem;
+    }
+
+    .network-benefits-section .cyber-benefit-card p {
+      font-size: 0.8125rem;
+    }
+
+    .network-benefits-section .benefit-icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .network-benefits-section .benefit-icon svg {
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -1763,9 +2059,106 @@
       min-height: auto;
     }
 
+    .ai-benefits-wrapper {
+      padding: 2rem 1.25rem;
+    }
+
+    .ai-benefits-grid {
+      gap: 2rem;
+    }
+
+    .ai-benefits-copy {
+      max-width: 100%;
+    }
+
+    .ai-benefits-title {
+      font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+    }
+
+    .ai-benefits-subtitle {
+      font-size: 0.95rem;
+      margin-top: 0.75rem;
+    }
+
     .ai-benefits-button {
       width: 100%;
       justify-content: center;
+      margin-top: 1.5rem;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .ai-benefits-section .cyber-benefits {
+      gap: 1rem;
+    }
+
+    .ai-benefits-section .cyber-benefit-card {
+      padding: 1rem 1.25rem;
+      grid-template-columns: 36px 1fr;
+      gap: 0.85rem;
+    }
+
+    .ai-benefits-section .cyber-benefit-card p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .ai-benefits-section .benefit-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .ai-benefits-section .benefit-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .ai-benefits-section .ai-benefits-left,
+    .ai-benefits-section .ai-benefits-right {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ai-benefits-wrapper {
+      padding: 1.5rem 1rem;
+    }
+
+    .ai-benefits-grid {
+      gap: 1.5rem;
+    }
+
+    .ai-benefits-title {
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+    }
+
+    .ai-benefits-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .ai-benefits-button {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    .ai-benefits-section .cyber-benefit-card {
+      padding: 0.9rem 1rem;
+      grid-template-columns: 32px 1fr;
+      gap: 0.75rem;
+    }
+
+    .ai-benefits-section .cyber-benefit-card p {
+      font-size: 0.8125rem;
+    }
+
+    .ai-benefits-section .benefit-icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .ai-benefits-section .benefit-icon svg {
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -3082,6 +3475,86 @@
   .partner-hero-content {
     position: relative;
     z-index: 2;
+  }
+
+  @media (max-width: 768px) {
+    .partner-hero-content {
+      padding-top: 1.5rem !important;
+      padding-bottom: 1.5rem !important;
+    }
+    .partner-ecosystem-hero {
+      min-height: auto;
+      padding: 2rem 0;
+    }
+    .partner-ecosystem-title {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+    }
+    .partner-ecosystem-subtitle {
+      font-size: 0.95rem;
+    }
+    .cisco-hero,
+    .juniper-hero,
+    .barracuda-hero,
+    .fortinet-hero,
+    .rsa-hero,
+    .crowdstrike-hero,
+    .forcepoint-hero,
+    .checkpoint-hero,
+    .apple-smb-hero,
+    .apple-enterprise-hero,
+    .jamf-hero {
+      min-height: auto;
+      padding: 2rem 0;
+    }
+    .cisco-hero-title,
+    .juniper-hero-title,
+    .barracuda-hero-title,
+    .fortinet-hero-title,
+    .rsa-hero-title,
+    .crowdstrike-hero-title,
+    .forcepoint-hero-title,
+    .checkpoint-hero-title,
+    .apple-smb-hero-title,
+    .apple-enterprise-hero-title,
+    .jamf-hero-title {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+    }
+    .cisco-hero-logo-img {
+      max-width: 120px;
+    }
+    .cisco-hero-kicker,
+    .cisco-hero-copy {
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .partner-hero-content {
+      padding-top: 1.25rem !important;
+      padding-bottom: 1.25rem !important;
+    }
+    .partner-ecosystem-title {
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+    }
+    .partner-ecosystem-subtitle {
+      font-size: 0.875rem;
+    }
+    .cisco-hero-title,
+    .juniper-hero-title,
+    .barracuda-hero-title,
+    .fortinet-hero-title,
+    .rsa-hero-title,
+    .crowdstrike-hero-title,
+    .forcepoint-hero-title,
+    .checkpoint-hero-title,
+    .apple-smb-hero-title,
+    .apple-enterprise-hero-title,
+    .jamf-hero-title {
+      font-size: clamp(1.35rem, 6vw, 1.85rem);
+    }
+    .cisco-hero-logo-img {
+      max-width: 100px;
+    }
   }
 
   .cisco-hero {

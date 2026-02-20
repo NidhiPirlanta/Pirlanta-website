@@ -109,6 +109,27 @@
     min-height: 50vh;
   }
 
+  @media (max-width: 768px) {
+    .contact-hero {
+      padding-top: 3rem;
+      padding-bottom: 5rem;
+      min-height: auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .contact-hero {
+      padding-top: 2.5rem;
+      padding-bottom: 4rem;
+    }
+    .contact-hero h2 {
+      font-size: 1.75rem;
+    }
+    .contact-hero p {
+      font-size: 1rem;
+    }
+  }
+
   .contact-hero-content {
     position: relative;
     z-index: 2;
